@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getCookie, setCookie } from "../components/Cookie";
-import curvedImage from '../assets/img/curved-images/logo-removebg-preview.png';
+import curvedImage2 from '../assets/img/curved-images/logo-removebg-preview3.png';
 //import curvedImage2 from '../assets/img/curved-images/logo-removebg-preview2.png';
 import unidecode from 'unidecode';
 import '../App.css';
@@ -141,7 +141,7 @@ function Login() {
                     <div className="col-md-6">
                         <div className="d-none d-md-block">
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                                <img style={{ width: '60%', marginTop: '25%' }}src={`${logoPath}?v=${version}`} alt="Logo" />
+                                <img style={{ width: '60%', marginTop: '25%' }}src={`${curvedImage2}?v=${version}`} alt="Logo" />
                             </div>
                         </div>
                     </div>
