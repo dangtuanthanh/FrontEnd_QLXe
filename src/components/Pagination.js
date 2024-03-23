@@ -59,7 +59,7 @@ const Pagination = (props) => {
             // Trang hiện tại
             pageNumbers.push(
                 <li key={props.dataRes.currentPage} className="page-item active">
-                    <button style={{ color: 'white' }} className="page-link">{props.dataRes.currentPage}</button>
+                    <button style={{ color: 'white',backgroundColor:'#17c1e8',border:'none' }} className="page-link">{props.dataRes.currentPage}</button>
                 </li>
             );
     

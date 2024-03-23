@@ -5,11 +5,10 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 
 import Combobox from "../Combobox";
 import { getCookie } from "../Cookie";
-import Insert_updateJobPosition from "./Insert_updateJobPosition";
 import Insert_updateRole from "./Insert_updateRole";
-import { urlGetRole, urlInsertMember, urlGetJobPosition, urlGetMember, urlUpdateMember } from "../url"
+import { urlGetRole, urlInsertMember, urlGetMember, urlUpdateMember } from "../url"
 
-const Insert_updateAccount = (props) => {
+const Them_suaThanhVien = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
@@ -24,9 +23,7 @@ const Insert_updateAccount = (props) => {
     const [isDisabled, setIsDisabled] = useState(true);
     // combobox
     const [combosVaiTro, setCombosVaiTro] = useState([]);//danh sách vai trò
-    const [combosViTriCongViec, setCombosViTriCongViec] = useState([]);//danh sách vị trí công việc
     //hiển thị popup thêm vị trí công việc và vai trò truy cập
-    const [themVTCV, setThemVTCV] = useState(false);
     const [themVTTC, setThemVTTC] = useState(false);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
@@ -49,14 +46,7 @@ const Insert_updateAccount = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            const fetchGetJobPosition = fetch(`${urlGetJobPosition}?limit=10000`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ss': getCookie('ss'),
-                },
-            })
-            Promise.all([fetchGetRole, fetchGetJobPosition, fetchGetAccount])
+            Promise.all([fetchGetRole, fetchGetAccount])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
@@ -73,32 +63,15 @@ const Insert_updateAccount = (props) => {
                 })
                 .then(data => {
                     setCombosVaiTro(data[0].data)
-                    setCombosViTriCongViec(data[1].data)
                     //xử lý dữ liệu hiển thị nếu là sửa dữ liệu
                     if (props.isInsert === false) {
-                        let getAccountByID = data[2]
-                        const NgaySinh = new Date(data[2].NgaySinh);
-                        const formattedDate = NgaySinh.toISOString().split("T")[0];
-                        const NgayVao = new Date(data[2].NgayVao);
-                        const formattedDate2 = NgayVao.toISOString().split("T")[0];
-                        const strings = data[2].IDVaiTro.map(num => num.toString());
-                        getAccountByID = ({
-                            ...getAccountByID,
-                            NgaySinh: formattedDate,
-                            NgayVao: formattedDate2,
-                            IDVaiTro: strings
-                        });
-                        setDataReq(getAccountByID)
-                        if (data[2].TaiKhoan) {
+                        setDataReq(data[1])
+                        if (data[1].MaVaiTro.length> 0) {
                             setResTaiKhoan(true)
                             setIsChecked(true);
                             setIsDisabled(false);
                         }
                     }
-                    else setDataReq({
-                        ...dataReq,
-                        IDViTriCongViec: data[1].data[0].IDViTriCongViec
-                    });
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
@@ -118,14 +91,7 @@ const Insert_updateAccount = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            const fetchGetJobPosition = fetch(`${urlGetJobPosition}?limit=10000`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ss': getCookie('ss'),
-                },
-            })
-            Promise.all([fetchGetRole, fetchGetJobPosition])
+            Promise.all([fetchGetRole])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
@@ -142,11 +108,6 @@ const Insert_updateAccount = (props) => {
                 })
                 .then(data => {
                     setCombosVaiTro(data[0].data)
-                    setCombosViTriCongViec(data[1].data)
-                    setDataReq({
-                        ...dataReq,
-                        IDViTriCongViec: data[1].data[0].IDViTriCongViec
-                    });
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
@@ -167,24 +128,16 @@ const Insert_updateAccount = (props) => {
     //combo vai trò
     const handleVaiTroChange = (ID) => {
         let updatedDataReq = { ...dataReq };
-        let IDVaiTro = updatedDataReq.IDVaiTro;
-
-        if (IDVaiTro.includes(ID)) {
-            IDVaiTro = IDVaiTro.filter(item => item !== ID)
+        let MaVaiTro = updatedDataReq.MaVaiTro;
+        if (MaVaiTro.includes(ID)) {
+            MaVaiTro = MaVaiTro.filter(item => item !== ID)
         } else {
-            IDVaiTro.push(ID);
+            MaVaiTro.push(ID);
         }
-        updatedDataReq.IDVaiTro = IDVaiTro;
+        updatedDataReq.MaVaiTro = MaVaiTro;
 
         setDataReq(updatedDataReq);
 
-    }
-    //combo vị trí công việc
-    function handleViTriCongViecChange(selectedValue) {
-        setDataReq({
-            ...dataReq,
-            IDViTriCongViec: selectedValue
-        });
     }
     // xử lý ảnh
     //url xử lý hiển thị hình ảnh
@@ -284,26 +237,21 @@ const Insert_updateAccount = (props) => {
     const handleCheckboxChange = (event) => {
         if (isDisabled === true) {//nếu đang hiện ô
             const updatedDataReq = { ...dataReq };
-            if (!updatedDataReq.IDVaiTro) {
-                updatedDataReq.IDVaiTro = [];
+            if (!updatedDataReq.MaVaiTro) {
+                updatedDataReq.MaVaiTro = [];
             }
-            const IDVaiTro = updatedDataReq.IDVaiTro;
-            IDVaiTro.push(String(combosVaiTro[0].IDVaiTro));
-            updatedDataReq.IDVaiTro = IDVaiTro;
+            const MaVaiTro = updatedDataReq.MaVaiTro;
+            MaVaiTro.push(combosVaiTro[0].MaVaiTro);
+            updatedDataReq.MaVaiTro = MaVaiTro;
             setDataReq(updatedDataReq);
         } else {
-            const inputElement = document.getElementById('accountInput');
             const inputElement2 = document.getElementById('passwordInput');
 
-            if (inputElement) {
-                inputElement.value = '';
-            }
             if (inputElement2) {
                 inputElement2.value = '';
             }
             const updatedDataReq = { ...dataReq };
-            delete updatedDataReq.IDVaiTro;
-            delete updatedDataReq.TaiKhoan;
+            delete updatedDataReq.MaVaiTro;
             delete updatedDataReq.MatKhau;
 
             setDataReq(updatedDataReq);
@@ -401,52 +349,26 @@ const Insert_updateAccount = (props) => {
         if (isChecked === true) {
             if (props.isInsert) {
                 //trường hợp check và thêm
-                if (!dataReq.TaiKhoan
-                    || !dataReq.MatKhau
-                    || !dataReq.IDVaiTro
-                    || !dataReq.IDVaiTro.length
-                    || !dataReq.TenNhanVien
-                    || !dataReq.IDViTriCongViec
-                    || !dataReq.NgaySinh
-                    || !dataReq.GioiTinh
-                    || !dataReq.DiaChi
-                    || !dataReq.SoDienThoai
-                    || !dataReq.TinhTrang
-                    || !dataReq.NgayVao
+                if (!dataReq.MatKhau
+                    || !dataReq.MaVaiTro
+                    || !dataReq.MaVaiTro.length
+                    || !dataReq.TenThanhVien
                 ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
                 else handleFetchAPISubmit();
                 //check và sửa
-            } else if (!dataReq.TaiKhoan
-                || !dataReq.IDVaiTro
-                || !dataReq.IDVaiTro.length
-                || !dataReq.TenNhanVien
-                || !dataReq.IDViTriCongViec
-                || !dataReq.NgaySinh
-                || !dataReq.GioiTinh
-                || !dataReq.DiaChi
-                || !dataReq.SoDienThoai
-                || !dataReq.TinhTrang
-                || !dataReq.NgayVao
+            } else if ( !dataReq.MaVaiTro
+                || !dataReq.MaVaiTro.length
+                || !dataReq.TenThanhVien
+                || !dataReq.MaThanhVien
             ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
             else handleFetchAPISubmit();
-        } else if (!dataReq.TenNhanVien
-            || !dataReq.IDViTriCongViec
-            || !dataReq.NgaySinh
-            || !dataReq.GioiTinh
-            || !dataReq.DiaChi
-            || !dataReq.SoDienThoai
-            || !dataReq.TinhTrang
-            || !dataReq.NgayVao) {
+        } else if (!dataReq.TenThanhVien) {
             props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
         }
         else {
             handleFetchAPISubmit();
         }
     };
-    const batPopupThemKhachHang = () => {
-        setThemVTCV(true)
-    }
-
 
     return (
         <div className="popup-box">
@@ -470,79 +392,38 @@ const Insert_updateAccount = (props) => {
                                 <div className="row">
                                     <div className='col-6'>
                                         <div className="form-group">
-                                            <label>Tên Nhân Viên {batBuocNhap}</label>
+                                            <label>Tên Thành Viên {batBuocNhap}</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                value={dataReq.TenNhanVien}
+                                                value={dataReq.TenThanhVien}
                                                 onChange={(event) => {
                                                     setDataReq({
                                                         ...dataReq,
-                                                        TenNhanVien: event.target.value
+                                                        TenThanhVien: event.target.value
                                                     });
                                                 }}
                                             />
                                         </div>
-                                        <Combobox
-                                            combos={combosViTriCongViec}
-                                            columnValue="IDViTriCongViec"
-                                            columnAdd="TenViTriCongViec"
-                                            nameCombo="Vị Trí Công Việc: "
-                                            batBuocNhap={batBuocNhap}
-                                            //defaultValue=''
-                                            value={dataReq.IDViTriCongViec}
-                                            onChange={handleViTriCongViecChange}
-                                            onClick={batPopupThemKhachHang}
-                                            isAdd={true}
-                                        />
+
                                         <div className="form-group">
-                                            <label>Ngày Sinh {batBuocNhap}</label>
+                                            <label>Email {isChecked && <span style={{ color: 'red' }}>*</span>}</label>
                                             <input
-                                                type="date"
+                                                type="email"
                                                 className="form-control"
                                                 onChange={(event) => {
                                                     setDataReq({
                                                         ...dataReq,
-                                                        NgaySinh: event.target.value
+                                                        Email: event.target.value
                                                     });
                                                 }}
-                                                value={dataReq.NgaySinh}
+                                                value={dataReq.Email}
                                             //  defaultValue='' 
                                             />
                                         </div>
+
                                         <div className="form-group">
-                                            <label>Giới Tính {batBuocNhap} ㅤ</label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="Nam"
-                                                    checked={dataReq.GioiTinh === 'Nam'}
-                                                    onChange={(event) => {
-                                                        setDataReq({
-                                                            ...dataReq,
-                                                            GioiTinh: event.target.value
-                                                        });
-                                                    }}
-                                                />
-                                                Namㅤ
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="Nữ"
-                                                    checked={dataReq.GioiTinh === 'Nữ'}
-                                                    onChange={(event) => {
-                                                        setDataReq({
-                                                            ...dataReq,
-                                                            GioiTinh: event.target.value
-                                                        });
-                                                    }}
-                                                />
-                                                Nữ
-                                            </label>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Địa Chỉ {batBuocNhap}</label>
+                                            <label>Địa Chỉ</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
@@ -556,7 +437,7 @@ const Insert_updateAccount = (props) => {
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label>Số Điện Thoại {batBuocNhap}</label>
+                                            <label>Số Điện Thoại</label>
                                             <input
                                                 type="number"
                                                 className="form-control"
@@ -568,50 +449,6 @@ const Insert_updateAccount = (props) => {
                                                     });
                                                 }}
                                             />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Tình Trạng {batBuocNhap} ㅤ</label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value='Đang làm'
-                                                    checked={dataReq.TinhTrang === 'Đang làm'}
-                                                    onChange={(event) => {
-                                                        setDataReq({
-                                                            ...dataReq,
-                                                            TinhTrang: event.target.value
-                                                        });
-                                                    }}
-                                                />
-                                                Đang làmㅤ
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value='Đã nghỉ'
-                                                    checked={dataReq.TinhTrang === 'Đã nghỉ'}
-                                                    onChange={(event) => {
-                                                        setDataReq({
-                                                            ...dataReq,
-                                                            TinhTrang: event.target.value
-                                                        });
-                                                    }}
-                                                />
-                                                Đã nghỉ
-                                            </label>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Ngày Vào {batBuocNhap}</label>
-                                            <input
-                                                type="date"
-                                                className="form-control"
-                                                onChange={(event) => {
-                                                    setDataReq({
-                                                        ...dataReq,
-                                                        NgayVao: event.target.value
-                                                    });
-                                                }}
-                                                value={dataReq.NgayVao} />
                                         </div>
                                     </div>
                                     <div className='col-6'>
@@ -651,17 +488,17 @@ const Insert_updateAccount = (props) => {
                                         >
 
                                             {combosVaiTro.map(combo => (
-                                                <div key={combo.IDVaiTro} >
+                                                <div key={combo.MaVaiTro} >
                                                     <label style={labelStyle}>
                                                         <input
                                                             disabled={isDisabled}
                                                             type="checkbox"
                                                             checked={
-                                                                (dataReq.IDVaiTro?.includes(combo.IDVaiTro.toString())) || false
+                                                                (dataReq.MaVaiTro?.includes(combo.MaVaiTro)) || false
                                                             }
-                                                            onChange={() => handleVaiTroChange(combo.IDVaiTro.toString())}
+                                                            onChange={() => handleVaiTroChange(combo.MaVaiTro)}
                                                         />
-                                                        {` ${combo["IDVaiTro"]} - ${combo["TenVaiTro"]}`}
+                                                        {` ${combo["MaVaiTro"]} - ${combo["TenVaiTro"]}`}
                                                     </label>
                                                 </div>
                                             ))}
@@ -702,25 +539,6 @@ const Insert_updateAccount = (props) => {
                                             data={combosVaiTro}
                                             onChange={handleVaiTroChange}
                                         /> */}
-
-                                        <div className="form-group">
-                                            <label style={labelStyle}>
-                                                Tài Khoản {isChecked && <span style={{ color: 'red' }}>*</span>}
-                                            </label>
-                                            <input
-                                                id="accountInput"
-                                                type="text"
-                                                className="form-control"
-                                                onChange={(event) => {
-                                                    setDataReq({
-                                                        ...dataReq,
-                                                        TaiKhoan: event.target.value
-                                                    });
-                                                }}
-                                                value={dataReq.TaiKhoan}
-                                                disabled={isDisabled}
-                                            />
-                                        </div>
 
 
                                         {(props.isInsert || (props.isInsert === false && resTaiKhoan === false)) && (
@@ -773,23 +591,11 @@ const Insert_updateAccount = (props) => {
                                 <button
                                     onClick={handleSubmit}
                                     style={{ float: "right" }} type="button"
-                                    className="btn btn-primary mt-3"
+                                    className="btn bg-gradient-info mt-3"
                                 >
                                     Xác Nhận
                                 </button>
                             </form>
-                            {
-                                themVTCV && <div className="popup">
-                                    <Insert_updateJobPosition
-                                        isInsert={true}
-                                        setPopupInsertUpdate={setThemVTCV}
-                                        dataUser={dataUser}
-                                        setdataUser={setdataUser}
-                                        addNotification={props.addNotification}
-                                        openPopupAlert={props.openPopupAlert}
-                                    />
-                                </div>
-                            }
                             {
                                 themVTTC && <div className="popup">
                                     <Insert_updateRole
@@ -810,4 +616,4 @@ const Insert_updateAccount = (props) => {
     );
 };
 
-export default Insert_updateAccount;
+export default Them_suaThanhVien;

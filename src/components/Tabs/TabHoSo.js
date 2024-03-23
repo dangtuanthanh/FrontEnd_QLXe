@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
 import { getCookie } from "../Cookie";
-import { urlGetOccupiedTables, urlGetInvoiceToday, urlGetRevenueToday, urlGetRevenueMonth, urlGetListRevenueMonth } from "../url";
+import { urlChangeInfo, urlGetInvoiceToday, urlGetRevenueToday, urlGetRevenueMonth, urlGetListRevenueMonth } from "../url";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPen } from '@fortawesome/free-solid-svg-icons'
+
 function TabHoSo(props) {
+    //xử lý redux
+    const dispatch = useDispatch()
+    const [dataReq, setDataReq] = useState({});
+    useEffect(() => {
+        console.log('props.thongTinDangNhap.ThanhVien: ', props.thongTinDangNhap.ThanhVien.HinhAnh);
+    }, [props.thongTinDangNhap]);
     //popup thông báo góc màn hình
     const [notifications, setNotifications] = useState([]);
     const addNotification = (message, btn, duration = 3000) => {
@@ -40,26 +49,214 @@ function TabHoSo(props) {
             </div>
         );
     };
-    const lines = JSON.stringify(props.thongTinDangNhap.NhanVien)
+
+    const [soDienThoai, setSoDienThoai] = useState(props.thongTinDangNhap.ThanhVien.SoDienThoai);
+    const [tenThanhVien, setTenThanhVien] = useState(props.thongTinDangNhap.ThanhVien.TenThanhVien);
+    const [diaChi, setDiaChi] = useState(props.thongTinDangNhap.ThanhVien.DiaChi);
+    const [hinhAnh, setHinhAnh] = useState(props.thongTinDangNhap.ThanhVien.HinhAnh);
+    // popup hộp thoại thông báo
+    const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
+    const [popupMessageAlert, setPopupMessageAlert] = useState('');
+    const [onAction, setOnAction] = useState(() => { });
+    const PopupAlert = (props) => {
+        return (
+            <div className="popup">
+                <div className="popup-box">
+                    <div className="box" style={{ textAlign: 'center' }}>
+                        <h5>Thông Báo</h5>
+
+                        <p>{props.message}</p>
+                        {props.onAction ? <div>
+                            <button style={{ float: 'left' }} className="btn btn-danger" onClick={props.onClose}>Thoát</button>
+                            <button style={{ float: 'right' }} className="btn btn-success" onClick={handleConfirm}>Xác Nhận</button>
+                        </div> :
+                            <button className="btn btn-success" onClick={props.onClose}>Xác Nhận</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        );
+    };
+    const openPopupAlert = (message, actionHandler) => {
+        setPopupMessageAlert(message);
+        setPopupAlert(true);
+        setOnAction(() => actionHandler);
+    }
+    const closePopupAlert = () => {
+        setPopupAlert(false);
+    };
+    const handleConfirm = () => {
+        onAction();
+        closePopupAlert();
+    }
+    const lines = JSON.stringify(props.thongTinDangNhap.ThanhVien)
         .replace(/{/g, '{\n')
         .replace(/}/g, '\n}')
         .replace(/,/g, ',\n')
         .split('\n');
-    function formatDate(dateString) {
-        // 1. Chuyển ISO string sang Date
-        let date = new Date(dateString);
+    // xử lý ảnh
+    //url xử lý hiển thị hình ảnh
+    const [urlAnh, setUrlAnh] = useState();
+    useEffect(() => {
+        if (hinhAnh && hinhAnh instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh(URL.createObjectURL(hinhAnh));
+        } else setUrlAnh(hinhAnh);
+    }, [hinhAnh]);
+    function ImageUpload() {
+        const fileInputRef = useRef(null);
 
-        // 2. Lấy thông tin ngày, tháng, năm 
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        let year = date.getFullYear();
+        const handleImageChange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setHinhAnh(file)
+                        // setDataReq({
+                        //     ...dataReq,
+                        //     HinhAnh: file // Lưu file hình ảnh vào dataReq
+                        // });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                   openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            } else {
+                setHinhAnh(undefined)
+                // setDataReq({
+                //     ...dataReq,
+                //     HinhAnh: undefined
+                // });
+            }
+        };
 
-        // 3. Thêm số 0 nếu ngày, tháng có 1 chữ số
-        month = month < 10 ? '0' + month : month;
-        day = day < 10 ? '0' + day : day;
+        const handleChooseFileClick = () => {
+            fileInputRef.current.click();
+        };
 
-        // 4. Trả về theo định dạng dd/mm/yyyy
-        return `${day}/${month}/${year}`;
+        const handleDrop = (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setHinhAnh(file)
+                        // setDataReq({
+                        //     ...dataReq,
+                        //     HinhAnh: file // Lưu file hình ảnh vào dataReq
+                        // });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            }
+        };
+
+        const handleDragOver = (event) => {
+            event.preventDefault();
+        };
+
+        return (
+            <div className="form-group">
+                <div
+                    style={{ width: '100%', textAlign: 'center', margin: '1% 0 2% 0' }}
+                    onClick={handleChooseFileClick}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                >
+                    {!hinhAnh && <span><span style={{ color: 'blue' }}>Chọn file</span> hoặc Kéo và thả ảnh vào đây</span>}
+                    
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*" // Chỉ chấp nhận các file hình ảnh
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                    />
+                    {hinhAnh && (
+                        <div style={{position: 'relative',
+                        display: 'inline-block' }} >
+                            <img
+                                src={urlAnh} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
+                                alt="Selected"
+                                style={{
+                                    width: '200px',
+                                    height: '200px',
+                                    objectFit: 'cover',
+                                    borderRadius: '50%',
+                                    border: '5px solid #6d6dff',
+                                    boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px'
+                                }}
+                            />
+                            <FontAwesomeIcon icon={faPen} 
+                            style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                right: 0,
+                                cursor: 'pointer' ,
+                                width: 20, // Thêm độ rộng
+                                height: 20 // Thêm chiều cao 
+                              }} 
+                            /> 
+                            </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+    const phoneRegex = /^0\d{9}$/;
+    const handleSubmit = () => {
+        if (!soDienThoai || !tenThanhVien || !diaChi || !hinhAnh)
+            addNotification('Vui lòng nhập đầy đủ thông tin.', 'warning', 4000)
+        else if (!phoneRegex.test(soDienThoai)) {
+            addNotification('Số điện thoại không hợp lệ.', 'warning', 4000)
+        } 
+        else {
+            dispatch({ type: 'SET_LOADING', payload: true })
+            const formData = new FormData();
+            formData.append('TenThanhVien', tenThanhVien);
+            formData.append('DiaChi', diaChi);
+            formData.append('SoDienThoai', soDienThoai);
+            formData.append('HinhAnh', hinhAnh);
+            fetch(urlChangeInfo, {
+                method: 'PUT',
+                headers: {
+                    'ss': getCookie('ss'),
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else if (response.status === 500) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else {
+                        return;
+                    }
+                })
+                .then(data => {
+                    addNotification(data.message, 'success', 3000)
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                    if (error instanceof TypeError) {
+                        openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        addNotification(error.message, 'warning', 5000)
+                    }
+
+                });
+
+        }
     }
     return (
         <div>
@@ -68,29 +265,16 @@ function TabHoSo(props) {
                     <NotificationContainer notifications={notifications} />
                     <h2 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hồ Sơ</h2>
                     <div style={{ width: '100%', textAlign: 'center', margin: '1% 0 2% 0' }}>
-                        <img
-                            style={{
-                                width: '200px',
-                                height: '200px',
-                                objectFit: 'cover',
-                                borderRadius: '50%',
-                                border: '5px solid #cb0c9f'
-                                , boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px'
-                            }}
-                            src={props.thongTinDangNhap.NhanVien.HinhAnh}
-                            onClick={() => {
-                                addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                            }}
-                        />
+                        <ImageUpload />
                     </div>
                     <div className="row" style={{ width: '80%' }}>
                         <div className="col-6">
                             <div className="form-group">
-                                <label >ID Nhân Viên</label>
+                                <label >Mã Thành Viên</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.IDNhanVien}
+                                    value={props.thongTinDangNhap.ThanhVien.MaThanhVien}
                                     onClick={() => {
                                         addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
                                     }}
@@ -101,114 +285,50 @@ function TabHoSo(props) {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Tên Nhân Viên</label>
+                                <label>Tên Thành Viên</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.TenNhanVien}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                                    }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
+                                    value={tenThanhVien}
+                                    onChange={(event) => {
+                                        setTenThanhVien(event.target.value);
                                     }}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Vị Trí Công Việc</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.TenViTriCongViec}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                                    }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
-                                    }}
-                                />
-                            </div>
+
+                        </div>
+                        <div className="col-6">
                             <div className="form-group">
                                 <label>Số Điện Thoại</label>
                                 <input
                                     type="number"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.SoDienThoai}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
+                                    value={soDienThoai}
+                                    onChange={(event) => {
+                                        setSoDienThoai(event.target.value);
                                     }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
-                                    }}
+                                    
                                 />
                             </div>
-                        </div>
-                        <div className="col-6">
-                            <div className="form-group">
-                                <label>Ngày Sinh</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={formatDate(props.thongTinDangNhap.NhanVien.NgaySinh)}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                                    }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
-                                    }}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Giới Tính</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.GioiTinh}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                                    }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
-                                    }}
-                                />
-                            </div>
+
+
                             <div className="form-group">
                                 <label>Địa Chỉ</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.DiaChi}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                                    }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
+                                    value={diaChi}
+                                    onChange={(event) => {
+                                        setDiaChi(event.target.value);
                                     }}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Ngày Vào</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={formatDate(props.thongTinDangNhap.NhanVien.NgayVao)}
-                                    onClick={() => {
-                                        addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
-                                    }}
-                                    style={{
-                                        opacity: 0.9,
-                                        cursor: 'not-allowed'
-                                    }}
-                                />
-                            </div>
+                            <button style={{ float: 'right' }} className="btn bg-gradient-info" onClick={() => {
+                                handleSubmit()
+                            }}>Cập nhật thông tin</button>
                         </div>
                     </div>
+
                     {/* <pre
                         style={{
                             background: '#333',
@@ -222,11 +342,14 @@ function TabHoSo(props) {
                         Đã chọn: {lines.map(line => <div>{line}</div>)}
                     </pre> */}
                 </div>
-                <div class="card-body px-0 pt-0 pb-2 mt-2" >
-
-
-                </div>
             </div>
+            {
+                popupAlert && <PopupAlert
+                    message={popupMessageAlert}
+                    onClose={closePopupAlert}
+                    onAction={onAction}
+                />
+            }
         </div>
     )
 

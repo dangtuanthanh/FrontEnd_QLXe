@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
 import { getCookie } from "../Cookie";
 import { urlChangePassword } from "../url";
-function TabTaiKhoan(props) {
+function TabEmail(props) {
     //xử lý redux
     const dispatch = useDispatch()
     const [dataReq, setDataReq] = useState({});
@@ -81,7 +81,7 @@ function TabTaiKhoan(props) {
         onAction();
         closePopupAlert();
     }
-    const lines = JSON.stringify(props.thongTinDangNhap.NhanVien)
+    const lines = JSON.stringify(props.thongTinDangNhap.ThanhVien)
         .replace(/{/g, '{\n')
         .replace(/}/g, '\n}')
         .replace(/,/g, ',\n')
@@ -133,7 +133,98 @@ function TabTaiKhoan(props) {
 
         }
     }
+// xử lý ảnh
+    //url xử lý hiển thị hình ảnh
+    const [urlAnh, setUrlAnh] = useState();
+    useEffect(() => {
+        if (dataReq.HinhAnh && dataReq.HinhAnh instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh(URL.createObjectURL(dataReq.HinhAnh));
+        } else setUrlAnh(dataReq.HinhAnh);
+    }, [dataReq.HinhAnh]);
+    function ImageUpload() {
+        const fileInputRef = useRef(null);
 
+        const handleImageChange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setDataReq({
+                            ...dataReq,
+                            HinhAnh: file // Lưu file hình ảnh vào dataReq
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    props.openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            } else {
+                setDataReq({
+                    ...dataReq,
+                    HinhAnh: undefined
+                });
+            }
+        };
+
+        const handleChooseFileClick = () => {
+            fileInputRef.current.click();
+        };
+
+        const handleDrop = (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setDataReq({
+                            ...dataReq,
+                            HinhAnh: file // Lưu file hình ảnh vào dataReq
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    props.openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            }
+        };
+
+        const handleDragOver = (event) => {
+            event.preventDefault();
+        };
+
+        return (
+            <div className="form-group">
+                <label>Hình Ảnh</label>
+                <div
+                    style={{ textAlign: 'center', border: '1px dashed #ccc', padding: '20px' }}
+                    onClick={handleChooseFileClick}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                >
+                    <span style={{ color: 'blue' }}>Chọn file</span> hoặc Kéo và thả ảnh vào đây
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*" // Chỉ chấp nhận các file hình ảnh
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                    />
+                    {dataReq.HinhAnh && (
+                        <img
+                            src={urlAnh} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
+                            alt="Selected"
+                            style={{ maxHeight: '112px', marginTop: '10px' }}
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
     return (
         <div>
             <div class="card mb-4" >
@@ -147,12 +238,12 @@ function TabTaiKhoan(props) {
                                 height: '200px',
                                 objectFit: 'cover',
                                 borderRadius: '50%',
-                                border: '5px solid #cb0c9f'
+                                border: '5px solid #6d6dff'
                                 , boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px'
                             }}
-                            src={props.thongTinDangNhap.NhanVien.HinhAnh}
+                            src={props.thongTinDangNhap.ThanhVien.HinhAnh}
                             onClick={() => {
-                                addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
+                                addNotification('Để chỉnh sửa ảnh , vui lòng chuyển sang tab "Hồ Sơ"', 'warning', 4000)
                             }}
                         />
                     </div>
@@ -160,11 +251,11 @@ function TabTaiKhoan(props) {
                         <div className="col-6">
                             <h4>ㅤ</h4>
                             <div className="form-group">
-                                <label >Tài Khoản</label>
+                                <label >Email</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.TaiKhoan}
+                                    value={props.thongTinDangNhap.ThanhVien.Email}
                                     onClick={() => {
                                         addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
                                     }}
@@ -194,7 +285,7 @@ function TabTaiKhoan(props) {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.VaiTro}
+                                    value={props.thongTinDangNhap.ThanhVien.VaiTro}
                                     onClick={() => {
                                         addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
                                     }}
@@ -209,7 +300,7 @@ function TabTaiKhoan(props) {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.Quyen}
+                                    value={props.thongTinDangNhap.ThanhVien.Quyen}
                                     onClick={() => {
                                         addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
                                     }}
@@ -269,7 +360,7 @@ function TabTaiKhoan(props) {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.NgayVao}
+                                    value={props.thongTinDangNhap.ThanhVien.NgayVao}
                                     onClick={() => {
                                         addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
                                     }}
@@ -279,7 +370,7 @@ function TabTaiKhoan(props) {
                                     }}
                                 />
                             </div> */}
-                            <button style={{ float: 'right' }} className="btn btn-primary" onClick={() => {
+                            <button style={{ float: 'right' }} className="btn bg-gradient-info" onClick={() => {
                                 handleSubmit()
                             }}>Xác Nhận Đổi Mật Khẩu</button>
                         </div>
@@ -315,4 +406,4 @@ function TabTaiKhoan(props) {
 
 }
 
-export default TabTaiKhoan
+export default TabEmail

@@ -1,28 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetRole, urlDeleteRole } from "../url";
+import { urlGetMember, urlDeleteMember, urlUndoDeleteMember } from "../url";
 import Pagination from "../Pagination";
+import TableThanhVien from "../Table/TableThanhVien";
+import Them_suaThanhVien from "../Popup/them_suaThanhVien";
 import ItemsPerPage from "../ItemsPerPage";
-import TableVaiTroTruyCap from "../Table/TableVaiTroTruyCap";
-import Insert_updateRole from "../Popup/Insert_updateRole";
-function TabVaiTroTruyCap() {
+//import ExportAccount from "../Popup/ExportAccount";
+//import ImportAccount from "../Popup/ImportAccount";
+//import SelectedEditAccount from "../components/Popup/SelectedEditAccount";
+function TabThanhVien() {
     //xử lý redux
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'MaVaiTro',
+        sortBy: 'MaThanhVien',
         sortOrder: 'asc',
-        searchBy: 'MaVaiTro',
+        searchBy: 'MaThanhVien',
         search: '',
         searchExact: 'false'
     });//
-    const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
+    const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getAccount
 
+
+
+
+    //xử lý popup
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -59,6 +66,11 @@ function TabVaiTroTruyCap() {
         closePopupAlert();
     }
 
+
+    //popup thêm,sửa nhân viên
+    const [popup1, setPopup1] = useState(false);//trạng thái popup1
+    const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
     //popup thông báo góc màn hình
     const [notifications, setNotifications] = useState([]);
     const addNotification = (message, btn, duration = 3000) => {
@@ -94,17 +106,68 @@ function TabVaiTroTruyCap() {
         );
     };
 
-    //popup thêm,sửa nhân viên
-    const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
-    const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
-    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
+    //popup xuất file
+    const [popupXuat, setpopupXuat] = useState(false);//trạng thái xuất dữ liệu
+    const closePopupXuat = () => {
+        setpopupXuat(false);
+    };
 
+    //popup nhập file
+    const [popupNhap, setPopupNhap] = useState(false);//trạng thái xuất dữ liệu
+    const closePopupNhap = () => {
+        setPopupNhap(false);
+    };
+
+      //undo delete
+    const [buttonUndo, setButtonUndo] = useState(false);//trạng thái hiển thị nút undo
+      const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
+    const handleUndo = () => {
+        dispatch({type: 'SET_LOADING', payload: true})
+        fetch(`${urlUndoDeleteMember}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+            body: JSON.stringify({ undoDelete })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 400) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                addNotification(data.message, 'success', 4000)
+                //ẩn loading
+                dispatch({type: 'SET_LOADING', payload: false})
+                setButtonUndo(false)
+                setUndoDelete([])
+                TaiDuLieu()
+            })
+            .catch(error => {
+                dispatch({type: 'SET_LOADING', payload: false})
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    };
 
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaVaiTro',
+            sortBy: 'MaThanhVien',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -116,7 +179,7 @@ function TabVaiTroTruyCap() {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaVaiTro',
+            sortBy: 'MaThanhVien',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -127,7 +190,7 @@ function TabVaiTroTruyCap() {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaVaiTro',
+            sortBy: 'MaThanhVien',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -135,63 +198,15 @@ function TabVaiTroTruyCap() {
 
     };
 
-
-    //Xoá dữ liệu
-    const deleteData = (ID) => {
-        dispatch({ type: 'SET_LOADING', payload: true })
-        let IDs = [ID]
-        if (Array.isArray(ID)) {
-            console.log('là mảng');
-            IDs = ID.map(item => Number(item));
-            console.log('mảng số đã được chuyển', IDs);
-        } else IDs = [ID];
-        fetch(`${urlDeleteRole}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-            body: JSON.stringify({ IDs })
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                } else if (response.status === 401) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else if (response.status === 500) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else {
-                    return;
-                }
-            })
-            .then(data => {
-                addNotification(data.message, 'success', 4000)
-                //ẩn loading
-                dispatch({ type: 'SET_LOADING', payload: false })
-                setSelectedIds([])
-                TaiDuLieu()
-
-            })
-            .catch(error => {
-                dispatch({ type: 'SET_LOADING', payload: false })
-                if (error instanceof TypeError) {
-                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                } else {
-                    addNotification(error.message, 'warning', 5000)
-                }
-
-            });
-    }
-    // sửa hàng loạt
-    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
+   
 
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
-        dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetRole}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        dispatch({type: 'SET_LOADING', payload: true})
+        fetch(`${urlGetMember}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -226,13 +241,12 @@ function TabVaiTroTruyCap() {
                         ...dataUser,
                         page: data.totalPages
                     });
-
                 }
                 //ẩn loading
-                dispatch({ type: 'SET_LOADING', payload: false })
+                dispatch({type: 'SET_LOADING', payload: false})
             })
             .catch(error => {
-                dispatch({ type: 'SET_LOADING', payload: false })
+                dispatch({type: 'SET_LOADING', payload: false})
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -241,11 +255,64 @@ function TabVaiTroTruyCap() {
 
             });
     };
+    //Xoá dữ liệu
+    const deleteData = (ID) => {
+        dispatch({type: 'SET_LOADING', payload: true})
+        let IDs = [ID]
+        if (Array.isArray(ID)) {
+            console.log('là mảng');
+            IDs = ID.map(item => Number(item));
+            console.log('mảng số đã được chuyển', IDs);
+        } else IDs = [ID];
+        fetch(`${urlDeleteMember}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+            body: JSON.stringify({ IDs })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                addNotification(data.message, 'success', 4000)
+                //ẩn loading
+                dispatch({type: 'SET_LOADING', payload: false})
+                setButtonUndo(true)
+                setSelectedIds([])
+                setUndoDelete(IDs)
+                TaiDuLieu()
+
+            })
+            .catch(error => {
+                dispatch({type: 'SET_LOADING', payload: false})
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    }
+   
+    // sửa hàng loạt
+    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
+
+
     return (
         <div>
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Vai Trò Truy Cập</h2>
+                    <h2> Quản Lý Thành Viên</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
@@ -264,7 +331,7 @@ function TabVaiTroTruyCap() {
                                         style={{ 'display': "inline-block" }}
                                         onClick={() => {
                                             setIsInsert(true)
-                                            setPopupInsertUpdate(true)
+                                            setPopup1(true)
                                             setIDAction()
                                         }}
 
@@ -272,6 +339,34 @@ function TabVaiTroTruyCap() {
                                         <FontAwesomeIcon icon={faAdd} />
                                         ㅤThêm
                                     </button>ㅤ
+                                    {/* <button
+                                        style={{ 'display': "inline-block" }}
+                                        onClick={() => {
+                                            setPopupNhap(true)
+                                        }}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faUpload} />
+                                        ㅤNhập
+                                    </button>ㅤ
+                                    <button
+                                        style={{ 'display': "inline-block" }}
+                                        onClick={() => {
+                                            setpopupXuat(true)
+                                        }}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faDownload} />
+                                        ㅤXuất
+                                    </button>ㅤ */}
+
+                                    {buttonUndo && <button
+                                        style={{ 'display': "inline-block" }}
+                                        onClick={() => {
+                                            handleUndo()
+                                        }}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faRotateLeft} />
+                                        ㅤHoàn Tác
+                                    </button>}
                                 </div>
                                 : <div style={{ 'display': "inline-block", float: 'left' }}>
                                     <button
@@ -283,12 +378,12 @@ function TabVaiTroTruyCap() {
                                         ㅤQuay Lại
                                     </button>ㅤ
                                     {/* <button
-                                                        style={{ display: "inline-block" }}
-                                                        //onClick={() => {togglePopup6();}}
-                                                        className="btn bg-gradient-info">
-                                                        <FontAwesomeIcon icon={faPencil} />
-                                                        ㅤSửa ô đã chọn
-                                                    </button>ㅤ */}
+                                                    style={{ display: "inline-block" }}
+                                                    //onClick={() => {togglePopup6();}}
+                                                    className="btn bg-gradient-info">
+                                                    <FontAwesomeIcon icon={faPencil} />
+                                                    ㅤSửa ô đã chọn
+                                                </button>ㅤ */}
                                     <button
                                         style={{ display: "inline-block" }}
                                         onClick={() => {
@@ -301,6 +396,14 @@ function TabVaiTroTruyCap() {
                                         <FontAwesomeIcon icon={faTrash} />
                                         ㅤXoá ô đã chọn
                                     </button>ㅤ
+
+                                    {/* <button
+                                        style={{ display: "inline-block" }}
+                                        onClick={() => { setpopupXuat(true) }}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faDownload} />
+                                        ㅤXuất ô đã chọn
+                                    </button>ㅤ */}
                                 </div>
                         }
 
@@ -331,8 +434,11 @@ function TabVaiTroTruyCap() {
                             }
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="MaVaiTro">Tìm theo MaVaiTro</option>
-                                <option value="TenVaiTro">Tìm theo TenVaiTro</option>
+                                <option value="MaThanhVien">Tìm theo Mã Thành Viên</option>
+                                <option value="TenThanhVien">Tìm theo Tên Thành Viên</option>
+                                <option value="DiaChi">Tìm theo Địa Chỉ</option>
+                                <option value="Email">Tìm theo Email</option>
+                                <option value="SoDienThoai">Tìm theo SĐT</option>
                             </select>
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -345,14 +451,14 @@ function TabVaiTroTruyCap() {
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableVaiTroTruyCap
+                        <TableThanhVien
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
                             addNotification={addNotification}
                             setIsInsert={setIsInsert}
                             setIDAction={setIDAction}
-                            setPopupInsertUpdate={setPopupInsertUpdate}
+                            setPopup1={setPopup1}
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                             selectedIds={selectedIds}
@@ -370,11 +476,11 @@ function TabVaiTroTruyCap() {
                 dataRes={dataRes}
             />
             {
-                popupInsertUpdate && <div className="popup">
-                    <Insert_updateRole
+                popup1 && <div className="popup">
+                    <Them_suaThanhVien
                         isInsert={isInsert}
-                        setPopupInsertUpdate={setPopupInsertUpdate}
-                        tieuDe='Thông Tin Vai Trò'
+                        setPopup1={setPopup1}
+                        tieuDe='Thông Tin Thành Viên'
                         dataUser={dataUser}
                         setdataUser={setdataUser}
                         addNotification={addNotification}
@@ -390,9 +496,34 @@ function TabVaiTroTruyCap() {
                     onAction={onAction}
                 />
             }
+            {/* {
+                popupXuat && <div className="popup">
+                <ExportAccount
+                    duLieuHienThi={duLieuHienThi}
+                    totalItems={dataRes.totalItems}
+                    openPopupAlert={openPopupAlert}
+                    addNotification={addNotification}
+                    onClose={closePopupXuat}
+                    selectedIds={selectedIds}
+                />
+                </div>
+            } */}
+
+            {/* {
+                popupNhap && <div className="popup">
+                <ImportAccount
+                    openPopupAlert={openPopupAlert}
+                    addNotification={addNotification}
+                    onClose={closePopupNhap}
+                    dataUser={dataUser}
+                    setdataUser={setdataUser}
+                />
+                </div>
+            } */}
+           
         </div>
     )
 
 }
 
-export default TabVaiTroTruyCap
+export default TabThanhVien

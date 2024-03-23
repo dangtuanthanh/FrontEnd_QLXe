@@ -5,29 +5,37 @@
 export const urlCheckLogin = 'http://localhost:3000/session';
 //đăng nhập
 export const urlLogin = 'http://localhost:3000/login';
+// đăng ký
+export const urlRegister= 'http://localhost:3000/register';
+// xác thực đăng ký
+export const urlRegisterCode= 'http://localhost:3000/registerCode';
 //đăng xuất
 export const urlLogout = 'http://localhost:3000/logout';
+//đổi thông tin thành viên
+export const urlChangeInfo = 'http://localhost:3000/changeInfo';
 //đổi mật khẩu
 export const urlChangePassword = 'http://localhost:3000/changePassword';
 
-/* Quản lý nhân viên
+/* Quản lý thành viên
  */
-//lấy danh sách nhân viên
-export const urlGetAccount = 'http://localhost:3000/getAccount';
-// thêm nhân viên
-export const urlInsertAccount = 'http://localhost:3000/insertAccount';
-// sửa nhân viên
-export const urlUpdateAccount = 'http://localhost:3000/updateAccount';
-// xoá nhân viên
-export const urlDeleteAccount = 'http://localhost:3000/deleteAccount';
-// undo delete nhân viên
-export const urlUndoDeleteAccount = 'http://localhost:3000/undoDeleteAccount';
+//lấy danh sách thành viên
+export const urlGetMember = 'http://localhost:3000/getMember';
+// thêm thành viên
+export const urlInsertMember = 'http://localhost:3000/insertMember';
+// sửa thành viên
+export const urlUpdateMember = 'http://localhost:3000/updateMember';
+// xoá thành viên
+export const urlDeleteMember = 'http://localhost:3000/deleteMember';
+// undo delete thành viên
+export const urlUndoDeleteMember = 'http://localhost:3000/undoDeleteMember';
+
+export const urlGetRole = 'http://localhost:3000/getRole';
+
 // nhập nhân viên
 export const urlImportExcelAccount = 'http://localhost:3000/importExcelAccount';
 
 
-//lấy danh sách vai trò
-export const urlGetRole = 'http://localhost:3000/getRole';
+
 // thêm vai trò
 export const urlInsertRole = 'http://localhost:3000/insertRole';
 // sửa nhân viên

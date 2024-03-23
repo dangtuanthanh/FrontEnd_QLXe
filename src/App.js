@@ -11,6 +11,9 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 //   RouterProvider,
 // } from "react-router-dom";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ThanhVien from "./pages/ThanhVien"
+
+
 import BangDieuKhien from "./pages/BangDieuKhien"
 import HoaDon from "./pages/HoaDon"
 import ThucDon from "./pages/ThucDon"
@@ -32,6 +35,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login /> } />
+          <Route path="/ThanhVien" element={<ThanhVien />} />
+
           <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
           <Route path="/HoaDon" element={<HoaDon />} />
           <Route path="/ThucDon" element={<ThucDon />} />

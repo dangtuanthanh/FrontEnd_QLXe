@@ -21,8 +21,8 @@ function Navigation({ menu }) {
       setActiveComponent('ThucDon');
     } else if (pathname === '/BanVaKhuVuc') {
       setActiveComponent('BanVaKhuVuc');
-    } else if (pathname === '/NhanVien') {
-      setActiveComponent('NhanVien');
+    } else if (pathname === '/ThanhVien') {
+      setActiveComponent('ThanhVien');
     } else if (pathname === '/CaLamViec') {
       setActiveComponent('CaLamViec');
     } else if (pathname === '/KhachHang') {
@@ -48,7 +48,7 @@ function Navigation({ menu }) {
         return <FontAwesomeIcon icon={faUtensils} />;
       case 'Bàn Và Khu Vực':
         return <FontAwesomeIcon icon={faTable} />;
-      case 'Nhân Viên':
+      case 'Thành Viên':
         return <FontAwesomeIcon icon={faUser} />;
       case 'Ca Làm Việc':
         return <FontAwesomeIcon icon={faCalendarCheck} />;
@@ -70,8 +70,8 @@ function Navigation({ menu }) {
           <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
 
           <img style={{
-            maxWidth: '70%',
-            marginLeft: '15%'
+            maxWidth: '40%',
+            marginLeft: '30%'
           }} src={logo} class="navbar-brand-img h-200" alt="main_logo" />
           {/* <span class="ms-1 font-weight-bolder">VSell</span> */}
 

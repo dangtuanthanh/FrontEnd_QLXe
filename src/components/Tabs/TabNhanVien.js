@@ -4,7 +4,7 @@ import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLe
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetAccount, urlDeleteAccount, urlUndoDeleteAccount } from "../url";
+import { urlGetMember, urlDeleteMember, urlUndoDeleteMember } from "../url";
 import Pagination from "../Pagination";
 import TableNhanVien from "../Table/TableNhanVien";
 import Insert_updateAccount from "../Popup/insert_updateAccount";
@@ -123,7 +123,7 @@ function TabNhanVien() {
       const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
     const handleUndo = () => {
         dispatch({type: 'SET_LOADING', payload: true})
-        fetch(`${urlUndoDeleteAccount}`, {
+        fetch(`${urlUndoDeleteMember}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ function TabNhanVien() {
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({type: 'SET_LOADING', payload: true})
-        fetch(`${urlGetAccount}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetMember}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -264,7 +264,7 @@ function TabNhanVien() {
             IDs = ID.map(item => Number(item));
             console.log('mảng số đã được chuyển', IDs);
         } else IDs = [ID];
-        fetch(`${urlDeleteAccount}`, {
+        fetch(`${urlDeleteMember}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

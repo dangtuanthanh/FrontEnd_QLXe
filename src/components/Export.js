@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileExcel, faFilePdf } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
-import { urlGetAccount } from "./url";
+import { urlGetMember } from "./url";
 import { getCookie } from "./Cookie";
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
@@ -45,7 +45,7 @@ const Export = (props) => {
         }
         else {
             dispatch({type: 'SET_LOADING', payload: true})
-            fetch(`${urlGetAccount}?limit=${props.totalItems}`, {
+            fetch(`${urlGetMember}?limit=${props.totalItems}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

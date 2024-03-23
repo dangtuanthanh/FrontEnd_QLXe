@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faTrash} from '@fortawesome/free-solid-svg-icons'
-const TableVaiTroTruyCap = (props) => {
+const TableThanhVien = (props) => {
     const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
@@ -46,7 +46,7 @@ const TableVaiTroTruyCap = (props) => {
                 checkbox.checked = true;
             });
             //$(".checkboxCon").prop("checked", true);
-            const allIds = props.duLieuHienThi.map((item) => item.MaVaiTro.toString());
+            const allIds = props.duLieuHienThi.map((item) => item.MaThanhVien.toString());
             console.log("allIds:", allIds); // Kiểm tra danh sách các id đã chọn
             props.setSelectedIds(allIds);
             setSelectAll(true);
@@ -86,7 +86,7 @@ const TableVaiTroTruyCap = (props) => {
     //hết xử lý Sửa hàng loạt
 
     return (
-        <table class="table align-items-center mb-0">
+        <table id="thanhvien" class="table align-items-center mb-0">
             <thead>
                 <tr >
                     <th style={{ textAlign: 'center' }}><input
@@ -94,45 +94,52 @@ const TableVaiTroTruyCap = (props) => {
                         checked={selectAll}
                         onChange={handleSelectAllChange}
                     /></th>
-                    {/* <th style={{ textAlign: 'center' }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th> */}
-                    <th style={{ textAlign: 'center' }} onClick={() => handleClickSort('MaVaiTro')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mã Vai Trò </th>
-                    <th style={{ padding: 8 }} onClick={() => handleClickSort('TenVaiTro')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Vai Trò </th>
+                    <th style={{ textAlign: 'center' }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th>
+                    <th style={{ textAlign: 'center' }} onClick={() => handleClickSort('MaThanhVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mã Thành Viên </th>
+                    <th style={{ padding: 8 }} onClick={() => handleClickSort('TenThanhVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Thành Viên </th>
+                    <th style={{ padding: 8 }}  class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Địa Chỉ </th>
+                    <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Email </th>
+                    <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Số Điện Thoại</th>
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10 ps-2">Hành Động</th>
                 </tr>
             </thead>
             <tbody>
                 {
                     props.duLieuHienThi.map((dulieu, index) =>
-                        //<div  onClick={() => handleRowClick(nhanvien)}>
-                        <tr 
-                        style={{ 'textAlign': 'center' }} 
-                        id='trdata' 
-                        key={dulieu.MaVaiTro} 
-                        onClick={() => {
+                        //<div  onClick={() => handleRowClick(thanhvien)}>
+                        <tr style={{ 'textAlign': 'center' }} id='trdata' key={dulieu.MaThanhVien} onClick={() => {
                             props.setIsInsert(false)
-                            props.setIDAction(dulieu.MaVaiTro)
-                            props.setPopupInsertUpdate(true)
+                            props.setIDAction(dulieu.MaThanhVien)
+                            props.setPopup1(true)
                         }} >
                             <td >
                                 <input
                                     type="checkbox"
-                                    value={dulieu.MaVaiTro}
+                                    value={dulieu.MaThanhVien}
                                     className='checkboxCon'
-                                    checked={props.selectedIds.includes(dulieu.MaVaiTro.toString())}
+                                    checked={props.selectedIds.includes(dulieu.MaThanhVien.toString())}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={handleCheckboxChange}
                                 />
 
                             </td>
-                            {/* <td >{index + 1}</td> */}
-                            <td >{dulieu.MaVaiTro}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.TenVaiTro}</td>
+                            <td >{index + 1}</td>
+                            <td >{dulieu.MaThanhVien}</td>
+                            <td style={{ textAlign: 'left' }} >{dulieu.TenThanhVien}</td>
+                            <td style={{ textAlign: 'left' }} >{dulieu.DiaChi}</td>
+                            <td style={{ textAlign: 'left' }}>{dulieu.Email}</td>
+                            <td>{dulieu.SoDienThoai}</td>
+                            {/* <td style={{ padding: '0' }}>
+                                <img
+                                    height={'35px'}
+                                    src={dulieu.HinhAnh}></img>
+                            </td> */}
                             <td>
                                 <a onClick={(e) => {
                                     e.stopPropagation();
                                     props.setIsInsert(false)
-                                    props.setIDAction(dulieu.MaVaiTro)
-                                    props.setPopupInsertUpdate(true)
+                                    props.setIDAction(dulieu.MaThanhVien)
+                                    props.setPopup1(true)
                                 }}>
                                     <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true" />
                                     < FontAwesomeIcon icon={faPencil} />
@@ -141,8 +148,8 @@ const TableVaiTroTruyCap = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenVaiTro}`,
-                                        () => { props.deleteData(dulieu.MaVaiTro) }
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenThanhVien}`,
+                                        () => { props.deleteData(dulieu.MaThanhVien) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>
 
@@ -157,4 +164,4 @@ const TableVaiTroTruyCap = (props) => {
     )
 };
 
-export default TableVaiTroTruyCap;
+export default TableThanhVien;
