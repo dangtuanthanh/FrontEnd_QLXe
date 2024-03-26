@@ -30,12 +30,6 @@ export const urlDeleteMember = 'http://localhost:3000/deleteMember';
 export const urlUndoDeleteMember = 'http://localhost:3000/undoDeleteMember';
 
 export const urlGetRole = 'http://localhost:3000/getRole';
-
-// nhập nhân viên
-export const urlImportExcelAccount = 'http://localhost:3000/importExcelAccount';
-
-
-
 // thêm vai trò
 export const urlInsertRole = 'http://localhost:3000/insertRole';
 // sửa nhân viên
@@ -46,153 +40,87 @@ export const urlDeleteRole = 'http://localhost:3000/deleteRole';
 export const urlGetPermission = 'http://localhost:3000/getPermission';
 
 
-//lấy danh sách vị trí công việc
-export const urlGetJobPosition = 'http://localhost:3000/getJobPosition';
-// thêm vị trí công việc
-export const urlInsertJobPosition = 'http://localhost:3000/insertJobPosition';
-// sửa vị trí công việc
-export const urlUpdateJobPosition = 'http://localhost:3000/updateJobPosition';
-//xoá vị trí công việc
-export const urlDeleteJobPosition = 'http://localhost:3000/deleteJobPosition';
 
-
-/* Quản lý bàn và khu vực
+/* Quản lý xe
  */
-//lấy danh sách khu vực
-export const urlGetArea = 'http://localhost:3000/getArea';
-// thêm Khu vực
-export const urlInsertArea = 'http://localhost:3000/insertArea';
-// sửa khu vực
-export const urlUpdateArea = 'http://localhost:3000/updateArea';
-//xoá vị trí khu vực
-export const urlDeleteArea = 'http://localhost:3000/deleteArea';
+//lấy danh sách tình trạng xe
+export const urlGetStatusCar = 'http://localhost:3000/getStatusCar';
+// thêm tình trạng xe
+export const urlInsertStatusCar = 'http://localhost:3000/insertStatusCar';
+// sửa tình trạng xe
+export const urlUpdateStatusCar = 'http://localhost:3000/updateStatusCar';
+//xoá tình trạng xe
+export const urlDeleteStatusCar = 'http://localhost:3000/deleteStatusCar';
 
-//lấy danh sách bàn
-export const urlGetTable = 'http://localhost:3000/getTable';
-// thêm bàn
-export const urlInsertTable = 'http://localhost:3000/insertTable';
-// sửa bàn
-export const urlUpdateTable = 'http://localhost:3000/updateTable';
-//xoá bàn
-export const urlDeleteTable = 'http://localhost:3000/deleteTable';
+//lấy danh sách nhóm loại xe
+export const urlGetGroupTypeCar = 'http://localhost:3000/getGroupTypeCar';
+// thêm nhóm loại xe
+export const urlInsertGroupTypeCar = 'http://localhost:3000/insertGroupTypeCar';
+// sửa nhóm loại xe
+export const urlUpdateGroupTypeCar = 'http://localhost:3000/updateGroupTypeCar';
+//xoá nhóm loại xe
+export const urlDeleteGroupTypeCar = 'http://localhost:3000/deleteGroupTypeCar';
 
-/* Quản lý ca làm việc
+//lấy danh sách loại xe
+export const urlGetTypeCar = 'http://localhost:3000/getTypeCar';
+// thêm loại xe
+export const urlInsertTypeCar = 'http://localhost:3000/insertTypeCar';
+// sửa loại xe
+export const urlUpdateTypeCar = 'http://localhost:3000/updateTypeCar';
+//xoá loại xe
+export const urlDeleteTypeCar = 'http://localhost:3000/deleteTypeCar';
+
+//lấy danh sách xe
+export const urlGetCar = 'http://localhost:3000/getCar';
+// thêm xe
+export const urlInsertCar = 'http://localhost:3000/insertCar';
+// sửa xe
+export const urlUpdateCar = 'http://localhost:3000/updateCar';
+//xoá xe
+export const urlDeleteCar = 'http://localhost:3000/deleteCar';
+
+
+
+/* Quản lý dịch vụ
  */
-//lấy danh sách ca làm việc
-export const urlGetShifts = 'http://localhost:3000/getShifts';
-// thêm ca làm việc
-export const urlInsertShifts = 'http://localhost:3000/insertShifts';
-// sửa ca làm việc
-export const urlUpdateShifts = 'http://localhost:3000/updateShifts';
-//xoá ca làm việc
-export const urlDeleteShifts = 'http://localhost:3000/deleteShifts';
+//lấy danh sách đăng kiểm
+export const urlGetRegistry = 'http://localhost:3000/getRegistry';
+// thêm đăng kiểm
+export const urlInsertRegistry = 'http://localhost:3000/insertRegistry';
+// sửa đăng kiểm
+export const urlUpdateRegistry = 'http://localhost:3000/updateRegistry';
+//xoá đăng kiểm
+export const urlDeleteRegistry = 'http://localhost:3000/deleteRegistry';
 
-//lấy danh sách chốt ca
-export const urlGetCloseShifts = 'http://localhost:3000/getCloseShifts';
-//tải danh sách ca phù hợp với giờ hiện tại
-export const urlGetMatchShifts = 'http://localhost:3000/GetMatchShifts';
-// thêm chốt ca mới
-export const urlInsertCloseShifts = 'http://localhost:3000/insertCloseShifts';
-// cập nhật chốt ca
-export const urlUpdateCloseShifts = 'http://localhost:3000/updateCloseShifts';
-// xoá chốt ca
-export const urlDeleteCloseShifts = 'http://localhost:3000/deleteCloseShifts';
+//lấy danh sách phù hiệu
+export const urlGetEmblem = 'http://localhost:3000/getEmblem';
+// thêm phù hiệu
+export const urlInsertEmblem = 'http://localhost:3000/insertEmblem';
+// sửa phù hiệu
+export const urlUpdateEmblem = 'http://localhost:3000/updateEmblem';
+//xoá phù hiệu
+export const urlDeleteEmblem = 'http://localhost:3000/deleteEmblem';
 
+//lấy danh sách bảo hiểm
+export const urlGetInsurance = 'http://localhost:3000/getInsurance';
+// thêm bảo hiểm
+export const urlInsertInsurance = 'http://localhost:3000/insertInsurance';
+// sửa bảo hiểm
+export const urlUpdateInsurance = 'http://localhost:3000/updateInsurance';
+//xoá bảo hiểm
+export const urlDeleteInsurance = 'http://localhost:3000/deleteInsurance';
 
-/* Quản lý Khách Hàng
- */
-//lấy danh sách khách hàng
-export const urlGetCustomer = 'http://localhost:3000/getCustomer';
-// thêm khách hàng
-export const urlInsertCustomer = 'http://localhost:3000/insertCustomer';
-// sửa khách hàng
-export const urlUpdateCustomer = 'http://localhost:3000/updateCustomer';
-//xoá khách hàng
-export const urlDeleteCustomer = 'http://localhost:3000/deleteCustomer';
-
-
-/* Quản lý Kho
- */
-//lấy danh sách đơn vị tính
-export const urlGetUnit = 'http://localhost:3000/getUnit';
-//lấy danh sách chuyển đổi đơn vị tính
-export const urlGetListUnitConversions = 'http://localhost:3000/getListUnitConversions';
-//lấy danh sách chuyển đổi đơn vị tính theo ID
-export const urlGetListUnitConversionsByIDUnit = 'http://localhost:3000/getListUnitConversionsByIDUnit';
-
-// thêm đơn vị tính
-export const urlInsertUnit = 'http://localhost:3000/insertUnit';
-// sửa đơn vị tính
-export const urlUpdateUnit = 'http://localhost:3000/updateUnit';
-//xoá đơn vị tính
-export const urlDeleteUnit = 'http://localhost:3000/deleteUnit';
-
-//lấy danh sách phiếu nhập
-export const urlGetReceipt = 'http://localhost:3000/getReceipt';
-// thêm phiếu nhập
-export const urlInsertReceipt = 'http://localhost:3000/insertReceipt';
-// sửa phiếu nhập
-export const urlUpdateReceipt = 'http://localhost:3000/updateReceipt';
-//xoá phiếu nhập
-export const urlDeleteReceipt = 'http://localhost:3000/deleteReceipt';
-
-//lấy danh sách nguyên liệu
-export const urlGetIngredient = 'http://localhost:3000/getIngredient';
-// thêm nguyên liệu
-export const urlInsertIngredient = 'http://localhost:3000/insertIngredient';
-// sửa nguyên liệu
-export const urlUpdateIngredient = 'http://localhost:3000/updateIngredient';
-//xoá nguyên liệu
-export const urlDeleteIngredient = 'http://localhost:3000/deleteIngredient';
+//lấy danh sách định vị
+export const urlGetLocate = 'http://localhost:3000/getLocate';
+// thêm định vị
+export const urlInsertLocate = 'http://localhost:3000/insertLocate';
+// sửa định vị
+export const urlUpdateLocate = 'http://localhost:3000/updateLocate';
+//xoá định vị
+export const urlDeleteLocate = 'http://localhost:3000/deleteLocate';
 
 
-/* Quản lý Thực đơn
- */
-//lấy danh sách toàn bộ sản phẩm 
-export const urlGetProduct = 'http://localhost:3000/getProduct';
-//xoá sản phẩm
-export const urlDeleteProduct = 'http://localhost:3000/deleteProduct';
 
-
-// thêm sản phẩm thành phẩm
-export const urlInsertFinishedProduct = 'http://localhost:3000/insertFinishedProduct';
-// sửa sản phẩm thành phẩm
-export const urlUpdateFinishedProduct = 'http://localhost:3000/updateFinishedProduct';
-// thêm sản phẩm chế biến
-export const urlInsertProcessedProduct = 'http://localhost:3000/insertProcessedProduct';
-// sửa sản phẩm chế biến
-export const urlUpdateProcessedProduct = 'http://localhost:3000/updateProcessedProduct';
-
-//lấy danh sách loại sản phẩm
-export const urlGetTypeProduct = 'http://localhost:3000/getTypeProduct';
-// thêm loại sản phẩm
-export const urlInsertTypeProduct = 'http://localhost:3000/insertTypeProduct';
-// sửa loại sản phẩm
-export const urlUpdateTypeProduct = 'http://localhost:3000/updateTypeProduct';
-//xoá loại sản phẩm
-export const urlDeleteTypeProduct = 'http://localhost:3000/deleteTypeProduct';
-
-/* Quản lý Hoá Đơn
- */
-//lấy danh sách hoá đơn
-export const urlGetInvoice = 'http://localhost:3000/getInvoice';
-// thêm hoá đơn
-export const urlInsertInvoice = 'http://localhost:3000/insertInvoice';
-// sửa hoá đơn
-export const urlUpdateInvoice = 'http://localhost:3000/updateInvoice';
-//xoá hoá đơn
-export const urlDeleteInvoice = 'http://localhost:3000/deleteInvoice';
-// cập nhật trạng thái bàn ăn
-export const urlUpdateStatusTable = 'http://localhost:3000/updateStatusTable';
-// lấy ảnh thanh toán
-export const urlGetPicturePayment = 'http://localhost:3000/getPicturePayment';
-
-/* Quản lý Bếp
- */
-//lấy danh sách order
-export const urlGetOrder = 'http://localhost:3000/getListProductsByStatus';
-//cập nhật trạng thái món ăn
-export const urlUpdateStatusProduct = 'http://localhost:3000/updateStatusProduct';
 
 /* Bảng điều khiển
  */

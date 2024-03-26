@@ -11,7 +11,6 @@ import CheckLogin from "../components/CheckLogin"
 import Navigation from "../components/Navigation"
 import loadingGif from '../assets/img/loading/loading1.gif'
 import TabBangDieuKhien from "../components/Tabs/TabBangDieuKhien";
-import Logout_ChotCa from "../components/Popup/Logout_ChotCa";
 import '../App.css';
 function BangDieuKhien() {
     const [thongTinDangNhap, setThongTinDangNhap] = useState({
@@ -144,10 +143,6 @@ function BangDieuKhien() {
                             </div>
                         </div>
                         <TabComponent />
-                        {popupChotCa && <Logout_ChotCa
-                            setPopupChotCa={setPopupChotCa}
-                            thongTinDangNhap={thongTinDangNhap}
-                        />}
                     </div>
                 </div>
             </div>

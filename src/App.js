@@ -12,19 +12,13 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 // } from "react-router-dom";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ThanhVien from "./pages/ThanhVien"
-
+import Xe from "./pages/Xe"
+import DichVu from "./pages/DichVu"
 
 import BangDieuKhien from "./pages/BangDieuKhien"
-import HoaDon from "./pages/HoaDon"
-import ThucDon from "./pages/ThucDon"
-import BanVaKhuVuc from "./pages/BanVaKhuVuc"
-import NhanVien from "./pages/NhanVien"
-import CaLamViec from "./pages/CaLamViec"
-import KhachHang from "./pages/KhachHang"
-import Kho from "./pages/Kho"
+
 import NotFound from "./pages/NotFound";
 import Login from './login/Login';
-import Bep from "./pages/Bep"
 import TrangCaNhan from "./pages/TrangCaNhan"
 function App() {
   return (
@@ -36,16 +30,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Login /> } />
           <Route path="/ThanhVien" element={<ThanhVien />} />
+          <Route path="/Xe" element={<Xe />} />
+          <Route path="/DichVu" element={<DichVu />} />
 
           <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
-          <Route path="/HoaDon" element={<HoaDon />} />
-          <Route path="/ThucDon" element={<ThucDon />} />
-          <Route path="/BanVaKhuVuc" element={<BanVaKhuVuc />} />
-          <Route path="/NhanVien" element={<NhanVien />} />
-          <Route path="/CaLamViec" element={<CaLamViec />} />
-          <Route path="/KhachHang" element={<KhachHang />} />
-          <Route path="/Kho" element={<Kho />} />
-          <Route path="/Bep" element={<Bep />} />
           <Route path="/TrangCaNhan" element={<TrangCaNhan />} />
           <Route path="*" element={<NotFound />}/>
         </Routes>

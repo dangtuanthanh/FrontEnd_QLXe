@@ -12,7 +12,6 @@ import Navigation from "../components/Navigation"
 import loadingGif from '../assets/img/loading/loading1.gif'
 import TabThanhVien from "../components/Tabs/TabThanhVien";
 import TabVaiTroTruyCap from "../components/Tabs/TabVaiTroTruyCap";
-import TabViTriCongViec from "../components/Tabs/TabViTriCongViec";
 import '../App.css';
 
 function ThanhVien() {
@@ -74,8 +73,7 @@ function ThanhVien() {
     const loading = useSelector(state => state.loading.loading)
     const tabs = {
         tab1: 'TabThanhVien',
-        tab2: 'TabVaiTroTruyCap',
-        tab3: 'TabViTriCongViec'
+        tab2: 'TabVaiTroTruyCap'
     }
 
     const [activeTab, setActiveTab] = useState(tabs.tab1);
@@ -91,9 +89,6 @@ function ThanhVien() {
 
     if (activeTab === tabs.tab2) {
         TabComponent = TabVaiTroTruyCap;
-    }
-    if (activeTab === tabs.tab3) {
-        TabComponent = TabViTriCongViec;
     }
 
     return (
@@ -125,12 +120,6 @@ function ThanhVien() {
                                     style={{color:'blue'}}
                                         className={activeTab === 'TabVaiTroTruyCap' ? 'nav-link active' : 'nav-link'}
                                         onClick={() => handleTabClick(tabs.tab2)}>Vai Trò Truy Cập</button>
-                                </li>
-                                <li class="nav-item">
-                                    <button
-                                    style={{color:'blue'}}
-                                        className={activeTab === 'TabViTriCongViec' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab3)}>Vị Trí Công Việc</button>
                                 </li>
 
                             </ul>

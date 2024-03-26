@@ -7,7 +7,7 @@ const Insert_updateRole = (props) => {
     const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
     const [dataReq, setDataReq] = useState({
-        IDQuyen: []
+        MaQuyen: []
     });
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
@@ -52,10 +52,10 @@ const Insert_updateRole = (props) => {
                 if (props.isInsert === false) {
                     //xử lý chuyển mảng num sang string
                     let getRoleByID = data[1]
-                    const stringsIDQuyen = data[1].IDQuyen.map(num => num.toString());
+                    const stringsMaQuyen = data[1].MaQuyen.map(num => num.toString());
                     getRoleByID = ({
                         ...getRoleByID,
-                        IDQuyen:stringsIDQuyen
+                        MaQuyen:stringsMaQuyen
                     });
                     setDataReq(getRoleByID)
                 }
@@ -76,28 +76,28 @@ const Insert_updateRole = (props) => {
     //combo vai trò
     const handleQuyenChange = (ID) => {
         let updatedDataReq = { ...dataReq };
-        let IDQuyen = updatedDataReq.IDQuyen;
-        if (IDQuyen.includes(ID)) {
-            IDQuyen = IDQuyen.filter(item => item !== ID)
+        let MaQuyen = updatedDataReq.MaQuyen;
+        if (MaQuyen.includes(ID)) {
+            MaQuyen = MaQuyen.filter(item => item !== ID)
         } else {
-            IDQuyen.push(ID);
+            MaQuyen.push(ID);
         }
-        updatedDataReq.IDQuyen = IDQuyen;
+        updatedDataReq.MaQuyen = MaQuyen;
         setDataReq(updatedDataReq);
     }
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!dataReq.TenVaiTro
-            || !dataReq.IDQuyen
-            || !dataReq.IDQuyen.length
+            || !dataReq.MaQuyen
+            || !dataReq.MaQuyen.length
         ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
         else {
             dispatch({ type: 'SET_LOADING', payload: true })
-            const strIDQuyen = dataReq.IDQuyen.join(',');
+            const strMaQuyen = dataReq.MaQuyen.join(',');
             const data = {
-                IDVaiTro:dataReq.IDVaiTro,
+                MaVaiTro:dataReq.MaVaiTro,
                 TenVaiTro: dataReq.TenVaiTro,
-                IDQuyen: strIDQuyen
+                MaQuyen: strMaQuyen
             };
             if (props.isInsert === true) {
                 fetch(urlInsertRole, {
@@ -124,7 +124,7 @@ const Insert_updateRole = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDVaiTro', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser, sortBy: 'MaVaiTro', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
@@ -202,16 +202,16 @@ const Insert_updateRole = (props) => {
                                 >
                                     <label>Quyền: {batBuocNhap}ㅤ</label>
                                     {combosQuyen.map(combo => (
-                                        <div key={combo.IDQuyen} >
+                                        <div key={combo.MaQuyen} >
                                             <label >
                                                 <input
                                                     type="checkbox"
                                                     checked={
-                                                        (dataReq.IDQuyen?.includes(combo.IDQuyen.toString())) || false
+                                                        (dataReq.MaQuyen?.includes(combo.MaQuyen.toString())) || false
                                                     }
-                                                    onChange={() => handleQuyenChange(combo.IDQuyen.toString())}
+                                                    onChange={() => handleQuyenChange(combo.MaQuyen.toString())}
                                                 />
-                                                {` ${combo["IDQuyen"]} - ${combo["TenQuyen"]} - ${combo["MoTa"]}`}
+                                                {` ${combo["MaQuyen"]} - ${combo["TenQuyen"]} - ${combo["MoTa"]}`}
                                             </label>
                                         </div>
                                     ))}

@@ -8,21 +8,25 @@ import '../assets/css/nucleo-svg.css';
 import '../assets/css/soft-ui-dashboard.min.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGaugeHigh, faFileInvoice, faLock, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
+import { faGaugeHigh, faCogs, faCar, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
 
 function Navigation({ menu }) {
   const [activeComponent, setActiveComponent] = useState('');
   const location = useLocation();
   useEffect(() => {
     const pathname = location.pathname;
-    if (pathname === '/HoaDon') {
-      setActiveComponent('HoaDon');
-    } else if (pathname === '/ThucDon') {
+    if (pathname === '/Xe') {
+      setActiveComponent('Xe');
+    } else if (pathname === '/ThanhVien') {
+      setActiveComponent('ThanhVien');
+    } else if (pathname === '/DichVu') {
+      setActiveComponent('DichVu');
+    }
+    else if (pathname === '/ThucDon') {
       setActiveComponent('ThucDon');
     } else if (pathname === '/BanVaKhuVuc') {
       setActiveComponent('BanVaKhuVuc');
-    } else if (pathname === '/ThanhVien') {
-      setActiveComponent('ThanhVien');
+
     } else if (pathname === '/CaLamViec') {
       setActiveComponent('CaLamViec');
     } else if (pathname === '/KhachHang') {
@@ -40,16 +44,20 @@ function Navigation({ menu }) {
 
   function renderIcon(item) {
     switch (item) {
+      case 'Thành Viên':
+        return <FontAwesomeIcon icon={faUser} />;
+      case 'Xe':
+        return <FontAwesomeIcon icon={faCar} />;
+      case 'Dịch Vụ':
+        return <FontAwesomeIcon icon={faCogs} />;
       case 'Bảng Điều Khiển':
         return <FontAwesomeIcon icon={faGaugeHigh} />;
-      case 'Hoá Đơn':
-        return <FontAwesomeIcon icon={faFileInvoice} />;
+
       case 'Thực Đơn':
         return <FontAwesomeIcon icon={faUtensils} />;
       case 'Bàn Và Khu Vực':
         return <FontAwesomeIcon icon={faTable} />;
-      case 'Thành Viên':
-        return <FontAwesomeIcon icon={faUser} />;
+
       case 'Ca Làm Việc':
         return <FontAwesomeIcon icon={faCalendarCheck} />;
       case 'Khách Hàng':
@@ -73,7 +81,7 @@ function Navigation({ menu }) {
             maxWidth: '40%',
             marginLeft: '30%'
           }} src={logo} class="navbar-brand-img h-200" alt="main_logo" />
-          {/* <span class="ms-1 font-weight-bolder">VSell</span> */}
+          {/* <span class="ms-1 font-weight-bolder">QLXe</span> */}
 
         </div>
         <hr class="horizontal dark mt-0" />
