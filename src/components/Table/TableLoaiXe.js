@@ -122,8 +122,24 @@ const TableLoaiXe = (props) => {
 
                             </td>
                             {/* <td >{dulieu.MaLoaiXe}</td> */}
-                            <td style={{ textAlign: 'left' }} >{dulieu.TenLoaiXe}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.MoTa}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.TenLoaiXe ?
+                                        dulieu.TenLoaiXe.length > 30 ?
+                                            dulieu.TenLoaiXe.slice(0, 30) + '...' :
+                                            dulieu.TenLoaiXe
+                                        : ''
+                                }
+                            </td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.MoTa ?
+                                        dulieu.MoTa.length > 40 ?
+                                            dulieu.MoTa.slice(0, 40) + '...' :
+                                            dulieu.MoTa
+                                        : ''
+                                }
+                            </td>
                             <td style={{ textAlign: 'left' }} >{dulieu.TenNhomLoaiXe}</td>
                             {/* <td style={{ padding: '0' }}>
                                 <img

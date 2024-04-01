@@ -7,12 +7,13 @@ import Combobox from "../Combobox";
 import { getCookie } from "../Cookie";
 import Insert_updateRole from "./Insert_updateRole";
 import { urlGetRole, urlInsertMember, urlGetMember, urlUpdateMember } from "../url"
-
+import Them_suaHopDong from "./them_suaHopDong";
 const Them_suaThanhVien = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
     const [dataReq, setDataReq] = useState({});
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
@@ -66,7 +67,7 @@ const Them_suaThanhVien = (props) => {
                     //xử lý dữ liệu hiển thị nếu là sửa dữ liệu
                     if (props.isInsert === false) {
                         setDataReq(data[1])
-                        if (data[1].MaVaiTro.length> 0) {
+                        if (data[1].MaVaiTro.length > 0) {
                             setResTaiKhoan(true)
                             setIsChecked(true);
                             setIsDisabled(false);
@@ -124,7 +125,7 @@ const Them_suaThanhVien = (props) => {
 
 
     }, [dataUser]);
-
+    const [DV7, setDV7] = useState(false);
     //combo vai trò
     const handleVaiTroChange = (ID) => {
         let updatedDataReq = { ...dataReq };
@@ -358,7 +359,7 @@ const Them_suaThanhVien = (props) => {
                 ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
                 else handleFetchAPISubmit();
                 //check và sửa
-            } else if ( !dataReq.MaVaiTro
+            } else if (!dataReq.MaVaiTro
                 || !dataReq.MaVaiTro.length
                 || !dataReq.TenThanhVien
                 || !dataReq.MaThanhVien
@@ -371,7 +372,61 @@ const Them_suaThanhVien = (props) => {
             handleFetchAPISubmit();
         }
     };
+    const Dropdown = ({
+        title,
+        items,
+        onItemClick
+    }) => {
 
+        const [open, setOpen] = useState(false);
+
+        const toggle = () => setOpen(prev => !prev);
+
+        return (
+            <div className="card" style={{ margin: '2%' }}>
+                <button
+                    className="btn bg-gradient-link btn-sm mb-0"
+                    onClick={(e) => { e.preventDefault(); toggle(); }}>
+                    {title} ({items?.length || 0})
+                </button>
+                {open && (
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr >
+
+                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mã HĐ </th>
+
+                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày</th>
+
+                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày Hết Hạn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {items?.map((dulieu, index) =>
+                                <tr style={{ 'textAlign': 'center' }} id='trdata' key={index} onClick={() => {
+                                    onItemClick(dulieu)
+                                }} >
+
+                                    <td>{dulieu.SoHopDong}</td>
+                                    <td>{dulieu.Ngay}</td>
+                                    <td>{dulieu.NgayHetHan}</td>
+                                </tr>
+                                //</div>
+                            )
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                )}
+            </div>
+        );
+    }
+    const handleDropdownItemClickHopDong  = item => {
+        setIDAction(item.MaHopDong)
+        setDV7(true)
+    };
     return (
         <div className="popup-box">
             <div className="box">
@@ -379,7 +434,13 @@ const Them_suaThanhVien = (props) => {
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Thành Viên<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}
+                                style={{
+                                    maxHeight: '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}
+                            >
                                 {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input
@@ -454,6 +515,11 @@ const Them_suaThanhVien = (props) => {
                                                 }}
                                             />
                                         </div>
+                                        <Dropdown
+                                            title="Xem Hợp Đồng"
+                                            items={dataReq.HopDong}
+                                            onItemClick={handleDropdownItemClickHopDong}
+                                        />
                                     </div>
                                     <div className='col-6'>
                                         <ImageUpload />
@@ -591,6 +657,9 @@ const Them_suaThanhVien = (props) => {
                                         )}
                                     </div>
                                 </div>
+
+                            </form>
+                            <div>
                                 <button onClick={() => { props.setPopup1(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
@@ -599,7 +668,7 @@ const Them_suaThanhVien = (props) => {
                                 >
                                     Xác Nhận
                                 </button>
-                            </form>
+                            </div>
                             {
                                 themVTTC && <div className="popup">
                                     <Insert_updateRole
@@ -609,6 +678,19 @@ const Them_suaThanhVien = (props) => {
                                         setdataUser={setdataUser}
                                         addNotification={props.addNotification}
                                         openPopupAlert={props.openPopupAlert}
+                                    />
+                                </div>
+                            }
+                            {
+                                DV7 && <div className="popup">
+                                    <Them_suaHopDong
+                                        isInsert={false}
+                                        setPopupInsertUpdate={setDV7}
+                                        dataUser={dataUser}
+                                        setdataUser={setdataUser}
+                                        addNotification={props.addNotification}
+                                        openPopupAlert={props.openPopupAlert}
+                                        iDAction={iDAction}
                                     />
                                 </div>
                             }

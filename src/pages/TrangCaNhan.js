@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faCog, faBell, faTimes, faBars, faSignOut ,faAddressCard, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 
@@ -61,7 +61,25 @@ function TrangCaNhan() {
     }
 
     //Xử lý menu
-    const [showNavigation, setShowNavigation] = useState(true);
+    const [isMobile, setIsMobile] = useState(() => {
+        return window.innerWidth < 1250;
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1250);
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
+
+    const [showNavigation, setShowNavigation] = useState(() => {
+        return isMobile ? false : true;
+    });
     const handleToggleNavigation = () => {
         setShowNavigation(!showNavigation);
     };
@@ -98,7 +116,10 @@ function TrangCaNhan() {
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
                 </div>
-                <div className={contentColumnClass}>
+                <div className={contentColumnClass} style={{
+                    opacity: isMobile && showNavigation ? 0.3 : 1,
+                    pointerEvents: isMobile && showNavigation ? 'none' : 'auto'
+                }}>
                     <div style={{ marginLeft: '2%', marginRight: '1%' }}>
                         <div style={{ marginLeft: '0px' }} className="row">
                             <ul class="nav nav-tabs col-6">
@@ -110,12 +131,24 @@ function TrangCaNhan() {
                                 <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabHoSo' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab1)}>Hồ Sơ</button>
+                                        style={{ color: 'blue' }}
+                                        onClick={() => handleTabClick(tabs.tab1)}>{isMobile ? (
+                                            <FontAwesomeIcon icon={faAddressCard} />
+                                        ) : (
+                                            'Hồ Sơ'
+                                        )}
+                                        </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabTaiKhoan' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab2)}>Tài Khoản</button>
+                                        style={{ color: 'blue' }}
+                                        onClick={() => handleTabClick(tabs.tab2)}>{isMobile ? (
+                                            <FontAwesomeIcon icon={faUserCircle} />
+                                        ) : (
+                                            'Tài Khoản'
+                                        )}
+                                        </button>
                                 </li>
                             </ul>
                             <div className="col-6 d-flex justify-content-end align-items-center">
@@ -126,12 +159,6 @@ function TrangCaNhan() {
                                         <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.ThanhVien.TenThanhVien}</span>
                                     </div>
                                 </span>
-                                <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                    <FontAwesomeIcon icon={faCog} />
-                                </span>
-                                <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                    <FontAwesomeIcon icon={faBell} />
-                                </span>
                                 <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn bg-gradient-info btn-sm mb-0">
                                     Đăng Xuất <FontAwesomeIcon icon={faSignOut} />
                                 </button>
@@ -140,6 +167,26 @@ function TrangCaNhan() {
                         <TabComponent  thongTinDangNhap={thongTinDangNhap}/>
                     </div>
                 </div>
+                <button
+                    id="ButtonMenu"
+                    className="btn bg-gradient-info"
+                    style={{
+                        position: 'fixed',
+                        top: '3rem',
+                        right: '1.5rem',
+                        padding: '8px 16px',
+                        width: '3rem'
+                    }}
+                    onClick={() => {
+                        setShowNavigation(!showNavigation)
+                    }}
+                >
+                    {showNavigation ? (
+                        <FontAwesomeIcon icon={faTimes} />
+                    ) : (
+                        <FontAwesomeIcon icon={faBars} />
+                    )}
+                </button>
             </div>
         </CheckLogin>
     );

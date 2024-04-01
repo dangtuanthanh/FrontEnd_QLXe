@@ -49,7 +49,7 @@ const TablePhuHieu = (props) => {
                 {
                     props.duLieuHienThi.map((dulieu, index) =>
                         //<div  onClick={() => handleRowClick(thanhvien)}>
-                        <tr style={{ 'textAlign': 'center' }} id='trdata' key={index} onClick={() => {
+                        <tr style={{ 'textAlign': 'center', backgroundColor: dulieu.SapHetHan ? '#fff7f7' : null  }} id='trdata' key={index} onClick={() => {
                             props.setIsInsert(false)
                             props.setIDAction(dulieu.MaXe)
                             props.setIDAction2(dulieu.LanPhuHieu)
@@ -61,7 +61,15 @@ const TablePhuHieu = (props) => {
                             <td >{dulieu.LanPhuHieu}</td>
                             <td >{dulieu.NgayCapPhuHieu}</td>
                             <td >{dulieu.NgayHetHan}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.NoiCapPhuHieu}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.NoiCapPhuHieu ?
+                                        dulieu.NoiCapPhuHieu.length > 15 ?
+                                            dulieu.NoiCapPhuHieu.slice(0, 15) + '...' :
+                                            dulieu.NoiCapPhuHieu
+                                        : ''
+                                }
+                            </td>
                             <td style={{ textAlign: 'left' }} >{dulieu.NguoiDiCapPhuHieu}</td>
                             {dulieu.TinhTrangApDung ?
                                 <td style={{ color: 'green' }} ><FontAwesomeIcon icon={faCheck} /> Áp Dụng</td>

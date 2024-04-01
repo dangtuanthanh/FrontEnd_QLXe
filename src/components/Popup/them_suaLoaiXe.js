@@ -3,9 +3,11 @@ import { useDispatch } from 'react-redux'
 import { getCookie } from "../Cookie";
 import Combobox from "../Combobox";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faSearch, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import Them_suaNhomLoaiXe from "./them_suaNhomLoaiXe";
+import SearchComBoBox from "../SearchCombobox";
 import { urlInsertTypeCar, urlGetTypeCar, urlUpdateTypeCar, urlGetGroupTypeCar } from "../url"
+
 const Them_suaLoaiXe = (props) => {
     const dispatch = useDispatch()
     const [dataReq, setDataReq] = useState({});
@@ -15,7 +17,11 @@ const Them_suaLoaiXe = (props) => {
     const [dataUser, setdataUser] = useState({});//
     // combobox
     const [themVTTC, setThemVTTC] = useState(false);
+    const [popupSearch, setPopupSearch] = useState(false);
+
     const [combosKhuVuc, setCombosKhuVuc] = useState([]);//danh sách vai trò
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
+    const [isInsert, setIsInsert] = useState(false);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -240,9 +246,27 @@ const Them_suaLoaiXe = (props) => {
                                         onChange={handleKhuVucChange}
                                     />
                                     <div style={{ display: 'flex', alignItems: 'center' }}
-                                    onClick={() => setThemVTTC(true)}
+                                        onClick={() => {
+                                            setIsInsert(true)
+                                            setIDAction()
+                                            setThemVTTC(true)
+                                        }}
                                     >
                                         <FontAwesomeIcon icon={faPlusCircle} />
+                                    </div>
+                                    <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
+                                        onClick={() => setPopupSearch(true)}
+                                    >
+                                        <FontAwesomeIcon icon={faSearch} />
+                                    </div>
+                                    <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
+                                        onClick={() => {
+                                            setIsInsert(false)
+                                            setIDAction(dataReq.MaNhomLoaiXe)
+                                            setThemVTTC(true)
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faInfoCircle} />
                                     </div>
                                 </div>
                                 <div className="form-group">
@@ -276,12 +300,24 @@ const Them_suaLoaiXe = (props) => {
                 {
                     themVTTC && <div className="popup">
                         <Them_suaNhomLoaiXe
-                            isInsert={true}
+                            iDAction={iDAction}
+                            isInsert={isInsert}
                             setPopupInsertUpdate={setThemVTTC}
                             dataUser={dataUser}
                             setdataUser={setdataUser}
                             addNotification={props.addNotification}
                             openPopupAlert={props.openPopupAlert}
+                        />
+                    </div>
+                }
+                {
+                    popupSearch && <div className="popup">
+                        <SearchComBoBox
+                            setPopupSearch={setPopupSearch}
+                            combos={combosKhuVuc}
+                            IDColumn={'MaNhomLoaiXe'}
+                            column={'TenNhomLoaiXe'}
+                            handleChange={handleKhuVucChange}
                         />
                     </div>
                 }

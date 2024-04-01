@@ -1,7 +1,7 @@
-
-#root{
+#root {
   overflow-x: hidden;
 }
+
 .input-group input {
   border-right: none;
   border-radius: 4px 0 0 4px;
@@ -73,8 +73,10 @@
 /* phân trang */
 .pagination-container {
   display: flex;
-  justify-content: center; /* Căn giữa các phần tử */
-  align-items: center; /* Căn giữa dọc các phần tử */
+  justify-content: center;
+  /* Căn giữa các phần tử */
+  align-items: center;
+  /* Căn giữa dọc các phần tử */
   float: right;
 }
 
@@ -153,8 +155,46 @@
   border: 1px solid #999;
   overflow: auto;
 }
+
 @keyframes blink {
   50% {
     border-color: orange;
+  }
+}
+
+/* responsive app*/
+@media only screen and (min-width: 1250px) {
+  #ButtonMenu {
+    display: none;
+  }
+  
+}
+@media only screen and (max-width: 1250px) {
+  #ButtonMenu {
+    display: block;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  #ButtonMenu {
+    display: block;
+  }
+}
+@media only screen and (max-width: 620px) {
+  #ButtonMenu {
+    display: block;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  #ButtonMenu {
+    display: block;
+  }
+}
+
+/**/
+@media only screen and (max-width: 320px) {
+  #ButtonMenu {
+    display: block;
   }
 }

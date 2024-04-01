@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faTrash} from '@fortawesome/free-solid-svg-icons'
-const TableThanhVien = (props) => {
+const TableHangMucBaoDuong = (props) => {
     const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
@@ -46,7 +46,7 @@ const TableThanhVien = (props) => {
                 checkbox.checked = true;
             });
             //$(".checkboxCon").prop("checked", true);
-            const allIds = props.duLieuHienThi.map((item) => item.MaThanhVien.toString());
+            const allIds = props.duLieuHienThi.map((item) => item.MaHangMucBaoDuong.toString());
             console.log("allIds:", allIds); // Kiểm tra danh sách các id đã chọn
             props.setSelectedIds(allIds);
             setSelectAll(true);
@@ -86,7 +86,7 @@ const TableThanhVien = (props) => {
     //hết xử lý Sửa hàng loạt
 
     return (
-        <table id="thanhvien" class="table align-items-center mb-0">
+        <table class="table align-items-center mb-0">
             <thead>
                 <tr >
                     <th style={{ textAlign: 'center' }}><input
@@ -94,11 +94,9 @@ const TableThanhVien = (props) => {
                         checked={selectAll}
                         onChange={handleSelectAllChange}
                     /></th>
-                    <th style={{ textAlign: 'center' }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th>
-                    <th style={{ padding: 8 }} onClick={() => handleClickSort('TenThanhVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Thành Viên </th>
-                    <th style={{ padding: 8 }}  class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Địa Chỉ </th>
-                    <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Email </th>
-                    <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Số Điện Thoại</th>
+                    {/* <th style={{ padding: 8, textAlign:'center'}} onClick={() => handleClickSort('MaHangMucBaoDuong')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mã Nhóm Loại Xe</th> */}
+                    <th style={{ padding: 8 }} onClick={() => handleClickSort('TenHangMuc')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Hạng Mục </th>
+                    <th style={{ padding: 8 }} onClick={() => handleClickSort('MoTa')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mô Tả </th>
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10 ps-2">Hành Động</th>
                 </tr>
             </thead>
@@ -106,43 +104,41 @@ const TableThanhVien = (props) => {
                 {
                     props.duLieuHienThi.map((dulieu, index) =>
                         //<div  onClick={() => handleRowClick(thanhvien)}>
-                        <tr style={{ 'textAlign': 'center' }} id='trdata' key={dulieu.MaThanhVien} onClick={() => {
+                        <tr style={{ 'textAlign': 'center' }} id='trdata' key={dulieu.MaHangMucBaoDuong} onClick={() => {
                             props.setIsInsert(false)
-                            props.setIDAction(dulieu.MaThanhVien)
-                            props.setPopup1(true)
+                            props.setIDAction(dulieu.MaHangMucBaoDuong)
+                            props.setPopupInsertUpdate(true)
                         }} >
                             <td >
                                 <input
                                     type="checkbox"
-                                    value={dulieu.MaThanhVien}
+                                    value={dulieu.MaHangMucBaoDuong}
                                     className='checkboxCon'
-                                    checked={props.selectedIds.includes(dulieu.MaThanhVien.toString())}
+                                    checked={props.selectedIds.includes(dulieu.MaHangMucBaoDuong.toString())}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={handleCheckboxChange}
                                 />
 
                             </td>
-                            <td >{index + 1}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.TenThanhVien}</td>
+                            {/* <td >{dulieu.MaHangMucBaoDuong}</td> */}
                             <td style={{ textAlign: 'left' }}>
                                 {
-                                    dulieu.DiaChi ?
-                                        dulieu.DiaChi.length > 40 ?
-                                            dulieu.DiaChi.slice(0, 40) + '...' :
-                                            dulieu.DiaChi
+                                    dulieu.TenHangMuc ?
+                                        dulieu.TenHangMuc.length > 30 ?
+                                            dulieu.TenHangMuc.slice(0, 30) + '...' :
+                                            dulieu.TenHangMuc
                                         : ''
                                 }
                             </td>
                             <td style={{ textAlign: 'left' }}>
                                 {
-                                    dulieu.Email ?
-                                        dulieu.Email.length > 20 ?
-                                            dulieu.Email.slice(0, 20) + '...' :
-                                            dulieu.Email
+                                    dulieu.MoTa ?
+                                        dulieu.MoTa.length > 50 ?
+                                            dulieu.MoTa.slice(0, 50) + '...' :
+                                            dulieu.MoTa
                                         : ''
                                 }
                             </td>
-                            <td>{dulieu.SoDienThoai}</td>
                             {/* <td style={{ padding: '0' }}>
                                 <img
                                     height={'35px'}
@@ -152,8 +148,8 @@ const TableThanhVien = (props) => {
                                 <a onClick={(e) => {
                                     e.stopPropagation();
                                     props.setIsInsert(false)
-                                    props.setIDAction(dulieu.MaThanhVien)
-                                    props.setPopup1(true)
+                                    props.setIDAction(dulieu.MaHangMucBaoDuong)
+                                    props.setPopupInsertUpdate(true)
                                 }}>
                                     <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true" />
                                     < FontAwesomeIcon icon={faPencil} />
@@ -162,8 +158,8 @@ const TableThanhVien = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenThanhVien}`,
-                                        () => { props.deleteData(dulieu.MaThanhVien) }
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenHangMuc}`,
+                                        () => { props.deleteData(dulieu.MaHangMucBaoDuong) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>
 
@@ -178,4 +174,4 @@ const TableThanhVien = (props) => {
     )
 };
 
-export default TableThanhVien;
+export default TableHangMucBaoDuong;

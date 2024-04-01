@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faRotate, faAdd,faFilter } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetStatusCar, urlDeleteStatusCar } from "../url";
+import { urlGetUsageHistory, urlDeleteUsageHistory } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableTinhTrangXe from "../Table/TableTinhTrangXe";
-import Them_suaTinhTrangXe from "../Popup/them_suaTinhTrangXe";
-function TabTinhTrangXe() {
+import TableLichSuSuDung from "../Table/TableLichSuSuDung";
+import Them_suaLichSuSuDung from "../Popup/them_suaLichSuSuDung";
+function TabLichSuSuDung() {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'MaTinhTrangXe',
+        sortBy: 'MaXe',
         sortOrder: 'asc',
-        searchBy: 'MoTa',
+        searchBy: 'BienSoXe',
         search: '',
         searchExact: 'false'
     });//
@@ -98,12 +98,13 @@ function TabTinhTrangXe() {
     const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
 
-
+    const [iDAction2, setIDAction2] = useState();//giá trị của id khi thực hiện sửa xoá
+    const [iDAction3, setIDAction3] = useState();//giá trị của id khi thực hiện sửa xoá
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaTinhTrangXe',
+            sortBy: 'MaXe',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -115,7 +116,7 @@ function TabTinhTrangXe() {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaTinhTrangXe',
+            sortBy: 'MaXe',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -126,7 +127,7 @@ function TabTinhTrangXe() {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaTinhTrangXe',
+            sortBy: 'MaXe',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -136,21 +137,19 @@ function TabTinhTrangXe() {
 
 
     //Xoá dữ liệu
-    const deleteData = (ID) => {
+    const deleteData = (ID, ID2) => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        let IDs = [ID]
-        if (Array.isArray(ID)) {
-            console.log('là mảng');
-            IDs = ID.map(item => Number(item));
-            console.log('mảng số đã được chuyển', IDs);
-        } else IDs = [ID];
-        fetch(`${urlDeleteStatusCar}`, {
+        const data = {
+            ID: ID,
+            ID2: ID2
+        }
+        fetch(`${urlDeleteUsageHistory}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
             },
-            body: JSON.stringify({ IDs })
+            body: JSON.stringify(data)
         })
             .then(response => {
                 if (response.status === 200) {
@@ -167,7 +166,6 @@ function TabTinhTrangXe() {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
                 dispatch({ type: 'SET_LOADING', payload: false })
-                setSelectedIds([])
                 TaiDuLieu()
 
             })
@@ -181,16 +179,21 @@ function TabTinhTrangXe() {
 
             });
     }
-    // sửa hàng loạt
-    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
-
+    const filterLanMoiNhat = () => {
+        setdataUser({
+            ...dataUser,
+            page: 1,
+            search: ' ',
+            searchBy: 'LanMoiNhat'
+        });
+    };
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetStatusCar}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetUsageHistory}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -244,64 +247,41 @@ function TabTinhTrangXe() {
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Tình Trạng Xe</h2>
+                    <h2> Quản Lý Lịch Sử Sử Dụng Xe</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
                     <div>
-                        {
-                            selectedIds.length == 0
-                                ? <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => { TaiDuLieu(); }}
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faRotate} />
-                                        ㅤLàm Mới
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setIsInsert(true)
-                                            setPopupInsertUpdate(true)
-                                            setIDAction()
-                                        }}
+                        <div style={{ 'display': "inline-block", float: 'left' }}>
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={() => { TaiDuLieu(); }}
+                                className="btn bg-gradient-info">
+                                <FontAwesomeIcon icon={faRotate} />
+                                ㅤLàm Mới
+                            </button>ㅤ
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={() => {
+                                    setIsInsert(true)
+                                    setPopupInsertUpdate(true)
+                                    setIDAction()
+                                    setIDAction2()
+                                }}
 
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faAdd} />
-                                        ㅤThêm
-                                    </button>ㅤ
-                                </div>
-                                : <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        //onClick={setSelectedIds([])}
-                                        onClick={() => { setSelectedIds([]); }}
-                                        className="btn btn-danger">
-                                        <FontAwesomeIcon icon={faArrowLeft} />
-                                        ㅤQuay Lại
-                                    </button>ㅤ
-                                    {/* <button
-                                                        style={{ display: "inline-block" }}
-                                                        //onClick={() => {togglePopup6();}}
-                                                        className="btn bg-gradient-info">
-                                                        <FontAwesomeIcon icon={faPencil} />
-                                                        ㅤSửa ô đã chọn
-                                                    </button>ㅤ */}
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => {
-                                            openPopupAlert(
-                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
-                                                () => { deleteData(selectedIds) }
-                                            )
-                                        }}
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faTrash} />
-                                        ㅤXoá ô đã chọn
-                                    </button>ㅤ
-                                </div>
-                        }
+                                className="btn bg-gradient-info">
+                                <FontAwesomeIcon icon={faAdd} />
+                                ㅤThêm
+                            </button>ㅤ
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={filterLanMoiNhat}
+                                className="btn btn-light">
+                                <FontAwesomeIcon icon={faFilter} />
+                                ㅤ Lần Mới Nhất
+                            </button>ㅤ
+                        </div>
+
 
                         <div style={{ 'display': "inline-block", float: 'right' }}>
                             {/* số hàng trên trang */}
@@ -319,6 +299,13 @@ function TabTinhTrangXe() {
                                     className="btn btn-close"
                                     style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
                                     onClick={() => {
+                                        if(dataUser.searchBy ==='LanMoiNhat')
+                                        setdataUser({
+                                            ...dataUser,
+                                            search: '',
+                                            searchBy:'BienSoXe'
+                                        });
+                                        else 
                                         setdataUser({
                                             ...dataUser,
                                             search: ''
@@ -330,8 +317,13 @@ function TabTinhTrangXe() {
                             }
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="MaTinhTrangXe">Tìm theo Mã Tình Trạng Xe</option>
-                                <option value="MoTa">Tìm theo Mô Tả</option>
+                                <option value="BienSoXe">Tìm theo Biển Số Xe</option>
+                                <option value="LanSuDung">Tìm theo Lần Sử Dụng</option>
+                                <option value="NgayDi">Tìm theo Ngày Đi</option>
+                                <option value="NgayVe">Tìm theo Ngày Về</option>
+                                <option value="ThoiGian">Tìm theo Thời Gian Di Chuyển</option>
+                                <option value="NguoiSuDung">Tìm theo Người Sử Dụng</option>
+                                <option value="MucDich">Tìm theo Mục Đích</option>
                             </select>
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -344,32 +336,41 @@ function TabTinhTrangXe() {
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableTinhTrangXe
+                        <TableLichSuSuDung
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
                             addNotification={addNotification}
                             setIsInsert={setIsInsert}
                             setIDAction={setIDAction}
+                            setIDAction2={setIDAction2}
+                            setIDAction3={setIDAction3}
                             setPopupInsertUpdate={setPopupInsertUpdate}
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
-                            selectedIds={selectedIds}
-                            setSelectedIds={setSelectedIds}
                         />
-                        <div style={{height:'7vh'}}></div>
+                        <div style={{ height: '7vh' }}></div>
                         <div style={{
                             display: 'flex', width: '100%', position: 'absolute',
                             right: 0,
                             bottom: 0, margin: '1rem'
                         }} >
-                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{fontFamily:'"Comic Sans MS", cursive, sans-serif',fontStyle: 'italic', color:'#cfcfcf'
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{
+                                fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
                             }}>Thiết kế và phát triển bởi: ...</label></div>
 
                             <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
                                 <div style={{ marginRight: '2rem' }}>
                                     {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDi" || dataRes.sortBy === "NgayVe" ?
+                                        (dataRes.sortOrder === 'asc'
+                                            ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                            : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
+                                        : (
+                                            dataRes.sortOrder === 'asc'
+                                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
+                                        theo cột {dataRes.sortBy}   </label>
                                 </div>
                                 {/* phân trang */}
                                 <Pagination
@@ -382,18 +383,19 @@ function TabTinhTrangXe() {
                     </div>
                 </div>
             </div>
-            
             {
                 popupInsertUpdate && <div className="popup">
-                    <Them_suaTinhTrangXe
+                    <Them_suaLichSuSuDung
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
-                        tieuDe='Thông Tin Tình Trạng Xe'
+                        tieuDe='Thông Tin Loại Xe'
                         dataUser={dataUser}
                         setdataUser={setdataUser}
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
+                        iDAction2={iDAction2}
+                        iDAction3={iDAction3}
                     />
                 </div>
             }
@@ -409,4 +411,4 @@ function TabTinhTrangXe() {
 
 }
 
-export default TabTinhTrangXe
+export default TabLichSuSuDung

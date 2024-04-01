@@ -8,7 +8,7 @@ import '../assets/css/nucleo-svg.css';
 import '../assets/css/soft-ui-dashboard.min.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGaugeHigh, faCogs, faCar, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
+import { faGaugeHigh, faCogs, faCar, faHandshake, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
 
 function Navigation({ menu }) {
   const [activeComponent, setActiveComponent] = useState('');
@@ -22,8 +22,10 @@ function Navigation({ menu }) {
     } else if (pathname === '/DichVu') {
       setActiveComponent('DichVu');
     }
-    else if (pathname === '/ThucDon') {
-      setActiveComponent('ThucDon');
+    else if (pathname === '/HopDong') {
+      setActiveComponent('HopDong');
+
+
     } else if (pathname === '/BanVaKhuVuc') {
       setActiveComponent('BanVaKhuVuc');
 
@@ -53,8 +55,8 @@ function Navigation({ menu }) {
       case 'Bảng Điều Khiển':
         return <FontAwesomeIcon icon={faGaugeHigh} />;
 
-      case 'Thực Đơn':
-        return <FontAwesomeIcon icon={faUtensils} />;
+      case 'Hợp Đồng':
+        return <FontAwesomeIcon icon={faHandshake} />;
       case 'Bàn Và Khu Vực':
         return <FontAwesomeIcon icon={faTable} />;
 

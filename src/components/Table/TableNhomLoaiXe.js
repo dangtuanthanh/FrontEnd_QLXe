@@ -121,8 +121,24 @@ const TableNhomLoaiXe = (props) => {
 
                             </td>
                             {/* <td >{dulieu.MaNhomLoaiXe}</td> */}
-                            <td style={{ textAlign: 'left' }} >{dulieu.TenNhomLoaiXe}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.MoTa}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.TenNhomLoaiXe ?
+                                        dulieu.TenNhomLoaiXe.length > 30 ?
+                                            dulieu.TenNhomLoaiXe.slice(0, 30) + '...' :
+                                            dulieu.TenNhomLoaiXe
+                                        : ''
+                                }
+                            </td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.MoTa ?
+                                        dulieu.MoTa.length > 50 ?
+                                            dulieu.MoTa.slice(0, 50) + '...' :
+                                            dulieu.MoTa
+                                        : ''
+                                }
+                            </td>
                             {/* <td style={{ padding: '0' }}>
                                 <img
                                     height={'35px'}

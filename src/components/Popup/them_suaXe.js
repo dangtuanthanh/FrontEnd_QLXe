@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux'
 import { getCookie } from "../Cookie";
 import Combobox from "../Combobox";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle, faSearchPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faSearchPlus, faSearch, faAngleDown } from '@fortawesome/free-solid-svg-icons'
+import SearchComBoBox from "../SearchCombobox";
 import { urlInsertCar, urlGetCar, urlUpdateCar, urlGetTypeCar, urlGetStatusCar } from "../url"
 import Them_suaLoaiXe from "./them_suaLoaiXe";
 import Them_suaTinhTrangXe from "./them_suaTinhTrangXe";
@@ -11,6 +12,10 @@ import Them_suaDangKiem from "./them_suaDangKiem";
 import Them_suaBaoHiem from "./them_suaBaoHiem";
 import Them_suaPhuHieu from "./them_suaPhuHieu";
 import Them_suaDinhVi from "./them_suaDinhVi";
+import Them_suaBaoDuong from "./them_suaBaoDuong";
+import Them_suaLichSuSuDung from "./them_suaLichSuSuDung";
+import Them_suaHopDong from "./them_suaHopDong";
+
 const Them_suaXe = (props) => {
     const dispatch = useDispatch()
     const [dataReq, setDataReq] = useState({});
@@ -21,11 +26,16 @@ const Them_suaXe = (props) => {
     // popup
     const [themVTTC, setThemVTTC] = useState(false);
     const [themVTTC2, setThemVTTC2] = useState(false);
+    const [popupSearch, setPopupSearch] = useState(false);
+    const [popupSearch2, setPopupSearch2] = useState(false);
     //popup dich vụ
     const [DV1, setDV1] = useState(false);
     const [DV2, setDV2] = useState(false);
     const [DV3, setDV3] = useState(false);
     const [DV4, setDV4] = useState(false);
+    const [DV5, setDV5] = useState(false);
+    const [DV6, setDV6] = useState(false);
+    const [DV7, setDV7] = useState(false);
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
 
     const [iDAction2, setIDAction2] = useState();//giá trị của id khi thực hiện sửa xoá
@@ -187,6 +197,9 @@ const Them_suaXe = (props) => {
             formDataReq.PhuHieu = undefined;
             formDataReq.DangKiem = undefined;
             formDataReq.DinhVi = undefined;
+            formDataReq.BaoDuong = undefined;
+            formDataReq.LichSuSuDung = undefined;
+            formDataReq.HopDong = undefined;
             const formData = new FormData();
             for (const key in formDataReq) {
                 if (dataReq.hasOwnProperty(key)) {
@@ -217,7 +230,7 @@ const Them_suaXe = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, page: 1, sortBy: 'MaLoaiXe', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser, page: 1, sortBy: 'MaXe', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
@@ -271,7 +284,9 @@ const Them_suaXe = (props) => {
     const Dropdown = ({
         title,
         items,
-        onItemClick
+        onItemClick,
+        isLSSD,
+        isHopDong
     }) => {
 
         const [open, setOpen] = useState(false);
@@ -289,11 +304,12 @@ const Them_suaXe = (props) => {
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr >
-                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Lần </th>
 
-                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày</th>
+                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">{isHopDong ? 'Mã HĐ' : 'Lần'} </th>
 
-                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày Hết Hạn</th>
+                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">{isLSSD ? 'Ngày Đi' : 'Ngày'}</th>
+
+                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">{isLSSD ? 'Ngày Về' : 'Ngày Hết Hạn'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -301,7 +317,8 @@ const Them_suaXe = (props) => {
                                 <tr style={{ 'textAlign': 'center' }} id='trdata' key={index} onClick={() => {
                                     onItemClick(dulieu)
                                 }} >
-                                    <td>{dulieu.Lan}</td>
+
+                                    <td>{isHopDong ? dulieu.SoHopDong : dulieu.Lan}</td>
                                     <td>{dulieu.Ngay}</td>
                                     <td>{dulieu.NgayHetHan}</td>
                                 </tr>
@@ -341,15 +358,49 @@ const Them_suaXe = (props) => {
         setIDAction3(dataReq.BienSoXe)
         setDV4(true)
     };
+    const handleDropdownItemClickBaoDuong = item => {
+        setIDAction(props.iDAction)
+        setIDAction2(item.Lan)
+        setIDAction3(dataReq.BienSoXe)
+        setDV5(true)
+    };
+    const handleDropdownItemClickLichSuSuDung = item => {
+        setIDAction(props.iDAction)
+        setIDAction2(item.Lan)
+        setIDAction3(dataReq.BienSoXe)
+        setDV6(true)
+    };
+    const handleDropdownItemClickHopDong = item => {
+        setIDAction(item.Lan)
+        setDV7(true)
+    };
     // xử lý ảnh
     //url xử lý hiển thị hình ảnh
     const [urlAnh, setUrlAnh] = useState();
+    const [urlAnh2, setUrlAnh2] = useState();
+    const [urlAnh3, setUrlAnh3] = useState();
+    const [urlAnh4, setUrlAnh4] = useState();
     useEffect(() => {
         if (dataReq.HinhAnh && dataReq.HinhAnh instanceof File) { // Kiểm tra kiểu dữ liệu
             setUrlAnh(URL.createObjectURL(dataReq.HinhAnh));
         } else setUrlAnh(dataReq.HinhAnh);
     }, [dataReq.HinhAnh]);
-    function ImageUpload() {
+    useEffect(() => {
+        if (dataReq.HinhAnh2 && dataReq.HinhAnh2 instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh2(URL.createObjectURL(dataReq.HinhAnh2));
+        } else setUrlAnh2(dataReq.HinhAnh2);
+    }, [dataReq.HinhAnh2]);
+    useEffect(() => {
+        if (dataReq.HinhAnh3 && dataReq.HinhAnh3 instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh3(URL.createObjectURL(dataReq.HinhAnh3));
+        } else setUrlAnh3(dataReq.HinhAnh3);
+    }, [dataReq.HinhAnh3]);
+    useEffect(() => {
+        if (dataReq.HinhAnh4 && dataReq.HinhAnh4 instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh4(URL.createObjectURL(dataReq.HinhAnh4));
+        } else setUrlAnh4(dataReq.HinhAnh4);
+    }, [dataReq.HinhAnh4]);
+    function ImageUpload({ imageColumn, url }) {
         const fileInputRef = useRef(null);
 
         const handleImageChange = (event) => {
@@ -361,7 +412,7 @@ const Them_suaXe = (props) => {
                     reader.onload = () => {
                         setDataReq({
                             ...dataReq,
-                            HinhAnh: file // Lưu file hình ảnh vào dataReq
+                            [imageColumn]: file // Lưu file hình ảnh vào dataReq
                         });
                     };
                     reader.readAsDataURL(file);
@@ -371,7 +422,7 @@ const Them_suaXe = (props) => {
             } else {
                 setDataReq({
                     ...dataReq,
-                    HinhAnh: undefined
+                    [imageColumn]: undefined
                 });
             }
         };
@@ -391,7 +442,7 @@ const Them_suaXe = (props) => {
                     reader.onload = () => {
                         setDataReq({
                             ...dataReq,
-                            HinhAnh: file // Lưu file hình ảnh vào dataReq
+                            [imageColumn]: file // Lưu file hình ảnh vào dataReq
                         });
                     };
                     reader.readAsDataURL(file);
@@ -407,7 +458,6 @@ const Them_suaXe = (props) => {
 
         return (
             <div className="form-group" style={{ marginBottom: '0px' }}>
-                <label>Hình Ảnh</label>
                 <div
                     style={{ textAlign: 'center', border: '1px dashed #ccc', padding: '20px' }}
                     onClick={handleChooseFileClick}
@@ -422,16 +472,62 @@ const Them_suaXe = (props) => {
                         style={{ display: 'none' }}
                         onChange={handleImageChange}
                     />
-                    {dataReq.HinhAnh && (
+                    {dataReq[imageColumn] && (
                         <img
-                            src={urlAnh} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
+                            src={url} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
                             alt="Selected"
                             style={{ maxHeight: '112px', marginTop: '10px' }}
                         />
                     )}
+
                 </div>
+                {dataReq[imageColumn] && <div style={{ display: 'flex', justifyContent: 'end' }}>
+                    <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: '1.3em' }}
+                    >
+                        <FontAwesomeIcon icon={faSearchPlus} />
+                    </a>
+                </div>}
             </div>
+
         );
+    }
+    const [activeDropdown, setActiveDropdown] = useState(1);
+    const [openDropdown, setOpenDropdown] = useState("Hình Ảnh 1");
+    function DropdownImage({
+        imageColumn,
+        url,
+        title,
+        active,
+        onClick
+    }) {
+
+        return (
+            <div
+                className={`dropdown ${active ? 'active' : ''}`}
+                onClick={onClick}
+            >
+                <button
+                    onClick={(e) => { e.preventDefault(); onClick(); }}
+                    className="btn bg-gradient-link btn-sm mb-2"
+                    style={{ width: '100%' }}
+                >
+                    {title}
+                    <FontAwesomeIcon icon={faAngleDown} style={{ marginLeft: '1em' }} />
+                </button>
+
+                {openDropdown === title && (
+                    <ImageUpload
+                        imageColumn={imageColumn}
+                        url={url}
+                    />
+                )}
+
+            </div>
+        )
     }
     return (
         <div className="lg-popup-box">
@@ -439,14 +535,15 @@ const Them_suaXe = (props) => {
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3"
-                            style={{
-                                maxHeight: '640px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}
                         >
                             <h4 id='tieudepop'>Thông Tin Xe<span style={{ color: 'blue' }}>ㅤ{dataReq.BienSoXe}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}
+                                style={{
+                                    maxHeight: '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}
+                            >
                                 <div className="row">
                                     <div className="col-4">
                                         <div className="form-group">
@@ -503,20 +600,30 @@ const Them_suaXe = (props) => {
                                                     });
                                                 }}
                                             /></div>
-                                        <div style={{ display: 'flex' }}>
-                                            <Combobox
-                                                combos={combosKhuVuc}
-                                                columnValue="MaLoaiXe"
-                                                columnAdd="TenLoaiXe"
-                                                nameCombo="Loại Xe: "
-                                                batBuocNhap={batBuocNhap}
-                                                value={dataReq.MaLoaiXe}
-                                                onChange={handleKhuVucChange}
-                                            />
-                                            <div style={{ display: 'flex', alignItems: 'center' }}
-                                                onClick={() => setThemVTTC(true)}
-                                            >
-                                                <FontAwesomeIcon icon={faPlusCircle} />
+                                        <div className="row" style={{ display: 'flex' }}>
+                                            <div className="col-10" style={{ display: 'flex' }}>
+                                                <Combobox
+                                                    combos={combosKhuVuc}
+                                                    columnValue="MaLoaiXe"
+                                                    columnAdd="TenLoaiXe"
+                                                    nameCombo="Loại Xe: "
+                                                    batBuocNhap={batBuocNhap}
+                                                    value={dataReq.MaLoaiXe}
+                                                    onChange={handleKhuVucChange}
+                                                    maxWord={21}
+                                                />
+                                            </div>
+                                            <div className="col-2" style={{ display: 'flex', padding: '0px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}
+                                                    onClick={() => setThemVTTC(true)}
+                                                >
+                                                    <FontAwesomeIcon icon={faPlusCircle} />
+                                                </div>
+                                                <div style={{ marginLeft: '0.5rem', display: 'flex', alignItems: 'center' }}
+                                                    onClick={() => setPopupSearch(true)}
+                                                >
+                                                    <FontAwesomeIcon icon={faSearch} />
+                                                </div>
                                             </div>
                                         </div>
 
@@ -577,69 +684,137 @@ const Them_suaXe = (props) => {
                                                 }}
                                             />
                                         </div>
-                                        <div style={{ display: 'flex' }}>
-                                            <Combobox
-                                                combos={combosTinhTrang}
-                                                columnValue="MaTinhTrangXe"
-                                                columnAdd="MoTa"
-                                                nameCombo="Tình Trạng: "
-                                                batBuocNhap={batBuocNhap}
-                                                value={dataReq.MaTinhTrangXe}
-                                                onChange={handleTinhTrangChange}
-                                            />
-                                            <div style={{ display: 'flex', alignItems: 'center' }}
-                                                onClick={() => setThemVTTC2(true)}
-                                            >
-                                                <FontAwesomeIcon icon={faPlusCircle} />
+                                        <div className="row" >
+                                            <div className="col-10">
+                                                <Combobox
+                                                    combos={combosTinhTrang}
+                                                    columnValue="MaTinhTrangXe"
+                                                    columnAdd="MoTa"
+                                                    nameCombo="Tình Trạng: "
+                                                    batBuocNhap={batBuocNhap}
+                                                    value={dataReq.MaTinhTrangXe}
+                                                    onChange={handleTinhTrangChange}
+                                                    maxWord={18}
+                                                />
                                             </div>
+                                            <div className="col-2" style={{ display: 'flex', padding: '0px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}
+                                                    onClick={() => setThemVTTC2(true)}
+                                                >
+                                                    <FontAwesomeIcon icon={faPlusCircle} />
+                                                </div>
+                                                <div style={{ marginLeft: '0.5rem', display: 'flex', alignItems: 'center' }}
+                                                    onClick={() => setPopupSearch2(true)}
+                                                >
+                                                    <FontAwesomeIcon icon={faSearch} />
+                                                </div>
+                                            </div>
+
                                         </div>
 
 
                                     </div>
                                     <div className="col-4">
-                                        <ImageUpload />
-                                        {dataReq.HinhAnh && <div style={{ display: 'flex', justifyContent: 'end' }}>
-                                            <a
-                                                href={urlAnh}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style={{ fontSize: '1.3em' }}
-                                            >
-                                                <FontAwesomeIcon icon={faSearchPlus} />
-                                            </a>
-                                        </div>}
-                                        {!props.isInsert && <div>
-                                            <Dropdown
-                                                title="Xem Đăng kiểm"
-                                                items={dataReq.DangKiem}
-                                                onItemClick={handleDropdownItemClickDangKiem} />
-                                            <Dropdown
-                                                title="Xem Phù Hiệu"
-                                                items={dataReq.PhuHieu}
-                                                onItemClick={handleDropdownItemClickPhuHieu} />
-                                            <Dropdown
-                                                title="Xem Bảo Hiểm"
-                                                items={dataReq.BaoHiem}
-                                                onItemClick={handleDropdownItemClickBaoHiem} />
-                                            <Dropdown
-                                                title="Xem Định Vị"
-                                                items={dataReq.DinhVi}
-                                                onItemClick={handleDropdownItemClickDinhVi} />
-                                        </div>
-                                        }
+                                        <DropdownImage
+                                            imageColumn="HinhAnh"
+                                            url={urlAnh}
+                                            title="Hình Ảnh 1"
+                                            active={activeDropdown === 1}
+                                            onClick={() => {
+                                                setOpenDropdown("Hình Ảnh 1");
+                                                setActiveDropdown(1);
+                                            }}
+                                        />
+
+                                        <DropdownImage
+                                            imageColumn="HinhAnh2"
+                                            url={urlAnh2}
+                                            title="Hình Ảnh 2"
+                                            active={activeDropdown === 2}
+                                            onClick={() => {
+                                                setOpenDropdown("Hình Ảnh 2");
+                                                setActiveDropdown(2);
+                                            }}
+                                        />
+                                        <DropdownImage
+                                            imageColumn="HinhAnh3"
+                                            url={urlAnh3}
+                                            title="Hình Ảnh 3"
+                                            active={activeDropdown === 3}
+                                            onClick={() => {
+                                                setOpenDropdown("Hình Ảnh 3");
+                                                setActiveDropdown(3);
+                                            }}
+                                        />
+                                        <DropdownImage
+                                            imageColumn="HinhAnh4"
+                                            url={urlAnh4}
+                                            title="Hình Ảnh 4"
+                                            active={activeDropdown === 4}
+                                            onClick={() => {
+                                                setOpenDropdown("Hình Ảnh 4");
+                                                setActiveDropdown(4);
+                                            }}
+                                        />
+
                                     </div>
                                 </div>
                                 <hr class="horizontal dark" />
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                                {!props.isInsert && <div className="row">
+                                    <div className="col-4">
+                                        <Dropdown
+                                            title="Xem Đăng kiểm"
+                                            items={dataReq.DangKiem}
+                                            onItemClick={handleDropdownItemClickDangKiem} />
+                                        <Dropdown
+                                            title="Xem Bảo Hiểm"
+                                            items={dataReq.BaoHiem}
+                                            onItemClick={handleDropdownItemClickBaoHiem} />
+                                        <Dropdown
+                                            title="Xem Hợp Đồng"
+                                            items={dataReq.HopDong}
+                                            onItemClick={handleDropdownItemClickHopDong}
+                                            isHopDong={true} />
+                                    </div>
+                                    <div className="col-4">
+                                        <Dropdown
+                                            title="Xem Phù Hiệu"
+                                            items={dataReq.PhuHieu}
+                                            onItemClick={handleDropdownItemClickPhuHieu} />
+
+                                        <Dropdown
+                                            title="Xem Định Vị"
+                                            items={dataReq.DinhVi}
+                                            onItemClick={handleDropdownItemClickDinhVi} />
+                                    </div>
+                                    <div className="col-4">
+                                        <Dropdown
+                                            title="Xem Bảo Dưỡng"
+                                            items={dataReq.BaoDuong}
+                                            onItemClick={handleDropdownItemClickBaoDuong} />
+
+                                        <Dropdown
+                                            title="Xem Lịch Sử Sử Dụng"
+                                            items={dataReq.LichSuSuDung}
+                                            onItemClick={handleDropdownItemClickLichSuSuDung}
+                                            isLSSD={true}
+                                        />
+                                    </div>
+
+
+                                </div>
+                                }
+                            </form>
+                            <div>
+                                <button style={{ marginBottom: '0px' }} onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
+                                    style={{ float: "right", marginBottom: '0px' }} type="button"
                                     className="btn bg-gradient-info mt-3"
                                 >
                                     Xác Nhận
                                 </button>
-                            </form>
-
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -724,6 +899,71 @@ const Them_suaXe = (props) => {
                             iDAction={iDAction}
                             iDAction2={iDAction2}
                             iDAction3={iDAction3}
+                        />
+                    </div>
+                }
+                {
+                    DV5 && <div className="popup">
+                        <Them_suaBaoDuong
+                            isInsert={false}
+                            setPopupInsertUpdate={setDV5}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={props.addNotification}
+                            openPopupAlert={props.openPopupAlert}
+                            iDAction={iDAction}
+                            iDAction2={iDAction2}
+                            iDAction3={iDAction3}
+                        />
+                    </div>
+                }
+                {
+                    DV6 && <div className="popup">
+                        <Them_suaLichSuSuDung
+                            isInsert={false}
+                            setPopupInsertUpdate={setDV6}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={props.addNotification}
+                            openPopupAlert={props.openPopupAlert}
+                            iDAction={iDAction}
+                            iDAction2={iDAction2}
+                            iDAction3={iDAction3}
+                        />
+                    </div>
+                }
+                {
+                    DV7 && <div className="popup">
+                        <Them_suaHopDong
+                            isInsert={false}
+                            setPopupInsertUpdate={setDV7}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={props.addNotification}
+                            openPopupAlert={props.openPopupAlert}
+                            iDAction={iDAction}
+                        />
+                    </div>
+                }
+                {
+                    popupSearch && <div className="popup">
+                        <SearchComBoBox
+                            setPopupSearch={setPopupSearch}
+                            combos={combosKhuVuc}
+                            IDColumn={'MaLoaiXe'}
+                            column={'TenLoaiXe'}
+                            handleChange={handleKhuVucChange}
+                        />
+                    </div>
+                }
+                {
+                    popupSearch2 && <div className="popup">
+                        <SearchComBoBox
+                            setPopupSearch={setPopupSearch2}
+                            combos={combosTinhTrang}
+                            IDColumn={'MaTinhTrangXe'}
+                            column={'MoTa'}
+                            handleChange={handleTinhTrangChange}
                         />
                     </div>
                 }

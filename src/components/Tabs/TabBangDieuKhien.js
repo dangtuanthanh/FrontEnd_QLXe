@@ -210,7 +210,7 @@ function TabBangDieuKhien() {
     }, []);
     return (
         <div>
-            <div class="card mb-4" >
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >
                 <div class="card-header pb-0" >
                     <h2>Bảng Điều Khiển</h2>
                     <NotificationContainer notifications={notifications} />

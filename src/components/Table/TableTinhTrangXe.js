@@ -120,7 +120,15 @@ const TableTinhTrangXe = (props) => {
 
                             </td>
                             <td >{dulieu.MaTinhTrangXe}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.MoTa}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.MoTa ?
+                                        dulieu.MoTa.length > 80 ?
+                                            dulieu.MoTa.slice(0, 80) + '...' :
+                                            dulieu.MoTa
+                                        : ''
+                                }
+                            </td>
                             {/* <td style={{ padding: '0' }}>
                                 <img
                                     height={'35px'}

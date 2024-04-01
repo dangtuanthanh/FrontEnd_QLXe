@@ -136,8 +136,24 @@ const TableXe = (props) => {
                             <td style={{ textAlign: 'left' }} >{dulieu.NhanHieu}</td>
                             <td >{dulieu.NgayMua}</td>
                             <td style={{ textAlign: 'left' }} >{dulieu.Mau}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.LinhKien}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.MoTaTinhTrangXe}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.LinhKien ?
+                                        dulieu.LinhKien.length > 35 ?
+                                            dulieu.LinhKien.slice(0, 35) + '...' :
+                                            dulieu.LinhKien
+                                        : ''
+                                }
+                            </td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.MoTaTinhTrangXe ?
+                                        dulieu.MoTaTinhTrangXe.length > 20 ?
+                                            dulieu.MoTaTinhTrangXe.slice(0, 20) + '...' :
+                                            dulieu.MoTaTinhTrangXe
+                                        : ''
+                                }
+                            </td>
                             {/* <td style={{ padding: '0' }}>
                                 <img
                                     height={'35px'}

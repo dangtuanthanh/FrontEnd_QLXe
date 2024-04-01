@@ -118,11 +118,11 @@ function TabThanhVien() {
         setPopupNhap(false);
     };
 
-      //undo delete
+    //undo delete
     const [buttonUndo, setButtonUndo] = useState(false);//trạng thái hiển thị nút undo
-      const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
+    const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
     const handleUndo = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlUndoDeleteMember}`, {
             method: 'POST',
             headers: {
@@ -147,13 +147,13 @@ function TabThanhVien() {
             .then(data => {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 setButtonUndo(false)
                 setUndoDelete([])
                 TaiDuLieu()
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -198,14 +198,14 @@ function TabThanhVien() {
 
     };
 
-   
+
 
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlGetMember}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
@@ -243,10 +243,10 @@ function TabThanhVien() {
                     });
                 }
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -257,7 +257,7 @@ function TabThanhVien() {
     };
     //Xoá dữ liệu
     const deleteData = (ID) => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         let IDs = [ID]
         if (Array.isArray(ID)) {
             console.log('là mảng');
@@ -286,7 +286,7 @@ function TabThanhVien() {
             .then(data => {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 setButtonUndo(true)
                 setSelectedIds([])
                 setUndoDelete(IDs)
@@ -294,7 +294,7 @@ function TabThanhVien() {
 
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -303,14 +303,14 @@ function TabThanhVien() {
 
             });
     }
-   
+
     // sửa hàng loạt
     const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
 
 
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh' }}>
                 <div class="card-header pb-0">
                     <h2> Quản Lý Thành Viên</h2>
                     <NotificationContainer notifications={notifications} />
@@ -464,17 +464,33 @@ function TabThanhVien() {
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
                         />
-                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                        <div style={{height:'7vh'}}></div>
+                        <div style={{
+                            display: 'flex', width: '100%', position: 'absolute',
+                            right: 0,
+                            bottom: 0, margin: '1rem'
+                        }} >
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{fontFamily:'"Comic Sans MS", cursive, sans-serif',fontStyle: 'italic', color:'#cfcfcf'
+                            }}>Thiết kế và phát triển bởi: ...</label></div>
+
+                            <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
+                                <div style={{ marginRight: '2rem' }}>
+                                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                                </div>
+                                {/* phân trang */}
+                                <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
+
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
+
             {
                 popup1 && <div className="popup">
                     <Them_suaThanhVien
@@ -520,7 +536,7 @@ function TabThanhVien() {
                 />
                 </div>
             } */}
-           
+
         </div>
     )
 

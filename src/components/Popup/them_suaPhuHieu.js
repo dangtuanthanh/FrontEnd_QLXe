@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle,faSearchPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faSearchPlus, faSearch, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { getCookie } from "../Cookie";
 import Them_suaXe from "./them_suaXe";
 import Combobox from "../Combobox";
+import SearchComBoBox from "../SearchCombobox";
 import { urlGetCar, urlGetEmblem, urlInsertEmblem, urlUpdateEmblem } from "../url"
 
 const Them_suaPhuHieu = (props) => {
@@ -16,10 +17,14 @@ const Them_suaPhuHieu = (props) => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
     const [dataUser, setdataUser] = useState({});//
+    const [popupSearch, setPopupSearch] = useState(false);
+
     // combobox
     const [combosVaiTro, setCombosVaiTro] = useState([]);//danh sách vai trò
     //hiển thị popup thêm vị trí công việc và vai trò truy cập
     const [themVTTC, setThemVTTC] = useState(false);
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
+    const [isInsert, setIsInsert] = useState(false);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -201,7 +206,7 @@ const Them_suaPhuHieu = (props) => {
         };
 
         return (
-            <div className="form-group" style={{marginBottom:'0px'}}>
+            <div className="form-group" style={{ marginBottom: '0px' }}>
                 <label>Hình Ảnh</label>
                 <div
                     style={{ textAlign: 'center', border: '1px dashed #ccc', padding: '20px' }}
@@ -224,7 +229,7 @@ const Them_suaPhuHieu = (props) => {
                             style={{ maxHeight: '112px', marginTop: '10px' }}
                         />
                     )}
-                    
+
                 </div>
             </div>
         );
@@ -328,23 +333,43 @@ const Them_suaPhuHieu = (props) => {
                             <form onSubmit={handleSubmit}>
                                 <div className="row" style={{ marginTop: '2%' }}>
                                     <div className='col-6'>
-                                        <div style={{ display: 'flex', pointerEvents: !props.isInsert && 'none', opacity: !props.isInsert && '0.5' }}>
-                                            <Combobox
-                                                combos={combosVaiTro}
-                                                columnValue="MaXe"
-                                                columnAdd="BienSoXe"
-                                                nameCombo="Xe: "
-                                                batBuocNhap={batBuocNhap}
-                                                value={dataReq.MaXe}
-                                                onChange={handleKhuVucChange}
-                                            />
-                                            <div style={{ display: 'flex', alignItems: 'center' }}
-                                                onClick={() => setThemVTTC(true)}
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', pointerEvents: !props.isInsert && 'none', opacity: !props.isInsert && '0.5' }}>
+                                                <Combobox
+                                                    combos={combosVaiTro}
+                                                    columnValue="MaXe"
+                                                    columnAdd="BienSoXe"
+                                                    nameCombo="Xe: "
+                                                    batBuocNhap={batBuocNhap}
+                                                    value={dataReq.MaXe}
+                                                    onChange={handleKhuVucChange}
+                                                    maxWord={19}
+                                                />
+                                                <div style={{ display: 'flex', alignItems: 'center' }}
+                                                    onClick={() => {
+                                                        setIsInsert(true)
+                                                        setIDAction()
+                                                        setThemVTTC(true)
+                                                    }}
+                                                >
+                                                    <FontAwesomeIcon icon={faPlusCircle} />
+                                                </div>
+                                                <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
+                                                    onClick={() => setPopupSearch(true)}
+                                                >
+                                                    <FontAwesomeIcon icon={faSearch} />
+                                                </div>
+                                            </div>
+                                            <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
+                                                onClick={() => {
+                                                    setIsInsert(false)
+                                                    setIDAction(dataReq.MaXe)
+                                                    setThemVTTC(true)
+                                                }}
                                             >
-                                                <FontAwesomeIcon icon={faPlusCircle} />
+                                                <FontAwesomeIcon icon={faInfoCircle} />
                                             </div>
                                         </div>
-
                                         <div className="form-group">
                                             <label>Ngày Cấp Phù Hiệu</label>
                                             <input
@@ -439,17 +464,17 @@ const Them_suaPhuHieu = (props) => {
                                             </div>
                                         }
                                         <ImageUpload />
-                                        { dataReq.HinhAnh &&<div style={{display:'flex', justifyContent:'end'}}>
-                                        <a
-                                            href={urlAnh}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{fontSize:'1.3em'}}
-                                        >
-                                             <FontAwesomeIcon icon={faSearchPlus} />
-                                        </a>
+                                        {dataReq.HinhAnh && <div style={{ display: 'flex', justifyContent: 'end' }}>
+                                            <a
+                                                href={urlAnh}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ fontSize: '1.3em' }}
+                                            >
+                                                <FontAwesomeIcon icon={faSearchPlus} />
+                                            </a>
                                         </div>}
-                                        
+
                                         <div className="form-group">
                                             <label>Tình Trạng Áp Dụng{batBuocNhap} ㅤ</label>
                                             <label>
@@ -496,12 +521,24 @@ const Them_suaPhuHieu = (props) => {
                             {
                                 themVTTC && <div className="popup">
                                     <Them_suaXe
-                                        isInsert={true}
+                                         iDAction={iDAction}
+                                         isInsert={isInsert}
                                         setPopupInsertUpdate={setThemVTTC}
                                         dataUser={dataUser}
                                         setdataUser={setdataUser}
                                         addNotification={props.addNotification}
                                         openPopupAlert={props.openPopupAlert}
+                                    />
+                                </div>
+                            }
+                            {
+                                popupSearch && <div className="popup">
+                                    <SearchComBoBox
+                                        setPopupSearch={setPopupSearch}
+                                        combos={combosVaiTro}
+                                        IDColumn={'MaXe'}
+                                        column={'BienSoXe'}
+                                        handleChange={handleKhuVucChange}
                                     />
                                 </div>
                             }

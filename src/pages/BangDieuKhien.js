@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faCog, faBell, faTimes, faBars, faSignOut,faGaugeHigh } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 
@@ -65,7 +65,25 @@ function BangDieuKhien() {
     }
 
     //Xử lý menu
-    const [showNavigation, setShowNavigation] = useState(true);
+    const [isMobile, setIsMobile] = useState(() => {
+        return window.innerWidth < 1250;
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1250);
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
+
+    const [showNavigation, setShowNavigation] = useState(() => {
+        return isMobile ? false : true;
+    });
     const handleToggleNavigation = () => {
         setShowNavigation(!showNavigation);
     };
@@ -98,7 +116,10 @@ function BangDieuKhien() {
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
                 </div>
-                <div className={contentColumnClass}>
+                <div className={contentColumnClass} style={{
+                    opacity: isMobile && showNavigation ? 0.3 : 1,
+                    pointerEvents: isMobile && showNavigation ? 'none' : 'auto'
+                }}>
                     <div style={{ marginLeft: '2%', marginRight: '1%' }}>
                         <div style={{ marginLeft: '0px' }} className="row">
                             <ul class="nav nav-tabs col-6">
@@ -110,7 +131,13 @@ function BangDieuKhien() {
                                 <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabBangDieuKhien' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab1)}>Bảng Điều Khiển</button>
+                                        style={{ color: 'blue' }}
+                                        onClick={() => handleTabClick(tabs.tab1)}>{isMobile ? (
+                                            <FontAwesomeIcon icon={faGaugeHigh} />
+                                        ) : (
+                                            'Bảng Điều Khiển'
+                                        )}
+                                    </button>
                                 </li>
                                 {/* <li class="nav-item">
                                     <button
@@ -124,18 +151,12 @@ function BangDieuKhien() {
                                         navigate(`/TrangCaNhan`);
                                     }}>
                                         <div onClick={() => {
-                                        navigate(`/TrangCaNhan`);
-                                    }}>
-                                        <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
-                                    </div>
+                                            navigate(`/TrangCaNhan`);
+                                        }}>
+                                            <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                        </div>
                                     </div>
 
-                                </span>
-                                <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                    <FontAwesomeIcon icon={faCog} />
-                                </span>
-                                <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                    <FontAwesomeIcon icon={faBell} />
                                 </span>
                                 <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn btn-primary btn-sm mb-0">
                                     Đăng Xuất <FontAwesomeIcon icon={faSignOut} />
@@ -145,6 +166,26 @@ function BangDieuKhien() {
                         <TabComponent />
                     </div>
                 </div>
+                <button
+                    id="ButtonMenu"
+                    className="btn bg-gradient-info"
+                    style={{
+                        position: 'fixed',
+                        top: '3rem',
+                        right: '1.5rem',
+                        padding: '8px 16px',
+                        width: '3rem'
+                    }}
+                    onClick={() => {
+                        setShowNavigation(!showNavigation)
+                    }}
+                >
+                    {showNavigation ? (
+                        <FontAwesomeIcon icon={faTimes} />
+                    ) : (
+                        <FontAwesomeIcon icon={faBars} />
+                    )}
+                </button>
             </div>
         </CheckLogin>
     );

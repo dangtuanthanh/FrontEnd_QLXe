@@ -4,24 +4,24 @@ import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-s
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetShifts, urlDeleteShifts } from "../url";
+import { urlGetMaintenanceItem, urlDeleteMaintenanceItem } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableCaLamViec from "../Table/TableCaLamViec";
-import Insert_updateCaLamViec from "../Popup/Insert_updateCaLamViec";
-function TabKhuVuc() {
+import TableHangMucBaoDuong from "../Table/TableHangMucBaoDuong";
+import Them_suaHangMucBaoDuong from "../Popup/them_suaHangMucBaoDuong";
+function TabHangMucBaoDuong() {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'IDCaLamViec',
+        sortBy: 'MaHangMucBaoDuong',
         sortOrder: 'asc',
-        searchBy: 'IDCaLamViec',
+        searchBy: 'TenHangMuc',
         search: '',
         searchExact: 'false'
     });//
-    const [dataRes, setDataRes] = useState({});
+    const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
 
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
@@ -33,7 +33,6 @@ function TabKhuVuc() {
                 <div className="popup-box">
                     <div className="box" style={{ textAlign: 'center' }}>
                         <h5>Thông Báo</h5>
-
                         <p>{props.message}</p>
                         {props.onAction ? <div>
                             <button style={{ float: 'left' }} className="btn btn-danger" onClick={props.onClose}>Thoát</button>
@@ -104,7 +103,7 @@ function TabKhuVuc() {
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDCaLamViec',
+            sortBy: 'MaHangMucBaoDuong',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -116,7 +115,7 @@ function TabKhuVuc() {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDCaLamViec',
+            sortBy: 'MaHangMucBaoDuong',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -127,7 +126,7 @@ function TabKhuVuc() {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDCaLamViec',
+            sortBy: 'MaHangMucBaoDuong',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -142,8 +141,9 @@ function TabKhuVuc() {
         let IDs = [ID]
         if (Array.isArray(ID)) {
             IDs = ID.map(item => Number(item));
+            console.log('mảng số đã được chuyển', IDs);
         } else IDs = [ID];
-        fetch(`${urlDeleteShifts}`, {
+        fetch(`${urlDeleteMaintenanceItem}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ function TabKhuVuc() {
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetShifts}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetMaintenanceItem}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -241,9 +241,9 @@ function TabKhuVuc() {
     };
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Ca Làm Việc</h2>
+                    <h2> Quản Lý Hạng Mục Bảo Dưỡng</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
@@ -254,7 +254,7 @@ function TabKhuVuc() {
                                     <button
                                         style={{ 'display': "inline-block" }}
                                         onClick={() => { TaiDuLieu(); }}
-                                        className="btn btn-primary">
+                                        className="btn bg-gradient-info">
                                         <FontAwesomeIcon icon={faRotate} />
                                         ㅤLàm Mới
                                     </button>ㅤ
@@ -266,7 +266,7 @@ function TabKhuVuc() {
                                             setIDAction()
                                         }}
 
-                                        className="btn btn-primary">
+                                        className="btn bg-gradient-info">
                                         <FontAwesomeIcon icon={faAdd} />
                                         ㅤThêm
                                     </button>ㅤ
@@ -280,6 +280,13 @@ function TabKhuVuc() {
                                         <FontAwesomeIcon icon={faArrowLeft} />
                                         ㅤQuay Lại
                                     </button>ㅤ
+                                    {/* <button
+                                                        style={{ display: "inline-block" }}
+                                                        //onClick={() => {togglePopup6();}}
+                                                        className="btn bg-gradient-info">
+                                                        <FontAwesomeIcon icon={faPencil} />
+                                                        ㅤSửa ô đã chọn
+                                                    </button>ㅤ */}
                                     <button
                                         style={{ display: "inline-block" }}
                                         onClick={() => {
@@ -288,7 +295,7 @@ function TabKhuVuc() {
                                                 () => { deleteData(selectedIds) }
                                             )
                                         }}
-                                        className="btn btn-primary">
+                                        className="btn bg-gradient-info">
                                         <FontAwesomeIcon icon={faTrash} />
                                         ㅤXoá ô đã chọn
                                     </button>ㅤ
@@ -322,10 +329,8 @@ function TabKhuVuc() {
                             }
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="IDCaLamViec">Tìm theo ID Ca Làm Việc</option>
-                                <option value="TenCaLamViec">Tìm theo Tên Ca Làm Việc</option>
-                                <option value="GioBatDau">Tìm theo Giờ Bắt Đầu </option>
-                                <option value="GioKetThuc">Tìm theo Giờ Kết Thúc</option>
+                                <option value="MaHangMucBaoDuong">Tìm theo Mã Hạng Mục Bảo Dưỡng</option>
+                                <option value="TenHangMuc">Tìm theo Tên Hạng Mục Bảo Dưỡng</option>
                             </select>
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -338,7 +343,7 @@ function TabKhuVuc() {
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableCaLamViec
+                        <TableHangMucBaoDuong
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
@@ -351,30 +356,37 @@ function TabKhuVuc() {
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
                         />
-                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "GioBatDau" || dataRes.sortBy === "GioKetThuc" ?
-                            (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray' , marginRight:'3px'}}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray' , marginRight:'3px'}}>mới nhất đến cũ nhất </label>)
-                            : (
-                                dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray' , marginRight:'3px'}}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray' , marginRight:'3px'}}>giảm dần</label>)}
-                             theo cột {dataRes.sortBy}   </label>
+                       <div style={{height:'7vh'}}></div>
+                        <div style={{
+                            display: 'flex', width: '100%', position: 'absolute',
+                            right: 0,
+                            bottom: 0, margin: '1rem'
+                        }} >
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{fontFamily:'"Comic Sans MS", cursive, sans-serif',fontStyle: 'italic', color:'#cfcfcf'
+                            }}>Thiết kế và phát triển bởi: ...</label></div>
+
+                            <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
+                                <div style={{ marginRight: '2rem' }}>
+                                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                                </div>
+                                {/* phân trang */}
+                                <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
             {
                 popupInsertUpdate && <div className="popup">
-                    <Insert_updateCaLamViec
+                    <Them_suaHangMucBaoDuong
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
+                        tieuDe='Thông Tin Hạng Mục Bảo Dưỡng'
                         dataUser={dataUser}
                         setdataUser={setdataUser}
                         addNotification={addNotification}
@@ -395,4 +407,4 @@ function TabKhuVuc() {
 
 }
 
-export default TabKhuVuc
+export default TabHangMucBaoDuong

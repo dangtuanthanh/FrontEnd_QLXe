@@ -179,14 +179,14 @@ function TabDangKiem() {
 
             });
     }
-    // const filterDangHoatDong = () => {
-    //     setdataUser({
-    //         ...dataUser,
-    //         page: 1,
-    //         search: 'Xe đang hoạt động',
-    //         searchBy: 'MoTaTinhTrangXe'
-    //     });
-    // };
+    const filterLanMoiNhat = () => {
+        setdataUser({
+            ...dataUser,
+            page: 1,
+            search: ' ',
+            searchBy: 'LanMoiNhat'
+        });
+    };
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
@@ -245,7 +245,7 @@ function TabDangKiem() {
     };
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
                     <h2> Quản Lý Đăng Kiểm</h2>
                     <NotificationContainer notifications={notifications} />
@@ -273,13 +273,13 @@ function TabDangKiem() {
                                 <FontAwesomeIcon icon={faAdd} />
                                 ㅤThêm
                             </button>ㅤ
-                            {/* <button
-                                            style={{ 'display': "inline-block" }}
-                                            onClick={filterDangHoatDong}
-                                            className="btn btn-light">
-                                            <FontAwesomeIcon icon={faFilter} />
-                                            ㅤ Đang Hoạt Động
-                                        </button>ㅤ */}
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={filterLanMoiNhat}
+                                className="btn btn-light">
+                                <FontAwesomeIcon icon={faFilter} />
+                                ㅤ Lần Mới Nhất
+                            </button>ㅤ
                         </div>
 
 
@@ -299,6 +299,13 @@ function TabDangKiem() {
                                     className="btn btn-close"
                                     style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
                                     onClick={() => {
+                                        if(dataUser.searchBy ==='LanMoiNhat')
+                                        setdataUser({
+                                            ...dataUser,
+                                            search: '',
+                                            searchBy:'BienSoXe'
+                                        });
+                                        else 
                                         setdataUser({
                                             ...dataUser,
                                             search: ''
@@ -343,25 +350,41 @@ function TabDangKiem() {
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                         />
-                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDangKiem" || dataRes.sortBy === "NgayHetHan" ?
-                            (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
-                            : (
-                                dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
-                            theo cột {dataRes.sortBy}   </label>
+<div style={{ height: '7vh' }}></div>
+                        <div style={{
+                            display: 'flex', width: '100%', position: 'absolute',
+                            right: 0,
+                            bottom: 0, margin: '1rem'
+                        }} >
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{
+                                fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
+                            }}>Thiết kế và phát triển bởi: ...</label></div>
+
+                            <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
+                                <div style={{ marginRight: '2rem' }}>
+                                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDangKiem" || dataRes.sortBy === "NgayHetHan" ?
+                                        (dataRes.sortOrder === 'asc'
+                                            ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                            : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
+                                        : (
+                                            dataRes.sortOrder === 'asc'
+                                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
+                                        theo cột {dataRes.sortBy}   </label>
+                                </div>
+                                {/* phân trang */}
+                                <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
+           
             {
                 popupInsertUpdate && <div className="popup">
                     <Them_suaDangKiem
