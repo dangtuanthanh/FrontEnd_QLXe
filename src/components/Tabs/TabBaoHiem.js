@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRotate, faAdd,faFilter } from '@fortawesome/free-solid-svg-icons'
+import { faRotate, faAdd, faFilter, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
@@ -9,7 +9,7 @@ import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableBaoHiem from "../Table/TableBaoHiem";
 import Them_suaBaoHiem from "../Popup/them_suaBaoHiem";
-function TabBaoHiem() {
+function TabBaoHiem(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
@@ -22,7 +22,11 @@ function TabBaoHiem() {
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
-
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -254,100 +258,100 @@ function TabBaoHiem() {
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Mua Bảo Hiểm</h2>
+                    <h2> Quản Lý Mua Bảo Hiểm{props.isMobile && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
+                    {showButtonFunction &&
+                        <div>
+                            <div style={{ 'display': "inline-block", float: 'left' }}>
+                                <button
+                                    style={{ 'display': "inline-block" }}
+                                    onClick={() => { TaiDuLieu(); }}
+                                    className="btn bg-gradient-info">
+                                    <FontAwesomeIcon icon={faRotate} />
+                                    ㅤLàm Mới
+                                </button>ㅤ
+                                <button
+                                    style={{ 'display': "inline-block" }}
+                                    onClick={() => {
+                                        setIsInsert(true)
+                                        setPopupInsertUpdate(true)
+                                        setIDAction()
+                                        setIDAction2()
+                                    }}
 
-                    <div>
-                        <div style={{ 'display': "inline-block", float: 'left' }}>
-                            <button
-                                style={{ 'display': "inline-block" }}
-                                onClick={() => { TaiDuLieu(); }}
-                                className="btn bg-gradient-info">
-                                <FontAwesomeIcon icon={faRotate} />
-                                ㅤLàm Mới
-                            </button>ㅤ
-                            <button
-                                style={{ 'display': "inline-block" }}
-                                onClick={() => {
-                                    setIsInsert(true)
-                                    setPopupInsertUpdate(true)
-                                    setIDAction()
-                                    setIDAction2()
-                                }}
-
-                                className="btn bg-gradient-info">
-                                <FontAwesomeIcon icon={faAdd} />
-                                ㅤThêm
-                            </button>ㅤ
-                            <button
-                                style={{ 'display': "inline-block" }}
-                                onClick={filterLanMoiNhat}
-                                className="btn btn-light">
-                                <FontAwesomeIcon icon={faFilter} />
-                                ㅤ Lần Mới Nhất
-                            </button>ㅤ
-                            {/* <button
+                                    className="btn bg-gradient-info">
+                                    <FontAwesomeIcon icon={faAdd} />
+                                    ㅤThêm
+                                </button>ㅤ
+                                <button
+                                    style={{ 'display': "inline-block" }}
+                                    onClick={filterLanMoiNhat}
+                                    className="btn btn-light">
+                                    <FontAwesomeIcon icon={faFilter} />
+                                    ㅤ Lần Mới Nhất
+                                </button>ㅤ
+                                {/* <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterDangHoatDong}
                                             className="btn btn-light">
                                             <FontAwesomeIcon icon={faFilter} />
                                             ㅤ Đang Hoạt Động
                                         </button>ㅤ */}
-                        </div>
+                            </div>
 
 
-                        <div style={{ 'display': "inline-block", float: 'right' }}>
-                            {/* số hàng trên trang */}
-                            <ItemsPerPage
-                                dataRes={dataRes}
-                                openPopupAlert={openPopupAlert}
-                                dataUser={dataUser}
-                                setdataUser={setdataUser}
-                            />
-                            ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
-                            {
-                                dataUser.search !== '' &&
-                                <button
-                                    className="btn btn-close"
-                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
-                                    onClick={() => {
-                                        if(dataUser.searchBy ==='LanMoiNhat')
-                                        setdataUser({
-                                            ...dataUser,
-                                            search: '',
-                                            searchBy:'BienSoXe'
-                                        });
-                                        else 
-                                        setdataUser({
-                                            ...dataUser,
-                                            search: ''
-                                        });
-                                    }}
-                                >
-                                    X
-                                </button>
-                            }
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="BienSoXe">Tìm theo Biển Số Xe</option>
-                                <option value="LanMuaBaoHiem">Tìm theo Lần Mua Bảo Hiểm</option>
-                                <option value="NgayMuaBaoHiem">Tìm theo Ngày Mua Bảo Hiểm</option>
-                                <option value="NgayHetHan">Tìm theo Ngày Hết Hạn</option>
-                                <option value="ThoiGian">Tìm theo Thời Gian Hiệu Lực</option>
-                                <option value="LoaiBaoHiem">Tìm theo Loại Bảo Hiểm</option>
-                                <option value="NguoiMuaBaoHiem">Tìm theo Người Mua Bảo Hiểm</option>
-                                <option value="TinhTrangApDung">Tìm theo Trạng Thái</option>
-                            </select>
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                <option value='false'>Chế độ tìm: Gần đúng</option>
-                                <option value="true">Chế độ tìm: Chính xác</option>
-                            </select>
+                            <div style={{ 'display': "inline-block", float: 'right' }}>
+                                {/* số hàng trên trang */}
+                                <ItemsPerPage
+                                    dataRes={dataRes}
+                                    openPopupAlert={openPopupAlert}
+                                    dataUser={dataUser}
+                                    setdataUser={setdataUser}
+                                />
+                                ㅤ
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                                {
+                                    dataUser.search !== '' &&
+                                    <button
+                                        className="btn btn-close"
+                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        onClick={() => {
+                                            if (dataUser.searchBy === 'LanMoiNhat')
+                                                setdataUser({
+                                                    ...dataUser,
+                                                    search: '',
+                                                    searchBy: 'BienSoXe'
+                                                });
+                                            else
+                                                setdataUser({
+                                                    ...dataUser,
+                                                    search: ''
+                                                });
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                }
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                    <option value="BienSoXe">Tìm theo Biển Số Xe</option>
+                                    <option value="LanMuaBaoHiem">Tìm theo Lần Mua Bảo Hiểm</option>
+                                    <option value="NgayMuaBaoHiem">Tìm theo Ngày Mua Bảo Hiểm</option>
+                                    <option value="NgayHetHan">Tìm theo Ngày Hết Hạn</option>
+                                    <option value="ThoiGian">Tìm theo Thời Gian Hiệu Lực</option>
+                                    <option value="LoaiBaoHiem">Tìm theo Loại Bảo Hiểm</option>
+                                    <option value="NguoiMuaBaoHiem">Tìm theo Người Mua Bảo Hiểm</option>
+                                    <option value="TinhTrangApDung">Tìm theo Trạng Thái</option>
+                                </select>
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                    <option value='false'>Chế độ tìm: Gần đúng</option>
+                                    <option value="true">Chế độ tìm: Chính xác</option>
+                                </select>
 
-                        </div>
-                    </div>
+                            </div>
+                        </div>}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
@@ -364,6 +368,8 @@ function TabBaoHiem() {
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                         />
+                    </div>
+                    {!props.isMobile ? <div>
                         <div style={{ height: '7vh' }}></div>
                         <div style={{
                             display: 'flex', width: '100%', position: 'absolute',
@@ -372,7 +378,7 @@ function TabBaoHiem() {
                         }} >
                             <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{
                                 fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
-                            }}>Thiết kế và phát triển bởi: ...</label></div>
+                            }}></label></div>
 
                             <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
                                 <div style={{ marginRight: '2rem' }}>
@@ -395,10 +401,16 @@ function TabBaoHiem() {
                                 />
                             </div>
                         </div>
-                    </div>
+                    </div> : <Pagination
+                        setdataUser={setdataUser}
+                        dataUser={dataUser}
+                        dataRes={dataRes}
+                    />
+                    }
+
                 </div>
             </div>
-            
+
             {
                 popupInsertUpdate && <div className="popup">
                     <Them_suaBaoHiem

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import Combobox from "../Combobox";
 import SearchComBoBox from "../SearchCombobox";
@@ -47,7 +47,7 @@ const Them_suaHopDongCuaToi = (props) => {
                 },
             })
 
-           
+
             Promise.all([fetchGetTable])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
@@ -64,7 +64,7 @@ const Them_suaHopDongCuaToi = (props) => {
                     return Promise.all(processedResponses);
                 })
                 .then(data => {
-                    
+
                     if (props.isInsert === false) {
                         let DuLieu = data[0];
                         const dateParts = DuLieu.NgayLamHopDong.split('/');
@@ -94,49 +94,9 @@ const Them_suaHopDongCuaToi = (props) => {
                     }
                     dispatch({ type: 'SET_LOADING', payload: false })
                 });
-        } 
+        }
     }, [dataUser]);
     //xử lý xác nhận
-
-    const handleListChange = (ID, Ten) => {
-        let updatedDataReq = { ...dataReq };
-        let newDanhSach = updatedDataReq.DanhSach;
-        const today = new Date();
-
-        // Lấy ngày tháng năm theo định dạng yyyy-mm-dd
-        const todayString = today.getFullYear() + "-" +
-            ('0' + (today.getMonth() + 1)).slice(-2) + "-" +
-            ('0' + today.getDate()).slice(-2);
-
-        if (newDanhSach.some(item => item.MaXe === ID)) {
-            newDanhSach = newDanhSach.filter(item => item.MaXe !== ID);
-        } else {
-            newDanhSach.push({
-                BienSoXe: Ten,
-                MaXe: ID,
-                NgayKiHopDong: todayString,
-                ThoiGian: 12,
-                DonGia: 0
-            });
-        }
-        updatedDataReq.DanhSach = newDanhSach;
-        setDataReq(updatedDataReq);
-    }
-    function handleDetailChange(ID, value, TenCot) {
-        console.log('ID', ID);
-        const index = dataReq.DanhSach.findIndex(
-            item => {
-                return item.MaXe === ID;
-            }
-        );
-        if (TenCot === 'DonGia' || TenCot === 'ThoiGian') {
-            dataReq.DanhSach[index][TenCot] = Number(value)
-        } else dataReq.DanhSach[index][TenCot] = value
-        setDataReq({
-            ...dataReq,
-            DanhSach: [...dataReq.DanhSach]
-        })
-    }
     //đọc tiền bằng chữ
     // Config reading options
     const config = new ReadingConfig()
@@ -144,23 +104,24 @@ const Them_suaHopDongCuaToi = (props) => {
 
 
 
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="lg-popup-box">
-            <div className="lg-box">
+            <div className="lg-box" style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3"
-                            style={{
-                                maxHeight: '640px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}
                         >
                             <h4 id='tieudepop'>Thông Tin Hợp Đồng<span style={{ color: 'blue' }}>ㅤ{dataReq.SoHopDong}</span></h4>
-                            <form>
-                                <div className="row">
-                                    <div className="col-6">
+                            <form style={{
+                                maxHeight: isMobile ? '74vh' : '530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div className="form-group" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                                             <label style={{ marginBottom: '0px' }}>Mã Hợp Đồng: {batBuocNhap}</label>
                                             <input
@@ -173,20 +134,20 @@ const Them_suaHopDongCuaToi = (props) => {
                                         </div>
 
                                     </div>
-                                    <div className="col-6">
-                                    <label style={{ marginBottom: '0px' }}>Tên Thành Viên: {batBuocNhap}</label>
-                                            <input
-                                                style={{ width: '50%', marginLeft: '1em', boder: 'none' }}
-                                                type="text"
-                                                className="form-control-sm"
-                                                value={dataReq.TenThanhVien}
-                                                disabled
-                                            />
+                                    <div className={`${isMobile ? 'col-12' : 'col-6'}`}>
+                                        <label style={{ marginBottom: '0px' }}>Tên Thành Viên: {batBuocNhap}</label>
+                                        <input
+                                            style={{ width: '50%', marginLeft: '1em', boder: 'none' }}
+                                            type="text"
+                                            className="form-control-sm"
+                                            value={dataReq.TenThanhVien}
+                                            disabled
+                                        />
                                     </div>
                                 </div>
-                                <div className="row" style={{ display: 'flex', alignItems: 'center' }}>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ display: 'flex', alignItems: 'center' }}>
 
-                                    <div className={!props.isInsert ? "col-4" : "col-6"}>
+                                    <div className={isMobile ? "col-12" : !props.isInsert ? "col-4" : "col-6"}>
                                         <div className="form-group">
                                             <label>Ngày Làm Hợp Đồng</label>
                                             <input
@@ -198,7 +159,7 @@ const Them_suaHopDongCuaToi = (props) => {
                                         </div>
 
                                     </div>
-                                    <div className={!props.isInsert ? "col-4" : "col-6"}>
+                                    <div className={isMobile ? "col-12" : !props.isInsert ? "col-4" : "col-6"}>
                                         <div className="form-group">
                                             <label>Thời Gian Hiệu Lực( Tháng)</label>
                                             <input
@@ -211,7 +172,7 @@ const Them_suaHopDongCuaToi = (props) => {
 
                                     </div>
                                     {!props.isInsert &&
-                                        <div className="col-4">
+                                        <div className={`${isMobile ? 'col-12' : 'col-4'}`}>
                                             <div className="form-group">
                                                 <label>Ngày Hết Hạn</label>
                                                 <input
@@ -239,35 +200,38 @@ const Them_suaHopDongCuaToi = (props) => {
                                         <div className="form-group">
                                             <h6 style={{ textAlign: 'center' }}><u>Chi Tiết Hợp Đồng</u>        {batBuocNhap}</h6>
                                         </div>
-                                        <div className="row" >
-                                            <div className="col-2">
-                                                <label>Xe</label>
+                                        {!isMobile &&
+                                            <div className='row' >
+                                                <div className="col-2">
+                                                    <label>Xe</label>
+                                                </div>
+                                                <div className="col-3">
+                                                    <label>Ngày Ký</label>
+                                                </div>
+                                                <div className="col-2">
+                                                    <label>Thời Gian(Tháng)</label>
+                                                </div>
+                                                {!props.isInsert && <div className="col-3">
+                                                    <label>Ngày Hết Hạn</label>
+                                                </div>}
+                                                <div className="col-2">
+                                                    <label>Đơn Giá</label>
+                                                </div>
                                             </div>
-                                            <div className="col-3">
-                                                <label>Ngày Ký</label>
-                                            </div>
-                                            <div className="col-2">
-                                                <label>Thời Gian(Tháng)</label>
-                                            </div>
-                                            {!props.isInsert && <div className="col-3">
-                                                <label>Ngày Hết Hạn</label>
-                                            </div>}
-                                            <div className="col-2">
-                                                <label>Đơn Giá</label>
-                                            </div>
-                                        </div>
+                                        }
                                         <div className="form-group" style={{
-                                            maxHeight: '220px',
-                                            overflow: 'auto',
-                                            overflowX: 'hidden'
+                                            maxHeight: !isMobile && '220px',
+                                            overflow: !isMobile && 'auto',
+                                            overflowX: !isMobile && 'hidden'
                                         }}>
                                             {dataReq.DanhSach.map(item => (
                                                 <div key={item.MaXe}
-                                                    className="row">
-                                                    <div className="col-2">
-                                                        <label>{item.BienSoXe} </label>
+                                                    className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2'}`}>
+                                                        <label>{isMobile && 'Xe: '}{item.BienSoXe} </label>
                                                     </div>
-                                                    <div className="col-3">
+                                                    <div className={`${isMobile ? 'col-12' : 'col-3'}`}>
+                                                    {isMobile && <label>Ngày Ký Hơp Đồng</label>}
                                                         <input
                                                             type="date"
                                                             className="form-control"
@@ -275,7 +239,8 @@ const Them_suaHopDongCuaToi = (props) => {
                                                             disabled
                                                         />
                                                     </div>
-                                                    <div className="col-2">
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2'}`}>
+                                                    {isMobile && <label>Thời Gian (Tháng)</label>}
                                                         <input
                                                             type="number"
                                                             className="form-control"
@@ -283,7 +248,8 @@ const Them_suaHopDongCuaToi = (props) => {
                                                             disabled
                                                         />
                                                     </div>
-                                                    {!props.isInsert && <div className="col-3">
+                                                    {!props.isInsert && <div className={`${isMobile ? 'col-12' : 'col-3'}`}>
+                                                    {isMobile && <label>Ngày Hết Hạn</label>}
                                                         <input
                                                             type="date"
                                                             className="form-control"
@@ -291,15 +257,19 @@ const Them_suaHopDongCuaToi = (props) => {
                                                             disabled
                                                         />
                                                     </div>}
-                                                    <div className="col-2">
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2'}`}>
+                                                    {isMobile && <label>Đơn Giá</label>}
                                                         <input
-                                                            type="number"
+                                                            type="text"
                                                             className="form-control"
-                                                            value={item.DonGia}
+                                                            value={new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND'
+                                                            }).format(item.DonGia)}
                                                             disabled
                                                         />
                                                     </div>
-                                                    {props.isInsert && <div className="col-3">
+                                                    {props.isInsert && <div className={`${isMobile ? 'col-12' : 'col-3'}`}>
                                                         <label>{doReadNumber(config, item.DonGia.toString())}</label>
 
                                                     </div>}
@@ -311,24 +281,23 @@ const Them_suaHopDongCuaToi = (props) => {
                                     </div>
                                 </div>
                                 <hr class="horizontal dark" />
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Đóng</button>
-                                <div style={{ float: "right", display: 'flex', alignItems: 'center' }} >
-                                    <label
-                                        style={{ fontSize: '1.3rem', marginRight: '1rem', color: '#727272', marginBottom: '0px' }}
-                                    >
-                                        Tổng Tiền: <span style={{ marginLeft: '1rem' }}>
-                                            {new Intl.NumberFormat('vi-VN', {
-                                                style: 'currency',
-                                                currency: 'VND'
-                                            }).format(dataReq.DanhSach.reduce((sum, item) => {
-                                                return sum + Number(item.DonGia);
-                                            }, 0))}</span>
-                                    </label>
-
-                                </div>
-
                             </form>
-
+                            <div style={{ width: '100%', overflow: 'hidden' }}>
+                                <label
+                                    style={{ fontSize: '1.3rem', marginRight: '1rem', color: '#727272', marginBottom: '0px', float: 'right' }}
+                                >
+                                    Tổng Tiền: <span style={{ marginLeft: '1rem' }}>
+                                        {new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND'
+                                        }).format(dataReq.DanhSach.reduce((sum, item) => {
+                                            return sum + Number(item.DonGia);
+                                        }, 0))}</span>
+                                </label>
+                            </div>
+                            <div style={{ width: '100%' }}>
+                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                            </div>
                         </div>
                     </div>
                 </div>

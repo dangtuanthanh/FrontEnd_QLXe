@@ -15,21 +15,16 @@ import '../App.css';
 function BangDieuKhien() {
     const [thongTinDangNhap, setThongTinDangNhap] = useState({
         menu: [],
-        NhanVien: {},
-        ChotCa: false
+        ThanhVien: {}
     });
     const xuLyLayThongTinDangNhap = (data) => {
         setThongTinDangNhap(data);
     };
-    const [popupChotCa, setPopupChotCa] = useState(false);
     //xử lý redux
     const dispatch = useDispatch()
     const navigate = useNavigate();
     const loading = useSelector(state => state.loading.loading)
     const logout = () => {
-        if (thongTinDangNhap.ChotCa)
-            setPopupChotCa(true)
-        else {
             dispatch({ type: 'SET_LOADING', payload: true })
             fetch(urlLogout, {
                 method: 'GET',
@@ -61,17 +56,24 @@ function BangDieuKhien() {
                     }
 
                 });
-        }
     }
 
     //Xử lý menu
     const [isMobile, setIsMobile] = useState(() => {
         return window.innerWidth < 1250;
     });
-
+    const [errHeight, setErrHeight] = useState(false);
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 1250);
+            const isMobileRedux = window.innerWidth < 1250;
+            dispatch({
+                type: 'SET_ISMOBILE',
+                payload: isMobileRedux
+            });
+            if (window.innerHeight < 700) {
+                setErrHeight(true)
+            } else setErrHeight(false)
         }
 
         window.addEventListener('resize', handleResize);
@@ -112,6 +114,18 @@ function BangDieuKhien() {
             {loading && <div className="loading">
                 <img src={loadingGif} style={{ width: '30%' }} />
             </div>}
+            {errHeight ? <div className="popup">
+                <div className="popup-box">
+                    <div className="box">
+                        <div className="conten-modal" >
+                            <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 700px.</h6>
+                            <p>Để đảm bảo ứng dụng được hiển thị đầy đủ hãy sử dụng thiết bị có chiều cao lớn hơn như máy tính, máy tính bảng.</p>
+                            <strong style={{ fontSize: '0.9rem',color:'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                :
             <div className="row">
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
@@ -124,7 +138,7 @@ function BangDieuKhien() {
                         <div style={{ marginLeft: '0px' }} className="row">
                             <ul class="nav nav-tabs col-6">
                                 <li class="nav-item">
-                                    <button class="nav-link " onClick={handleToggleNavigation}>
+                                    <button style={{ color: 'blue' }} class="nav-link " onClick={handleToggleNavigation}>
                                         {showNavigation ? "<<" : ">>"}
                                     </button>
                                 </li>
@@ -153,12 +167,12 @@ function BangDieuKhien() {
                                         <div onClick={() => {
                                             navigate(`/TrangCaNhan`);
                                         }}>
-                                            <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                            <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.ThanhVien.TenThanhVien}</span>
                                         </div>
                                     </div>
 
                                 </span>
-                                <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn btn-primary btn-sm mb-0">
+                                <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn bg-gradient-info btn-sm mb-0">
                                     Đăng Xuất <FontAwesomeIcon icon={faSignOut} />
                                 </button>
                             </div>
@@ -187,6 +201,7 @@ function BangDieuKhien() {
                     )}
                 </button>
             </div>
+}
         </CheckLogin>
     );
 }

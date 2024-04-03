@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import { urlGetPermission, urlInsertRole, urlGetRole, urlUpdateRole } from "../url"
 const Insert_updateRole = (props) => {
@@ -187,9 +187,12 @@ const Insert_updateRole = (props) => {
             }
         }
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box"style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
@@ -259,7 +262,7 @@ const Insert_updateRole = (props) => {
                                 <button
                                     onClick={handleSubmit}
                                     style={{ float: "right" }} type="button"
-                                    className="btn btn-primary mt-3"
+                                    className="btn bg-gradient-info mt-3"
                                 >
                                     Xác Nhận
                                 </button>

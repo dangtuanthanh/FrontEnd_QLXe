@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRotate, faAdd, faFilter } from '@fortawesome/free-solid-svg-icons'
+import { faRotate, faAdd, faFilter, faArrowDown,faArrowUp  } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
@@ -9,7 +9,7 @@ import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableBaoDuong from "../Table/TableBaoDuong";
 import Them_suaBaoDuong from "../Popup/them_suaBaoDuong";
-function TabBaoDuong() {
+function TabBaoDuong(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
@@ -22,7 +22,11 @@ function TabBaoDuong() {
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
-
+//Xử lý hiển thị các nút chức năng
+const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
+const handleToggleButtonFunction = () => {
+    setShowButtonFunction(!showButtonFunction);
+};
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -254,10 +258,10 @@ function TabBaoDuong() {
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Bảo Dưỡng Xe</h2>
+                    <h2> Quản Lý Bảo Dưỡng Xe{props.isMobile &&<button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction?faArrowUp :faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
-
+                    {showButtonFunction &&
                     <div>
                         <div style={{ 'display': "inline-block", float: 'left' }}>
                             <button
@@ -347,6 +351,7 @@ function TabBaoDuong() {
 
                         </div>
                     </div>
+}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
@@ -363,6 +368,8 @@ function TabBaoDuong() {
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                         />
+                        </div>
+                        {!props.isMobile ?<div>
                         <div style={{ height: '7vh' }}></div>
                         <div style={{
                             display: 'flex', width: '100%', position: 'absolute',
@@ -371,7 +378,7 @@ function TabBaoDuong() {
                         }} >
                             <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{
                                 fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
-                            }}>Thiết kế và phát triển bởi: ...</label></div>
+                            }}></label></div>
 
                             <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
                                 <div style={{ marginRight: '2rem' }}>
@@ -394,7 +401,13 @@ function TabBaoDuong() {
                                 />
                             </div>
                         </div>
-                    </div>
+                        </div>: <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                        }
+                    
                 </div>
             </div>
             {

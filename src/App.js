@@ -28,7 +28,7 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login /> } />
+          <Route path="/" element={<Login />} />
           <Route path="/ThanhVien" element={<ThanhVien />} />
           <Route path="/Xe" element={<Xe />} />
           <Route path="/DichVu" element={<DichVu />} />
@@ -36,7 +36,7 @@ function App() {
 
           <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
           <Route path="/TrangCaNhan" element={<TrangCaNhan />} />
-          <Route path="*" element={<NotFound />}/>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </Provider>

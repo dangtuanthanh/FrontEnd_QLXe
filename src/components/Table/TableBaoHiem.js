@@ -6,14 +6,14 @@ const TableBaoHiem = (props) => {
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
         if (isAsc) {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc',page:1 })
             setIsAsc(false)
             if (value === 'NgayMuaBaoHiem' || value === 'NgayHetHan')
                 props.addNotification(`Sắp xếp cũ nhất tới mới nhất theo ${value}`, 'success', 3000)
             else
                 props.addNotification(`Sắp xếp tăng dần theo ${value}`, 'success', 3000)
         } else {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc',page:1 })
             setIsAsc(true)
             if (value === 'NgayMuaBaoHiem' || value === 'NgayHetHan')
                 props.addNotification(`Sắp xếp mới nhất đến cũ nhất theo ${value}`, 'success', 3000)

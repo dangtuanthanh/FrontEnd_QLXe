@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
-import { urlGetMaintenanceItem, urlInsertMaintenanceItem , urlUpdateMaintenanceItem } from "../url"
+import { urlGetMaintenanceItem, urlInsertMaintenanceItem, urlUpdateMaintenanceItem } from "../url"
 
 const Them_suaHangMucBaoDuong = (props) => {
     //xử lý redux
@@ -65,8 +65,8 @@ const Them_suaHangMucBaoDuong = (props) => {
         else {
             dispatch({ type: 'SET_LOADING', payload: true })
             const data = {
-                MaHangMucBaoDuong:dataReq.MaHangMucBaoDuong,
-                TenHangMuc:dataReq.TenHangMuc,
+                MaHangMucBaoDuong: dataReq.MaHangMucBaoDuong,
+                TenHangMuc: dataReq.TenHangMuc,
                 MoTa: dataReq.MoTa
             };
             if (props.isInsert === true) {
@@ -119,7 +119,7 @@ const Them_suaHangMucBaoDuong = (props) => {
                             return response.json();
                         } else if (response.status === 401) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
-                        }else if (response.status === 400) {
+                        } else if (response.status === 400) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
                         } else if (response.status === 500) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
@@ -146,16 +146,23 @@ const Them_suaHangMucBaoDuong = (props) => {
             }
         }
     }
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Hạng Mục Bảo Dưỡng<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
-                            <div className="">
+                            <form onSubmit={handleSubmit}
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
+                                <div className="">
                                     <div className="form-group">
                                         <label>Tên Hạng Mục Bảo Dưỡng {batBuocNhap}</label>
                                         <input
@@ -187,16 +194,16 @@ const Them_suaHangMucBaoDuong = (props) => {
                                         />
                                     </div>
                                 </div>
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
-                                <button
-                                    onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
-                                    className="btn bg-gradient-info mt-3"
-                                >
-                                    Xác Nhận
-                                </button>
-                            </form>
 
+                            </form>
+                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                            <button
+                                onClick={handleSubmit}
+                                style={{ float: "right" }} type="button"
+                                className="btn bg-gradient-info mt-3"
+                            >
+                                Xác Nhận
+                            </button>
                         </div>
                     </div>
                 </div>

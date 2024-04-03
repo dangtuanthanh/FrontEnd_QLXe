@@ -1,5 +1,6 @@
 //http://localhost:3000
 // http://localhost:3000
+//http://localhost:3000/
 /* Hệ thống
  */
 //kiểm tra phiên đăng nhập
@@ -171,12 +172,12 @@ export const urlDeleteUsageHistory = 'http://localhost:3000/deleteUsageHistory';
 /* Bảng điều khiển
  */
 //lấy số bàn đang có khách
-export const urlGetOccupiedTables = 'http://localhost:3000/getOccupiedTables';
+export const urlGetTotalCar = 'http://localhost:3000/getTotalCar';
 //lấy số hoá đơn trong ngày
-export const urlGetInvoiceToday = 'http://localhost:3000/getInvoiceToday';
+export const urlGetTotalMember = 'http://localhost:3000/getTotalMember';
 //lấy tổng tiền hoá đơn trong ngày
-export const urlGetRevenueToday = 'http://localhost:3000/getRevenueToday';
+export const urlGetYearContract = 'http://localhost:3000/getYearContract';
 //lấy tổng tiền hoá đơn trong tháng
-export const urlGetRevenueMonth = 'http://localhost:3000/getRevenueMonth';
+export const urlGetRevenueYear = 'http://localhost:3000/getRevenueYear';
 //lấy tổng tiền hoá đơn trong tuần
-export const urlGetListRevenueMonth = 'http://localhost:3000/getListRevenueMonth';
+export const urlGetListRevenueYear = 'http://localhost:3000/getListRevenueYear';

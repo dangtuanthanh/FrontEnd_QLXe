@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
-import {  urlInsertStatusCar, urlGetStatusCar, urlUpdateStatusCar } from "../url"
+import { urlInsertStatusCar, urlGetStatusCar, urlUpdateStatusCar } from "../url"
 
 const Them_suaTinhTrangXe = (props) => {
     //xử lý redux
@@ -65,7 +65,7 @@ const Them_suaTinhTrangXe = (props) => {
         else {
             dispatch({ type: 'SET_LOADING', payload: true })
             const data = {
-                MaTinhTrangXe:dataReq.MaTinhTrangXe,
+                MaTinhTrangXe: dataReq.MaTinhTrangXe,
                 MoTa: dataReq.MoTa
             };
             if (props.isInsert === true) {
@@ -118,7 +118,7 @@ const Them_suaTinhTrangXe = (props) => {
                             return response.json();
                         } else if (response.status === 401) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
-                        }else if (response.status === 400) {
+                        } else if (response.status === 400) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
                         } else if (response.status === 500) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
@@ -145,15 +145,23 @@ const Them_suaTinhTrangXe = (props) => {
             }
         }
     }
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Tình Trạng Xe<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}
+                            >
                                 {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input

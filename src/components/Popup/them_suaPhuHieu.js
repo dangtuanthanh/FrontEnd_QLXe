@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch ,useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faSearchPlus, faSearch, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { getCookie } from "../Cookie";
@@ -322,17 +322,25 @@ const Them_suaPhuHieu = (props) => {
         }
 
     }
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box"style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Phù Hiệu Xe {!props.isInsert && <span > <span style={{ color: 'blue' }}> {props.iDAction3} Lần {props.iDAction2} </span></span>}</h4>
-                            <form onSubmit={handleSubmit}>
-                                <div className="row" style={{ marginTop: '2%' }}>
-                                    <div className='col-6'>
+                            <form onSubmit={handleSubmit}
+                             style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}
+                            >
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ marginTop: '2%' }}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <div style={{ display: 'flex', pointerEvents: !props.isInsert && 'none', opacity: !props.isInsert && '0.5' }}>
                                                 <Combobox
@@ -430,7 +438,7 @@ const Them_suaPhuHieu = (props) => {
 
 
                                     </div>
-                                    <div className='col-6'>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         {!props.isInsert &&
                                             <div className="form-group" style={{ pointerEvents: !props.isInsert && 'none', opacity: !props.isInsert && '0.5' }}>
                                                 <label>Lần Phù Hiệu{batBuocNhap}</label>
@@ -509,7 +517,9 @@ const Them_suaPhuHieu = (props) => {
 
                                     </div>
                                 </div>
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                               
+                            </form>
+                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
                                     style={{ float: "right" }} type="button"
@@ -517,7 +527,6 @@ const Them_suaPhuHieu = (props) => {
                                 >
                                     Xác Nhận
                                 </button>
-                            </form>
                             {
                                 themVTTC && <div className="popup">
                                     <Them_suaXe

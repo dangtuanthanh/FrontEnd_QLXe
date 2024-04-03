@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faCog, faBell, faTimes, faBars, faSignOut, faCar,faShareAlt,faExclamationTriangle,faSitemap,faClock  } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faCog, faBell, faTimes, faBars, faSignOut, faCar, faShareAlt, faExclamationTriangle, faSitemap, faClock } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 
@@ -69,10 +69,18 @@ function Xe() {
     const [isMobile, setIsMobile] = useState(() => {
         return window.innerWidth < 1250;
     });
-
+    const [errHeight, setErrHeight] = useState(window.innerHeight < 700);
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 1250);
+            const isMobileRedux = window.innerWidth < 1250;
+            dispatch({
+                type: 'SET_ISMOBILE',
+                payload: isMobileRedux
+            });
+            if (window.innerHeight < 700) {
+                setErrHeight(true)
+            } else setErrHeight(false)
         }
 
         window.addEventListener('resize', handleResize);
@@ -129,6 +137,18 @@ function Xe() {
             {loading && <div className="loading">
                 <img src={loadingGif} style={{ width: '30%' }} />
             </div>}
+            {errHeight ? <div className="popup">
+                <div className="popup-box">
+                    <div className="box">
+                        <div className="conten-modal" >
+                            <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 700px.</h6>
+                            <p>Để đảm bảo ứng dụng được hiển thị đầy đủ hãy sử dụng thiết bị có chiều cao lớn hơn như máy tính, máy tính bảng.</p>
+                            <strong style={{ fontSize: '0.9rem',color:'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                :
             <div className="row">
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
@@ -139,12 +159,14 @@ function Xe() {
                 }}>
                     <div style={{ marginLeft: '2%', marginRight: '1%' }}>
                         <div style={{ marginLeft: '0px' }} className="row">
-                            <ul class="nav nav-tabs col-8" >
-                                <li class="nav-item" >
-                                    <button class="nav-link " style={{ color: 'blue' }} onClick={handleToggleNavigation}>
-                                        {showNavigation ? "<<" : ">>"}
-                                    </button>
-                                </li>
+                            <ul class={`nav nav-tabs  ${isMobile ? 'col-10' : 'col-8'} `} >
+                                {!isMobile &&
+                                    <li class="nav-item" >
+                                        <button class="nav-link " style={{ color: 'blue' }} onClick={handleToggleNavigation}>
+                                            {showNavigation ? "<<" : ">>"}
+                                        </button>
+                                    </li>
+                                }
                                 <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabXe' ? 'nav-link active' : 'nav-link'}
@@ -154,7 +176,7 @@ function Xe() {
                                         ) : (
                                             'Xe'
                                         )}
-                                        </button>
+                                    </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
@@ -165,7 +187,7 @@ function Xe() {
                                         ) : (
                                             'Tình Trạng Xe'
                                         )}
-                                        </button>
+                                    </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
@@ -176,7 +198,7 @@ function Xe() {
                                         ) : (
                                             'Loại Xe'
                                         )}
-                                        </button>
+                                    </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
@@ -187,7 +209,7 @@ function Xe() {
                                         ) : (
                                             'Nhóm Loại Xe'
                                         )}
-                                        </button>
+                                    </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
@@ -198,10 +220,10 @@ function Xe() {
                                         ) : (
                                             'Lịch Sử Sử Dụng'
                                         )}
-                                        </button>
+                                    </button>
                                 </li>
                             </ul>
-                            <div className="col-4 d-flex justify-content-end align-items-center">
+                            <div className={` ${isMobile ? 'col-2' : 'col-4'} d-flex justify-content-end align-items-center`}>
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <div onClick={() => {
                                         navigate(`/TrangCaNhan`);
@@ -210,11 +232,17 @@ function Xe() {
                                     </div>
                                 </span>
                                 <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn bg-gradient-info btn-sm mb-0">
-                                    Đăng Xuất <FontAwesomeIcon icon={faSignOut} />
+                                    {isMobile ? (
+                                        <FontAwesomeIcon icon={faSignOut} />
+                                    ) : (
+                                        <>
+                                            Đăng Xuất  <FontAwesomeIcon icon={faSignOut} />
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
-                        <TabComponent />
+                        <TabComponent isMobile={isMobile} />
 
                     </div>
                 </div>
@@ -239,6 +267,7 @@ function Xe() {
                     )}
                 </button>
             </div>
+}
         </CheckLogin>
     );
 }

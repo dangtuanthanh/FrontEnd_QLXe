@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch ,useSelector} from 'react-redux'
 import { getCookie } from "../Cookie";
 import Combobox from "../Combobox";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -212,15 +212,23 @@ const Them_suaLoaiXe = (props) => {
 
     }
 
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box"style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Loại Xe<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}
+                            >
                                 <div className="form-group">
                                     <label>Tên Loại Xe {batBuocNhap}</label>
                                     <input
@@ -244,6 +252,7 @@ const Them_suaLoaiXe = (props) => {
                                         batBuocNhap={batBuocNhap}
                                         value={dataReq.MaNhomLoaiXe}
                                         onChange={handleKhuVucChange}
+                                        maxWord={isMobile &&14}
                                     />
                                     <div style={{ display: 'flex', alignItems: 'center' }}
                                         onClick={() => {
@@ -254,12 +263,12 @@ const Them_suaLoaiXe = (props) => {
                                     >
                                         <FontAwesomeIcon icon={faPlusCircle} />
                                     </div>
-                                    <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
+                                    <div style={{ marginLeft: isMobile?'0.5rem':'1rem', display: 'flex', alignItems: 'center' }}
                                         onClick={() => setPopupSearch(true)}
                                     >
                                         <FontAwesomeIcon icon={faSearch} />
                                     </div>
-                                    <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
+                                    <div style={{ marginLeft: isMobile?'0.5rem':'1rem', display: 'flex', alignItems: 'center' }}
                                         onClick={() => {
                                             setIsInsert(false)
                                             setIDAction(dataReq.MaNhomLoaiXe)
@@ -283,7 +292,6 @@ const Them_suaLoaiXe = (props) => {
                                         }}
                                     />
                                 </div>
-
                                 <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}

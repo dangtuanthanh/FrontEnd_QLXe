@@ -66,10 +66,18 @@ function ThanhVien() {
     const [isMobile, setIsMobile] = useState(() => {
         return window.innerWidth < 1250;
     });
-
+    const [errHeight, setErrHeight] = useState(false);
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 1250);
+            const isMobileRedux = window.innerWidth < 1250;
+            dispatch({
+                type: 'SET_ISMOBILE',
+                payload: isMobileRedux
+            });
+            if (window.innerHeight < 700) {
+                setErrHeight(true)
+            } else setErrHeight(false)
         }
 
         window.addEventListener('resize', handleResize);
@@ -119,6 +127,18 @@ function ThanhVien() {
             {loading && <div className="loading">
                 <img src={loadingGif} style={{ width: '30%' }} />
             </div>}
+            {errHeight ? <div className="popup">
+                <div className="popup-box">
+                    <div className="box">
+                        <div className="conten-modal" >
+                            <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 700px.</h6>
+                            <p>Để đảm bảo ứng dụng được hiển thị đầy đủ hãy sử dụng thiết bị có chiều cao lớn hơn như máy tính, máy tính bảng.</p>
+                            <strong style={{ fontSize: '0.9rem',color:'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                :
             <div className="row">
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
@@ -145,7 +165,7 @@ function ThanhVien() {
                                         ) : (
                                             'Thành Viên'
                                         )}
-                                        </button>
+                                    </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
@@ -179,7 +199,7 @@ function ThanhVien() {
                             </div>
                         </div>
 
-                        <TabComponent />
+                        <TabComponent isMobile={isMobile} />
                     </div>
                 </div>
                 <button
@@ -203,6 +223,7 @@ function ThanhVien() {
                     )}
                 </button>
             </div>
+}
         </CheckLogin>
     );
 }

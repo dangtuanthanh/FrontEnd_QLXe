@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector  } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
@@ -225,6 +225,7 @@ function TabEmail(props) {
             </div>
         );
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >
@@ -247,8 +248,8 @@ function TabEmail(props) {
                             }}
                         />
                     </div>
-                    <div className="row" style={{ width: '80%' }}>
-                        <div className="col-6">
+                    <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%' }}>
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <h4>ㅤ</h4>
                             <div className="form-group">
                                 <label >Email</label>
@@ -311,7 +312,7 @@ function TabEmail(props) {
                                 />
                             </div>
                         </div>
-                        <div className="col-6">
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <h4 style={{ textAlign: 'center' }}>Đổi Mật Khẩu</h4>
                             <div className="form-group">
                                 <label>Nhập Mật Khẩu Cũ</label>

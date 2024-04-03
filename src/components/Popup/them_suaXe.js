@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import Combobox from "../Combobox";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -529,9 +529,12 @@ const Them_suaXe = (props) => {
             </div>
         )
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="lg-popup-box">
-            <div className="lg-box">
+            <div className="lg-box" style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3"
@@ -539,13 +542,13 @@ const Them_suaXe = (props) => {
                             <h4 id='tieudepop'>Thông Tin Xe<span style={{ color: 'blue' }}>ㅤ{dataReq.BienSoXe}</span></h4>
                             <form onSubmit={handleSubmit}
                                 style={{
-                                    maxHeight: '530px',
+                                    maxHeight:  isMobile ? '74vh':'530px',
                                     overflow: 'auto',
                                     overflowX: 'hidden'
                                 }}
                             >
-                                <div className="row">
-                                    <div className="col-4">
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <div className="form-group">
                                             <label>Biển Số Xe {batBuocNhap}</label>
                                             <input
@@ -628,7 +631,7 @@ const Them_suaXe = (props) => {
                                         </div>
 
                                     </div>
-                                    <div className="col-4">
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <div className="form-group">
                                             <label>Màu</label>
                                             <input
@@ -714,7 +717,7 @@ const Them_suaXe = (props) => {
 
 
                                     </div>
-                                    <div className="col-4">
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <DropdownImage
                                             imageColumn="HinhAnh"
                                             url={urlAnh}
@@ -760,8 +763,8 @@ const Them_suaXe = (props) => {
                                     </div>
                                 </div>
                                 <hr class="horizontal dark" />
-                                {!props.isInsert && <div className="row">
-                                    <div className="col-4">
+                                {!props.isInsert && <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <Dropdown
                                             title="Xem Đăng kiểm"
                                             items={dataReq.DangKiem}
@@ -776,7 +779,7 @@ const Them_suaXe = (props) => {
                                             onItemClick={handleDropdownItemClickHopDong}
                                             isHopDong={true} />
                                     </div>
-                                    <div className="col-4">
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <Dropdown
                                             title="Xem Phù Hiệu"
                                             items={dataReq.PhuHieu}
@@ -787,7 +790,7 @@ const Them_suaXe = (props) => {
                                             items={dataReq.DinhVi}
                                             onItemClick={handleDropdownItemClickDinhVi} />
                                     </div>
-                                    <div className="col-4">
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <Dropdown
                                             title="Xem Bảo Dưỡng"
                                             items={dataReq.BaoDuong}

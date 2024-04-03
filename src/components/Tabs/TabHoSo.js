@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
@@ -258,6 +258,7 @@ function TabHoSo(props) {
 
         }
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >
@@ -267,8 +268,8 @@ function TabHoSo(props) {
                     <div style={{ width: '100%', textAlign: 'center', margin: '1% 0 2% 0' }}>
                         <ImageUpload />
                     </div>
-                    <div className="row" style={{ width: '80%' }}>
-                        <div className="col-6">
+                    <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%' }}>
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <div className="form-group">
                                 <label >Mã Thành Viên</label>
                                 <input
@@ -297,7 +298,7 @@ function TabHoSo(props) {
                             </div>
 
                         </div>
-                        <div className="col-6">
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <div className="form-group">
                                 <label>Số Điện Thoại</label>
                                 <input

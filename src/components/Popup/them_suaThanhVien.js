@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-
-import Combobox from "../Combobox";
 import { getCookie } from "../Cookie";
 import Insert_updateRole from "./Insert_updateRole";
 import { urlGetRole, urlInsertMember, urlGetMember, urlUpdateMember } from "../url"
@@ -423,20 +421,23 @@ const Them_suaThanhVien = (props) => {
             </div>
         );
     }
-    const handleDropdownItemClickHopDong  = item => {
+    const handleDropdownItemClickHopDong = item => {
         setIDAction(item.MaHopDong)
         setDV7(true)
     };
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
-        <div className="popup-box">
-            <div className="box">
-                <div className="conten-modal">
+        <div className="popup-box" >
+            <div className="box" style={{
+                width: isMobile && '100%'
+            }}>
+                <div className="conten-modal" >
                     <div>
-                        <div className="bg-light px-4 py-3">
+                        <div className="bg-light px-4 py-3" >
                             <h4 id='tieudepop'>Thông Tin Thành Viên<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}
                                 style={{
-                                    maxHeight: '530px',
+                                    maxHeight:  isMobile ? '74vh':'530px',
                                     overflow: 'auto',
                                     overflowX: 'hidden'
                                 }}
@@ -452,8 +453,8 @@ const Them_suaThanhVien = (props) => {
                                         value=''
                                     />
                                 </div> */}
-                                <div className="row">
-                                    <div className='col-6'>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div className="form-group">
                                             <label>Tên Thành Viên {batBuocNhap}</label>
                                             <input
@@ -521,7 +522,7 @@ const Them_suaThanhVien = (props) => {
                                             onItemClick={handleDropdownItemClickHopDong}
                                         />
                                     </div>
-                                    <div className='col-6'>
+                                    <div className={` ${isMobile ? 'col-12' : 'col-6'}`}>
                                         <ImageUpload />
                                         <div className="form-group">
                                             <label>
