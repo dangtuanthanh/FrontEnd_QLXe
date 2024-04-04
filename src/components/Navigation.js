@@ -6,9 +6,10 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import '../assets/css/nucleo-icons.css';
 import '../assets/css/nucleo-svg.css';
 import '../assets/css/soft-ui-dashboard.min.css';
-import logo from '../assets/img/logos/logo-removebg-preview.png';
+import logo from '../assets/img/logos/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGaugeHigh, faCogs, faCar, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
+import { faGaugeHigh, faCogs, faCar, faHandshake, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { useSelector } from 'react-redux'
 
 function Navigation({ menu }) {
   const [activeComponent, setActiveComponent] = useState('');
@@ -22,9 +23,15 @@ function Navigation({ menu }) {
     } else if (pathname === '/DichVu') {
       setActiveComponent('DichVu');
     }
-    else if (pathname === '/ThucDon') {
-      setActiveComponent('ThucDon');
-    } else if (pathname === '/BanVaKhuVuc') {
+    else if (pathname === '/HopDong') {
+      setActiveComponent('HopDong');
+    } else if (pathname === '/TrangCaNhan') {
+      setActiveComponent('TrangCaNhan');
+
+
+    }
+
+    else if (pathname === '/BanVaKhuVuc') {
       setActiveComponent('BanVaKhuVuc');
 
     } else if (pathname === '/CaLamViec') {
@@ -53,8 +60,8 @@ function Navigation({ menu }) {
       case 'Bảng Điều Khiển':
         return <FontAwesomeIcon icon={faGaugeHigh} />;
 
-      case 'Thực Đơn':
-        return <FontAwesomeIcon icon={faUtensils} />;
+      case 'Hợp Đồng':
+        return <FontAwesomeIcon icon={faHandshake} />;
       case 'Bàn Và Khu Vực':
         return <FontAwesomeIcon icon={faTable} />;
 
@@ -70,10 +77,10 @@ function Navigation({ menu }) {
         return null;
     }
   }
-
+  const isMobile = useSelector(state => state.isMobile.isMobile)
   return (
     <div>
-      <aside style={{ backgroundColor: '#FAFAFA' }} class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps ps--active-y" id="sidenav-main">
+      <aside style={{ backgroundColor: '#FAFAFA', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps ps--active-y" id="sidenav-main">
         <div class="sidenav-header">
           <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
 
@@ -84,9 +91,10 @@ function Navigation({ menu }) {
           {/* <span class="ms-1 font-weight-bolder">QLXe</span> */}
 
         </div>
-        <hr class="horizontal dark mt-0" />
+        {/* <hr class="horizontal dark mt-0"/> */}
+        <div style={{ height: '0.2rem' }}></div>
 
-        <ul class="navbar-nav">
+        <ul class="navbar-nav" style={{ marginLeft: '1rem', width: '14rem' }}>
           {menu.map((menuItem, index) => {
             // Chuyển đổi menuItem từ 'Hoá Đơn' thành 'HoaDon'
             //const menuPath = menuItem.replace(/\s+/g, '');
@@ -107,7 +115,17 @@ function Navigation({ menu }) {
               </li>
             );
           })}
-
+          {isMobile &&<li className="nav-item">
+            <Link
+              id={'TrangCaNhan'}
+              className={`nav-link${activeComponent === 'TrangCaNhan' ? ' active' : ''}`}
+              to={`/TrangCaNhan`}//Chuyển trang
+            >
+              <FontAwesomeIcon icon={faUserCircle} />
+              <span class="nav-link-text ms-1"> Trang Cá Nhân</span>
+            </Link>
+          </li>
+          }
 
           {/* 
           <li class="nav-item mt-3">
@@ -177,7 +195,10 @@ function Navigation({ menu }) {
             </a>
           </li> */}
         </ul>
-
+        <div className="nav-item" style={{ marginTop: 'auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', opacity: '0.8' }}>
+          <p style={{ fontSize: '0.9rem', marginBottom: '0px' }}> © 2024 CLB Lập Trình</p>
+          <p style={{ fontSize: '0.9rem' }}> Trường ĐH Lạc Hồng</p>
+        </div>
 
       </aside>
 

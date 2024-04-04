@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
@@ -11,6 +11,7 @@ import { faPen } from '@fortawesome/free-solid-svg-icons'
 function TabHoSo(props) {
     //xử lý redux
     const dispatch = useDispatch()
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     const [dataReq, setDataReq] = useState({});
     useEffect(() => {
         console.log('props.thongTinDangNhap.ThanhVien: ', props.thongTinDangNhap.ThanhVien.HinhAnh);
@@ -62,7 +63,7 @@ function TabHoSo(props) {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:isMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -258,17 +259,18 @@ function TabHoSo(props) {
 
         }
     }
+
     return (
         <div>
-            <div class="card mb-4" >
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >
                 <div class="card-header pb-0" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                     <NotificationContainer notifications={notifications} />
                     <h2 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hồ Sơ</h2>
                     <div style={{ width: '100%', textAlign: 'center', margin: '1% 0 2% 0' }}>
                         <ImageUpload />
                     </div>
-                    <div className="row" style={{ width: '80%' }}>
-                        <div className="col-6">
+                    <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%' }}>
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <div className="form-group">
                                 <label >Mã Thành Viên</label>
                                 <input
@@ -297,7 +299,7 @@ function TabHoSo(props) {
                             </div>
 
                         </div>
-                        <div className="col-6">
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <div className="form-group">
                                 <label>Số Điện Thoại</label>
                                 <input

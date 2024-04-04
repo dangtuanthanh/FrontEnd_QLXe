@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLeft, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
@@ -12,9 +12,15 @@ import ItemsPerPage from "../ItemsPerPage";
 //import ExportAccount from "../Popup/ExportAccount";
 //import ImportAccount from "../Popup/ImportAccount";
 //import SelectedEditAccount from "../components/Popup/SelectedEditAccount";
-function TabThanhVien() {
+import '../../App.css';
+function TabThanhVien(props) {
     //xử lý redux
     const dispatch = useDispatch()
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
@@ -34,11 +40,15 @@ function TabThanhVien() {
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
     const [onAction, setOnAction] = useState(() => { });
+    const [prIsMobile, setPrIsMobile] = useState(props.isMobile);
+    useEffect(() => {
+        setPrIsMobile(props.isMobile)
+    }, [props.isMobile]);
     const PopupAlert = (props) => {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:prIsMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -118,11 +128,11 @@ function TabThanhVien() {
         setPopupNhap(false);
     };
 
-      //undo delete
+    //undo delete
     const [buttonUndo, setButtonUndo] = useState(false);//trạng thái hiển thị nút undo
-      const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
+    const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
     const handleUndo = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlUndoDeleteMember}`, {
             method: 'POST',
             headers: {
@@ -147,13 +157,13 @@ function TabThanhVien() {
             .then(data => {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 setButtonUndo(false)
                 setUndoDelete([])
                 TaiDuLieu()
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -198,14 +208,14 @@ function TabThanhVien() {
 
     };
 
-   
+
 
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlGetMember}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
@@ -243,10 +253,10 @@ function TabThanhVien() {
                     });
                 }
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -257,7 +267,7 @@ function TabThanhVien() {
     };
     //Xoá dữ liệu
     const deleteData = (ID) => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         let IDs = [ID]
         if (Array.isArray(ID)) {
             console.log('là mảng');
@@ -286,7 +296,7 @@ function TabThanhVien() {
             .then(data => {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 setButtonUndo(true)
                 setSelectedIds([])
                 setUndoDelete(IDs)
@@ -294,7 +304,7 @@ function TabThanhVien() {
 
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -303,43 +313,43 @@ function TabThanhVien() {
 
             });
     }
-   
+
     // sửa hàng loạt
     const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
 
 
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Thành Viên</h2>
+                    <h2> Quản Lý Thành Viên {props.isMobile && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
+                    {showButtonFunction &&
+                        <div>
+                            {
+                                selectedIds.length == 0
+                                    ? <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => { TaiDuLieu(); }}
+                                            className="btn bg-gradient-info">
+                                            <FontAwesomeIcon icon={faRotate} />
+                                            ㅤLàm Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setIsInsert(true)
+                                                setPopup1(true)
+                                                setIDAction()
+                                            }}
 
-                    <div>
-                        {
-                            selectedIds.length == 0
-                                ? <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => { TaiDuLieu(); }}
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faRotate} />
-                                        ㅤLàm Mới
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setIsInsert(true)
-                                            setPopup1(true)
-                                            setIDAction()
-                                        }}
-
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faAdd} />
-                                        ㅤThêm
-                                    </button>ㅤ
-                                    {/* <button
+                                            className="btn bg-gradient-info">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm
+                                        </button>ㅤ
+                                        {/* <button
                                         style={{ 'display': "inline-block" }}
                                         onClick={() => {
                                             setPopupNhap(true)
@@ -358,96 +368,97 @@ function TabThanhVien() {
                                         ㅤXuất
                                     </button>ㅤ */}
 
-                                    {buttonUndo && <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            handleUndo()
-                                        }}
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faRotateLeft} />
-                                        ㅤHoàn Tác
-                                    </button>}
-                                </div>
-                                : <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        //onClick={setSelectedIds([])}
-                                        onClick={() => { setSelectedIds([]); }}
-                                        className="btn btn-danger">
-                                        <FontAwesomeIcon icon={faArrowLeft} />
-                                        ㅤQuay Lại
-                                    </button>ㅤ
-                                    {/* <button
+                                        {buttonUndo && <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                handleUndo()
+                                            }}
+                                            className="btn bg-gradient-info">
+                                            <FontAwesomeIcon icon={faRotateLeft} />
+                                            ㅤHoàn Tác
+                                        </button>}
+                                    </div>
+                                    : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            //onClick={setSelectedIds([])}
+                                            onClick={() => { setSelectedIds([]); }}
+                                            className="btn btn-danger">
+                                            <FontAwesomeIcon icon={faArrowLeft} />
+                                            ㅤQuay Lại
+                                        </button>ㅤ
+                                        {/* <button
                                                     style={{ display: "inline-block" }}
                                                     //onClick={() => {togglePopup6();}}
                                                     className="btn bg-gradient-info">
                                                     <FontAwesomeIcon icon={faPencil} />
                                                     ㅤSửa ô đã chọn
                                                 </button>ㅤ */}
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => {
-                                            openPopupAlert(
-                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
-                                                () => { deleteData(selectedIds) }
-                                            )
-                                        }}
-                                        className="btn bg-gradient-info">
-                                        <FontAwesomeIcon icon={faTrash} />
-                                        ㅤXoá ô đã chọn
-                                    </button>ㅤ
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => {
+                                                openPopupAlert(
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    () => { deleteData(selectedIds) }
+                                                )
+                                            }}
+                                            className="btn bg-gradient-info">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                            ㅤXoá ô đã chọn
+                                        </button>ㅤ
 
-                                    {/* <button
+                                        {/* <button
                                         style={{ display: "inline-block" }}
                                         onClick={() => { setpopupXuat(true) }}
                                         className="btn bg-gradient-info">
                                         <FontAwesomeIcon icon={faDownload} />
                                         ㅤXuất ô đã chọn
                                     </button>ㅤ */}
-                                </div>
-                        }
-
-                        <div style={{ 'display': "inline-block", float: 'right' }}>
-                            {/* số hàng trên trang */}
-                            <ItemsPerPage
-                                dataRes={dataRes}
-                                openPopupAlert={openPopupAlert}
-                                dataUser={dataUser}
-                                setdataUser={setdataUser}
-                            />
-                            ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
-                            {
-                                dataUser.search !== '' &&
-                                <button
-                                    className="btn btn-close"
-                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
-                                    onClick={() => {
-                                        setdataUser({
-                                            ...dataUser,
-                                            search: ''
-                                        });
-                                    }}
-                                >
-                                    X
-                                </button>
+                                    </div>
                             }
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="MaThanhVien">Tìm theo Mã Thành Viên</option>
-                                <option value="TenThanhVien">Tìm theo Tên Thành Viên</option>
-                                <option value="DiaChi">Tìm theo Địa Chỉ</option>
-                                <option value="Email">Tìm theo Email</option>
-                                <option value="SoDienThoai">Tìm theo SĐT</option>
-                            </select>
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                <option value='false'>Chế độ tìm: Gần đúng</option>
-                                <option value="true">Chế độ tìm: Chính xác</option>
-                            </select>
 
+                            <div style={{ 'display': "inline-block", float: 'right' }}>
+                                {/* số hàng trên trang */}
+                                <ItemsPerPage
+                                    dataRes={dataRes}
+                                    openPopupAlert={openPopupAlert}
+                                    dataUser={dataUser}
+                                    setdataUser={setdataUser}
+                                />
+                                ㅤ
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                                {
+                                    dataUser.search !== '' &&
+                                    <button
+                                        className="btn btn-close"
+                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        onClick={() => {
+                                            setdataUser({
+                                                ...dataUser,
+                                                search: ''
+                                            });
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                }
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                    <option value="MaThanhVien">Tìm theo Mã Thành Viên</option>
+                                    <option value="TenThanhVien">Tìm theo Tên Thành Viên</option>
+                                    <option value="DiaChi">Tìm theo Địa Chỉ</option>
+                                    <option value="Email">Tìm theo Email</option>
+                                    <option value="SoDienThoai">Tìm theo SĐT</option>
+                                </select>
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                    <option value='false'>Chế độ tìm: Gần đúng</option>
+                                    <option value="true">Chế độ tìm: Chính xác</option>
+                                </select>
+
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
@@ -464,17 +475,42 @@ function TabThanhVien() {
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
                         />
-                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
                     </div>
+                    {!props.isMobile ? <div>
+                        <div style={{ height: '7vh' }}></div>
+                        <div style={{
+                            display: 'flex', width: '100%', position: 'absolute',
+                            right: 0,
+                            bottom: 0, margin: '1rem'
+                        }} >
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{
+                                fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
+                            }}></label></div>
+
+                            <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
+                                <div style={{ marginRight: '2rem' }}>
+                                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                                </div>
+                                {/* phân trang */}
+                                <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                            </div>
+                        </div>
+                    </div> : <Pagination
+                        setdataUser={setdataUser}
+                        dataUser={dataUser}
+                        dataRes={dataRes}
+                    />
+                    }
+
                 </div>
+
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
+
             {
                 popup1 && <div className="popup">
                     <Them_suaThanhVien
@@ -486,6 +522,7 @@ function TabThanhVien() {
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
+                        // isMobile= {props.isMobile} //không truyền nữa, sử dụng redux
                     />
                 </div>
             }
@@ -520,7 +557,7 @@ function TabThanhVien() {
                 />
                 </div>
             } */}
-           
+
         </div>
     )
 

@@ -6,14 +6,14 @@ const TableXe = (props) => {
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
         if (isAsc) {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc',page:1 })
             setIsAsc(false)
             if (value === 'NamSanXuat' || value === 'NgayMua')
                 props.addNotification(`Sắp xếp cũ nhất tới mới nhất theo ${value}`, 'success', 3000)
             else
                 props.addNotification(`Sắp xếp tăng dần theo ${value}`, 'success', 3000)
         } else {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc',page:1 })
             setIsAsc(true)
             if (value === 'NamSanXuat' || value === 'NgayMua')
                 props.addNotification(`Sắp xếp mới nhất đến cũ nhất theo ${value}`, 'success', 3000)
@@ -136,8 +136,24 @@ const TableXe = (props) => {
                             <td style={{ textAlign: 'left' }} >{dulieu.NhanHieu}</td>
                             <td >{dulieu.NgayMua}</td>
                             <td style={{ textAlign: 'left' }} >{dulieu.Mau}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.LinhKien}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.MoTaTinhTrangXe}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.LinhKien ?
+                                        dulieu.LinhKien.length > 35 ?
+                                            dulieu.LinhKien.slice(0, 35) + '...' :
+                                            dulieu.LinhKien
+                                        : ''
+                                }
+                            </td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.MoTaTinhTrangXe ?
+                                        dulieu.MoTaTinhTrangXe.length > 20 ?
+                                            dulieu.MoTaTinhTrangXe.slice(0, 20) + '...' :
+                                            dulieu.MoTaTinhTrangXe
+                                        : ''
+                                }
+                            </td>
                             {/* <td style={{ padding: '0' }}>
                                 <img
                                     height={'35px'}

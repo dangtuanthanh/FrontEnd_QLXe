@@ -4,20 +4,20 @@ import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowDown, faArrowUp
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetRegistry, urlDeleteRegistry } from "../url";
+import { urlGetMyContract, urlDeleteContract } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableDangKiem from "../Table/TableDangKiem";
-import Them_suaDangKiem from "../Popup/them_suaDangKiem";
-function TabDangKiem(props) {
+import TableHopDong from "../Table/TableHopDong";
+import Them_suaHopDongCuaToi from "../Popup/them_suaHopDongCuaToi";
+function TabHopDongCuaToi(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'MaXe',
+        sortBy: 'MaHopDong',
         sortOrder: 'asc',
-        searchBy: 'BienSoXe',
+        searchBy: 'TenThanhVien',
         search: '',
         searchExact: 'false'
     });//
@@ -106,13 +106,12 @@ function TabDangKiem(props) {
     const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
 
-    const [iDAction2, setIDAction2] = useState();//giá trị của id khi thực hiện sửa xoá
-    const [iDAction3, setIDAction3] = useState();//giá trị của id khi thực hiện sửa xoá
+
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaXe',
+            sortBy: 'MaHopDong',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -124,7 +123,7 @@ function TabDangKiem(props) {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaXe',
+            sortBy: 'MaHopDong',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -135,7 +134,7 @@ function TabDangKiem(props) {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaXe',
+            sortBy: 'MaHopDong',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -145,19 +144,19 @@ function TabDangKiem(props) {
 
 
     //Xoá dữ liệu
-    const deleteData = (ID, ID2) => {
+    const deleteData = (ID) => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        const data = {
-            ID: ID,
-            ID2: ID2
-        }
-        fetch(`${urlDeleteRegistry}`, {
+        let IDs = [ID]
+        if (Array.isArray(ID)) {
+            IDs = ID.map(item => Number(item));
+        } else IDs = [ID];
+        fetch(`${urlDeleteContract}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({ IDs })
         })
             .then(response => {
                 if (response.status === 200) {
@@ -174,6 +173,7 @@ function TabDangKiem(props) {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
                 dispatch({ type: 'SET_LOADING', payload: false })
+                setSelectedIds([])
                 TaiDuLieu()
 
             })
@@ -187,21 +187,24 @@ function TabDangKiem(props) {
 
             });
     }
-    const filterLanMoiNhat = () => {
+    const filterHetHan = () => {
         setdataUser({
             ...dataUser,
             page: 1,
             search: ' ',
-            searchBy: 'LanMoiNhat'
+            searchBy: 'HetHan'
         });
     };
+    // sửa hàng loạt
+    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
+
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetRegistry}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetMyContract}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -255,41 +258,71 @@ function TabDangKiem(props) {
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Đăng Kiểm{props.isMobile && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button>}</h2>
+                    <h2>Hợp Đồng Của Tôi
+                        {props.isMobile && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button>}
+                        <label
+                            style={{ float: 'right', color: 'gray', fontSize: '1rem' }}>
+                            Số Hợp Đồng: {dataRes.itemsPerPage} | Tổng Tiền:ㅤ
+                            {new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND'
+                            }).format(duLieuHienThi.reduce((total, item) => {
+                                return total + item.TongTien
+                            }, 0))}
+                        </label>
+                    </h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
                     {showButtonFunction &&
                         <div>
-                            <div style={{ 'display': "inline-block", float: 'left' }}>
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={() => { TaiDuLieu(); }}
-                                    className="btn bg-gradient-info">
-                                    <FontAwesomeIcon icon={faRotate} />
-                                    ㅤLàm Mới
-                                </button>ㅤ
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={() => {
-                                        setIsInsert(true)
-                                        setPopupInsertUpdate(true)
-                                        setIDAction()
-                                        setIDAction2()
-                                    }}
-
-                                    className="btn bg-gradient-info">
-                                    <FontAwesomeIcon icon={faAdd} />
-                                    ㅤThêm
-                                </button>ㅤ
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={filterLanMoiNhat}
-                                    className="btn btn-light">
-                                    <FontAwesomeIcon icon={faFilter} />
-                                    ㅤ Lần Mới Nhất
-                                </button>ㅤ
-                            </div>
-
+                            {
+                                selectedIds.length == 0
+                                    ? <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => { TaiDuLieu(); }}
+                                            className="btn bg-gradient-info">
+                                            <FontAwesomeIcon icon={faRotate} />
+                                            ㅤLàm Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterHetHan}
+                                            className="btn btn-light">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤ Hết Hạn
+                                        </button>ㅤ
+                                    </div>
+                                    : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            //onClick={setSelectedIds([])}
+                                            onClick={() => { setSelectedIds([]); }}
+                                            className="btn btn-danger">
+                                            <FontAwesomeIcon icon={faArrowLeft} />
+                                            ㅤQuay Lại
+                                        </button>ㅤ
+                                        {/* <button
+                                                        style={{ display: "inline-block" }}
+                                                        //onClick={() => {togglePopup6();}}
+                                                        className="btn bg-gradient-info">
+                                                        <FontAwesomeIcon icon={faPencil} />
+                                                        ㅤSửa ô đã chọn
+                                                    </button>ㅤ */}
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => {
+                                                openPopupAlert(
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    () => { deleteData(selectedIds) }
+                                                )
+                                            }}
+                                            className="btn bg-gradient-info">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                            ㅤXoá ô đã chọn
+                                        </button>ㅤ
+                                    </div>
+                            }
 
                             <div style={{ 'display': "inline-block", float: 'right' }}>
                                 {/* số hàng trên trang */}
@@ -307,11 +340,11 @@ function TabDangKiem(props) {
                                         className="btn btn-close"
                                         style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
                                         onClick={() => {
-                                            if (dataUser.searchBy === 'LanMoiNhat')
+                                            if (dataUser.searchBy === 'HetHan')
                                                 setdataUser({
                                                     ...dataUser,
                                                     search: '',
-                                                    searchBy: 'BienSoXe'
+                                                    searchBy: 'TenThanhVien'
                                                 });
                                             else
                                                 setdataUser({
@@ -325,14 +358,12 @@ function TabDangKiem(props) {
                                 }
                                 ㅤ
                                 <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                    <option value="BienSoXe">Tìm theo Biển Số Xe</option>
-                                    <option value="LanDangKiem">Tìm theo Lần Đăng Kiểm</option>
-                                    <option value="NgayDangKiem">Tìm theo Ngày Đăng Kiểm</option>
-                                    <option value="NgayHetHan">Tìm theo Ngày Hết Hạn</option>
-                                    <option value="ThoiGian">Tìm theo Thời Gian Hiệu Lực</option>
-                                    <option value="NoiDangKiem">Tìm theo Nơi Đăng Kiểm</option>
-                                    <option value="NguoiDiDangKiem">Tìm theo Người Đi Đăng Kiểm</option>
-                                    <option value="TinhTrangApDung">Tìm theo Trạng Thái</option>
+                                    <option value="TenThanhVien">Tìm theo Tên Người Ký</option>
+                                    <option value="SoHopDong">Tìm theo Mã Hợp Đồng</option>
+                                    <option value="NgayLamHopDong">Tìm theo Ngày</option>
+                                    <option value="NgayHetHanHopDong">Tìm theo Ngày Hết Hạn</option>
+                                    <option value="MaThanhVien">Tìm theo Mã Thành Viên</option>
+                                    {/* <option value="TinhTrangApDung">Tìm theo Tình Trạng</option> */}
                                 </select>
                                 ㅤ
                                 <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -341,25 +372,26 @@ function TabDangKiem(props) {
                                 </select>
 
                             </div>
-                        </div>}
+                        </div>
+                    }
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableDangKiem
+                        <TableHopDong
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
                             addNotification={addNotification}
                             setIsInsert={setIsInsert}
                             setIDAction={setIDAction}
-                            setIDAction2={setIDAction2}
-                            setIDAction3={setIDAction3}
                             setPopupInsertUpdate={setPopupInsertUpdate}
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
+                            selectedIds={selectedIds}
+                            setSelectedIds={setSelectedIds}
                         />
-                    </div>
-                    {!props.isMobile ? <div>
+                        </div>
+                         {!props.isMobile ?<div>
                         <div style={{ height: '7vh' }}></div>
                         <div style={{
                             display: 'flex', width: '100%', position: 'absolute',
@@ -373,7 +405,7 @@ function TabDangKiem(props) {
                             <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
                                 <div style={{ marginRight: '2rem' }}>
                                     {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDangKiem" || dataRes.sortBy === "NgayHetHan" ?
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLamHopDong" || dataRes.sortBy === "NgayHetHanHopDong" ?
                                         (dataRes.sortOrder === 'asc'
                                             ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
                                             : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
@@ -391,19 +423,18 @@ function TabDangKiem(props) {
                                 />
                             </div>
                         </div>
-                    </div> : <Pagination
-                        setdataUser={setdataUser}
-                        dataUser={dataUser}
-                        dataRes={dataRes}
-                    />
-                    }
-
+                        </div>: <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                        }
+                    
                 </div>
             </div>
-
             {
                 popupInsertUpdate && <div className="popup">
-                    <Them_suaDangKiem
+                    <Them_suaHopDongCuaToi
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
                         tieuDe='Thông Tin Loại Xe'
@@ -412,8 +443,6 @@ function TabDangKiem(props) {
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
-                        iDAction2={iDAction2}
-                        iDAction3={iDAction3}
                     />
                 </div>
             }
@@ -429,4 +458,4 @@ function TabDangKiem(props) {
 
 }
 
-export default TabDangKiem
+export default TabHopDongCuaToi

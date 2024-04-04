@@ -6,11 +6,11 @@ const TableNhomLoaiXe = (props) => {
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
         if (isAsc) {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc',page:1 })
             setIsAsc(false)
             props.addNotification(`Sắp xếp tăng dần theo ${value}`, 'success', 3000)
         } else {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc',page:1 })
             setIsAsc(true)
             props.addNotification(`Sắp xếp giảm dần theo ${value}`, 'success', 3000)
         }
@@ -121,8 +121,24 @@ const TableNhomLoaiXe = (props) => {
 
                             </td>
                             {/* <td >{dulieu.MaNhomLoaiXe}</td> */}
-                            <td style={{ textAlign: 'left' }} >{dulieu.TenNhomLoaiXe}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.MoTa}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.TenNhomLoaiXe ?
+                                        dulieu.TenNhomLoaiXe.length > 30 ?
+                                            dulieu.TenNhomLoaiXe.slice(0, 30) + '...' :
+                                            dulieu.TenNhomLoaiXe
+                                        : ''
+                                }
+                            </td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.MoTa ?
+                                        dulieu.MoTa.length > 50 ?
+                                            dulieu.MoTa.slice(0, 50) + '...' :
+                                            dulieu.MoTa
+                                        : ''
+                                }
+                            </td>
                             {/* <td style={{ padding: '0' }}>
                                 <img
                                     height={'35px'}

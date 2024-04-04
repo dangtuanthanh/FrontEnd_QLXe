@@ -1,4 +1,6 @@
 //http://localhost:3000
+// http://localhost:3000
+//https://backend-qlxe.onrender.com/
 /* Hệ thống
  */
 //kiểm tra phiên đăng nhập
@@ -120,17 +122,62 @@ export const urlUpdateLocate = 'https://backend-qlxe.onrender.com/updateLocate';
 export const urlDeleteLocate = 'https://backend-qlxe.onrender.com/deleteLocate';
 
 
+/* Quản lý hợp đồng
+ */
+//lấy danh sách hợp đồng
+export const urlGetContract = 'https://backend-qlxe.onrender.com/getContract';
+// thêm hợp đồng
+export const urlInsertContract = 'https://backend-qlxe.onrender.com/insertContract';
+// sửa hợp đồng
+export const urlUpdateContract = 'https://backend-qlxe.onrender.com/updateContract';
+//xoá hợp đồng
+export const urlDeleteContract = 'https://backend-qlxe.onrender.com/deleteContract';
+// lấy danh sách hợp đồng của tôi
+export const urlGetMyContract = 'https://backend-qlxe.onrender.com/getMyContract';
 
+
+/* Quản lý hạng mục bảo dưỡng
+ */
+//lấy danh sách hạng mục bảo dưỡng
+export const urlGetMaintenanceItem = 'https://backend-qlxe.onrender.com/getMaintenanceItem';
+// thêm hạng mục bảo dưỡng
+export const urlInsertMaintenanceItem = 'https://backend-qlxe.onrender.com/insertMaintenanceItem';
+// sửa hạng mục bảo dưỡng
+export const urlUpdateMaintenanceItem = 'https://backend-qlxe.onrender.com/updateMaintenanceItem';
+//xoá hạng mục bảo dưỡng
+export const urlDeleteMaintenanceItem = 'https://backend-qlxe.onrender.com/deleteMaintenanceItem';
+
+/* Quản lý bảo dưỡng
+ */
+//lấy danh sách bảo dưỡng
+export const urlGetMaintenance = 'https://backend-qlxe.onrender.com/getMaintenance';
+// thêm bảo dưỡng
+export const urlInsertMaintenance = 'https://backend-qlxe.onrender.com/insertMaintenance';
+// sửa bảo dưỡng
+export const urlUpdateMaintenance = 'https://backend-qlxe.onrender.com/updateMaintenance';
+//xoá bảo dưỡng
+export const urlDeleteMaintenance = 'https://backend-qlxe.onrender.com/deleteMaintenance';
+
+/* Quản lý lịch sử sử dụng
+ */
+//lấy danh sách lịch sử sử dụng
+export const urlGetUsageHistory = 'https://backend-qlxe.onrender.com/getUsageHistory';
+// thêm lịch sử sử dụng
+export const urlInsertUsageHistory = 'https://backend-qlxe.onrender.com/insertUsageHistory';
+// sửa lịch sử sử dụng
+export const urlUpdateUsageHistory = 'https://backend-qlxe.onrender.com/updateUsageHistory';
+//xoá lịch sử sử dụng
+export const urlDeleteUsageHistory = 'https://backend-qlxe.onrender.com/deleteUsageHistory';
 
 /* Bảng điều khiển
  */
 //lấy số bàn đang có khách
-export const urlGetOccupiedTables = 'https://backend-qlxe.onrender.com/getOccupiedTables';
+export const urlGetTotalCar = 'https://backend-qlxe.onrender.com/getTotalCar';
 //lấy số hoá đơn trong ngày
-export const urlGetInvoiceToday = 'https://backend-qlxe.onrender.com/getInvoiceToday';
+export const urlGetTotalMember = 'https://backend-qlxe.onrender.com/getTotalMember';
 //lấy tổng tiền hoá đơn trong ngày
-export const urlGetRevenueToday = 'https://backend-qlxe.onrender.com/getRevenueToday';
+export const urlGetYearContract = 'https://backend-qlxe.onrender.com/getYearContract';
 //lấy tổng tiền hoá đơn trong tháng
-export const urlGetRevenueMonth = 'https://backend-qlxe.onrender.com/getRevenueMonth';
+export const urlGetRevenueYear = 'https://backend-qlxe.onrender.com/getRevenueYear';
 //lấy tổng tiền hoá đơn trong tuần
-export const urlGetListRevenueMonth = 'https://backend-qlxe.onrender.com/getListRevenueMonth';
+export const urlGetListRevenueYear = 'https://backend-qlxe.onrender.com/getListRevenueYear';

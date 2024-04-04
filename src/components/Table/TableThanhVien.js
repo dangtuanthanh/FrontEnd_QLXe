@@ -6,11 +6,11 @@ const TableThanhVien = (props) => {
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
         if (isAsc) {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc',page:1 })
             setIsAsc(false)
             props.addNotification(`Sắp xếp tăng dần theo ${value}`, 'success', 3000)
         } else {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc',page:1 })
             setIsAsc(true)
             props.addNotification(`Sắp xếp giảm dần theo ${value}`, 'success', 3000)
         }
@@ -95,7 +95,6 @@ const TableThanhVien = (props) => {
                         onChange={handleSelectAllChange}
                     /></th>
                     <th style={{ textAlign: 'center' }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th>
-                    <th style={{ textAlign: 'center' }} onClick={() => handleClickSort('MaThanhVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mã Thành Viên </th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenThanhVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Thành Viên </th>
                     <th style={{ padding: 8 }}  class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Địa Chỉ </th>
                     <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Email </th>
@@ -124,10 +123,25 @@ const TableThanhVien = (props) => {
 
                             </td>
                             <td >{index + 1}</td>
-                            <td >{dulieu.MaThanhVien}</td>
                             <td style={{ textAlign: 'left' }} >{dulieu.TenThanhVien}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.DiaChi}</td>
-                            <td style={{ textAlign: 'left' }}>{dulieu.Email}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.DiaChi ?
+                                        dulieu.DiaChi.length > 40 ?
+                                            dulieu.DiaChi.slice(0, 40) + '...' :
+                                            dulieu.DiaChi
+                                        : ''
+                                }
+                            </td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.Email ?
+                                        dulieu.Email.length > 20 ?
+                                            dulieu.Email.slice(0, 20) + '...' :
+                                            dulieu.Email
+                                        : ''
+                                }
+                            </td>
                             <td>{dulieu.SoDienThoai}</td>
                             {/* <td style={{ padding: '0' }}>
                                 <img

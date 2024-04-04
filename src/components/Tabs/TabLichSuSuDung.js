@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { faRotate, faAdd,faFilter, faArrowDown,faArrowUp  } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetRegistry, urlDeleteRegistry } from "../url";
+import { urlGetUsageHistory, urlDeleteUsageHistory } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableDangKiem from "../Table/TableDangKiem";
-import Them_suaDangKiem from "../Popup/them_suaDangKiem";
-function TabDangKiem(props) {
+import TableLichSuSuDung from "../Table/TableLichSuSuDung";
+import Them_suaLichSuSuDung from "../Popup/them_suaLichSuSuDung";
+function TabLichSuSuDung(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
@@ -22,11 +22,11 @@ function TabDangKiem(props) {
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
-    //Xử lý hiển thị các nút chức năng
-    const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
-    const handleToggleButtonFunction = () => {
-        setShowButtonFunction(!showButtonFunction);
-    };
+ //Xử lý hiển thị các nút chức năng
+ const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
+ const handleToggleButtonFunction = () => {
+     setShowButtonFunction(!showButtonFunction);
+ };
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -151,7 +151,7 @@ function TabDangKiem(props) {
             ID: ID,
             ID2: ID2
         }
-        fetch(`${urlDeleteRegistry}`, {
+        fetch(`${urlDeleteUsageHistory}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ function TabDangKiem(props) {
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetRegistry}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetUsageHistory}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -255,97 +255,97 @@ function TabDangKiem(props) {
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Đăng Kiểm{props.isMobile && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button>}</h2>
+                    <h2> Quản Lý Lịch Sử Sử Dụng Xe {props.isMobile &&<button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction?faArrowUp :faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
                     {showButtonFunction &&
-                        <div>
-                            <div style={{ 'display': "inline-block", float: 'left' }}>
+                    <div>
+                        <div style={{ 'display': "inline-block", float: 'left' }}>
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={() => { TaiDuLieu(); }}
+                                className="btn bg-gradient-info">
+                                <FontAwesomeIcon icon={faRotate} />
+                                ㅤLàm Mới
+                            </button>ㅤ
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={() => {
+                                    setIsInsert(true)
+                                    setPopupInsertUpdate(true)
+                                    setIDAction()
+                                    setIDAction2()
+                                }}
+
+                                className="btn bg-gradient-info">
+                                <FontAwesomeIcon icon={faAdd} />
+                                ㅤThêm
+                            </button>ㅤ
+                            <button
+                                style={{ 'display': "inline-block" }}
+                                onClick={filterLanMoiNhat}
+                                className="btn btn-light">
+                                <FontAwesomeIcon icon={faFilter} />
+                                ㅤ Lần Mới Nhất
+                            </button>ㅤ
+                        </div>
+
+
+                        <div style={{ 'display': "inline-block", float: 'right' }}>
+                            {/* số hàng trên trang */}
+                            <ItemsPerPage
+                                dataRes={dataRes}
+                                openPopupAlert={openPopupAlert}
+                                dataUser={dataUser}
+                                setdataUser={setdataUser}
+                            />
+                            ㅤ
+                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                            {
+                                dataUser.search !== '' &&
                                 <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={() => { TaiDuLieu(); }}
-                                    className="btn bg-gradient-info">
-                                    <FontAwesomeIcon icon={faRotate} />
-                                    ㅤLàm Mới
-                                </button>ㅤ
-                                <button
-                                    style={{ 'display': "inline-block" }}
+                                    className="btn btn-close"
+                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
                                     onClick={() => {
-                                        setIsInsert(true)
-                                        setPopupInsertUpdate(true)
-                                        setIDAction()
-                                        setIDAction2()
+                                        if(dataUser.searchBy ==='LanMoiNhat')
+                                        setdataUser({
+                                            ...dataUser,
+                                            search: '',
+                                            searchBy:'BienSoXe'
+                                        });
+                                        else 
+                                        setdataUser({
+                                            ...dataUser,
+                                            search: ''
+                                        });
                                     }}
+                                >
+                                    X
+                                </button>
+                            }
+                            ㅤ
+                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                <option value="BienSoXe">Tìm theo Biển Số Xe</option>
+                                <option value="LanSuDung">Tìm theo Lần Sử Dụng</option>
+                                <option value="NgayDi">Tìm theo Ngày Đi</option>
+                                <option value="NgayVe">Tìm theo Ngày Về</option>
+                                <option value="ThoiGian">Tìm theo Thời Gian Di Chuyển</option>
+                                <option value="NguoiSuDung">Tìm theo Người Sử Dụng</option>
+                                <option value="MucDich">Tìm theo Mục Đích</option>
+                            </select>
+                            ㅤ
+                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                <option value='false'>Chế độ tìm: Gần đúng</option>
+                                <option value="true">Chế độ tìm: Chính xác</option>
+                            </select>
 
-                                    className="btn bg-gradient-info">
-                                    <FontAwesomeIcon icon={faAdd} />
-                                    ㅤThêm
-                                </button>ㅤ
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={filterLanMoiNhat}
-                                    className="btn btn-light">
-                                    <FontAwesomeIcon icon={faFilter} />
-                                    ㅤ Lần Mới Nhất
-                                </button>ㅤ
-                            </div>
-
-
-                            <div style={{ 'display': "inline-block", float: 'right' }}>
-                                {/* số hàng trên trang */}
-                                <ItemsPerPage
-                                    dataRes={dataRes}
-                                    openPopupAlert={openPopupAlert}
-                                    dataUser={dataUser}
-                                    setdataUser={setdataUser}
-                                />
-                                ㅤ
-                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
-                                {
-                                    dataUser.search !== '' &&
-                                    <button
-                                        className="btn btn-close"
-                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
-                                        onClick={() => {
-                                            if (dataUser.searchBy === 'LanMoiNhat')
-                                                setdataUser({
-                                                    ...dataUser,
-                                                    search: '',
-                                                    searchBy: 'BienSoXe'
-                                                });
-                                            else
-                                                setdataUser({
-                                                    ...dataUser,
-                                                    search: ''
-                                                });
-                                        }}
-                                    >
-                                        X
-                                    </button>
-                                }
-                                ㅤ
-                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                    <option value="BienSoXe">Tìm theo Biển Số Xe</option>
-                                    <option value="LanDangKiem">Tìm theo Lần Đăng Kiểm</option>
-                                    <option value="NgayDangKiem">Tìm theo Ngày Đăng Kiểm</option>
-                                    <option value="NgayHetHan">Tìm theo Ngày Hết Hạn</option>
-                                    <option value="ThoiGian">Tìm theo Thời Gian Hiệu Lực</option>
-                                    <option value="NoiDangKiem">Tìm theo Nơi Đăng Kiểm</option>
-                                    <option value="NguoiDiDangKiem">Tìm theo Người Đi Đăng Kiểm</option>
-                                    <option value="TinhTrangApDung">Tìm theo Trạng Thái</option>
-                                </select>
-                                ㅤ
-                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                    <option value='false'>Chế độ tìm: Gần đúng</option>
-                                    <option value="true">Chế độ tìm: Chính xác</option>
-                                </select>
-
-                            </div>
-                        </div>}
+                        </div>
+                    </div>
+}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableDangKiem
+                        <TableLichSuSuDung
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
@@ -358,8 +358,8 @@ function TabDangKiem(props) {
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                         />
-                    </div>
-                    {!props.isMobile ? <div>
+                        </div>
+                        {!props.isMobile ?<div>
                         <div style={{ height: '7vh' }}></div>
                         <div style={{
                             display: 'flex', width: '100%', position: 'absolute',
@@ -373,7 +373,7 @@ function TabDangKiem(props) {
                             <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
                                 <div style={{ marginRight: '2rem' }}>
                                     {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDangKiem" || dataRes.sortBy === "NgayHetHan" ?
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDi" || dataRes.sortBy === "NgayVe" ?
                                         (dataRes.sortOrder === 'asc'
                                             ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
                                             : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
@@ -391,19 +391,18 @@ function TabDangKiem(props) {
                                 />
                             </div>
                         </div>
-                    </div> : <Pagination
-                        setdataUser={setdataUser}
-                        dataUser={dataUser}
-                        dataRes={dataRes}
-                    />
-                    }
-
+                        </div>: <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                        }
+                    
                 </div>
             </div>
-
             {
                 popupInsertUpdate && <div className="popup">
-                    <Them_suaDangKiem
+                    <Them_suaLichSuSuDung
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
                         tieuDe='Thông Tin Loại Xe'
@@ -429,4 +428,4 @@ function TabDangKiem(props) {
 
 }
 
-export default TabDangKiem
+export default TabLichSuSuDung

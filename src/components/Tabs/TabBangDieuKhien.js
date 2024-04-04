@@ -1,33 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
 import { getCookie } from "../Cookie";
-import { urlGetOccupiedTables, urlGetInvoiceToday, urlGetRevenueToday, urlGetRevenueMonth, urlGetListRevenueMonth } from "../url";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons'
+
+import { urlGetTotalCar, urlGetTotalMember, urlGetYearContract, urlGetRevenueYear, urlGetListRevenueYear } from "../url";
 function TabBangDieuKhien() {
     //xử lý redux
     const dispatch = useDispatch();
-    const [banCoKhach, setBanCoKhach] = useState('...');
-    const [hoaDonTrongNgay, setHoaDonTrongNgay] = useState('...');
-    const [doanhThuHomNay, setDoanhThuHomNay] = useState('...');
-    const [doanhThuThang, setDoanhThuThang] = useState('...');
+    const isMobile = useSelector(state => state.isMobile.isMobile)
+    const [tongSoXe, setTongSoXe] = useState('...');
+    const [tongThanhVien, setTongThanhVien] = useState('...');
+    const [hopDongNamNay, setHopDongNamNay] = useState('...');
+    const [doanhThuNamNay, setDoanhThuNamNay] = useState('...');
     const [label, setLabel] = useState([]);
     const [dataSetNow, setDataSetNow] = useState([]);
-    const [dataSetBefore, setDataSetBefore] = useState([]);
+    const [dataSetoldYear, setDataSetoldYear] = useState([]);
+    const currentYear = new Date().getFullYear();
+    const previousYear = currentYear - 1;
+    const [dataUser, setdataUser] = useState({//dữ liệu người dùng
+        oldYear: previousYear,
+        year: currentYear
+    });//
+    const handleChangeYear = (e) => {
+        setdataUser({
+            ...dataUser,
+            year: e.target.value
+        });
+    }
+    const handleChangeOldYear = (e) => {
+        setdataUser({
+            ...dataUser,
+            oldYear: e.target.value
+        });
+    }
+    const handleSwap = () => {
+        setdataUser({
+            year: dataUser.oldYear,
+            oldYear: dataUser.year
+        });
+    }
+    const years = [];
+    for (let i = 2000; i <= 2099; i++) {
+        years.push(i);
+    }
     const dataDoThi = {
         labels: label,
         datasets: [
             {
-                label: 'Tháng này',
-                data: dataSetNow,
-                borderColor: 'rgb(75, 192, 192)'
+                label: dataUser.oldYear,
+                data: dataSetoldYear,
+                borderColor: 'rgb(255, 99, 132)'
             },
             {
-                label: 'Tháng trước',
-                data: dataSetBefore,
-                borderColor: 'rgb(255, 99, 132)'
+                label: dataUser.year,
+                data: dataSetNow,
+                borderColor: 'rgb(75, 192, 192)'
             }
+
         ]
     }
     const optionsDoThi = {
@@ -65,7 +98,7 @@ function TabBangDieuKhien() {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:isMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -128,37 +161,83 @@ function TabBangDieuKhien() {
         );
     };
     useEffect(() => {
+        TaiDuLieu()
+    }, [dataUser]);
+    const TaiDuLieu = () => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        fetch(`${urlGetListRevenueYear}?oldYear=${dataUser.oldYear}&year=${dataUser.year}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                const label = [];
+                const dataSetoldYear = [];
+                const dataSetNow = [];
+
+                data.oldYear.forEach(item => {
+                    label.push(item.Month);
+                    dataSetoldYear.push(item.Revenue);
+                });
+
+                data.year.forEach(item => {
+                    dataSetNow.push(item.Revenue);
+                });
+
+                setLabel(label);
+                setDataSetoldYear(dataSetoldYear);
+                setDataSetNow(dataSetNow);
+                //ẩn loading
+                dispatch({ type: 'SET_LOADING', payload: false })
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    };
+    useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true })
         //lấy 1 sản phẩm
-        const fetch1 = fetch(`${urlGetOccupiedTables}`, {
+        const fetch1 = fetch(`${urlGetTotalCar}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
             },
         })
-        const fetch2 = fetch(`${urlGetInvoiceToday}`, {
+        const fetch2 = fetch(`${urlGetTotalMember}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
             },
         })
-        const fetch3 = fetch(`${urlGetRevenueToday}`, {
+        const fetch3 = fetch(`${urlGetYearContract}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
             },
         })
-        const fetch4 = fetch(`${urlGetRevenueMonth}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
-        const fetch5 = fetch(`${urlGetListRevenueMonth}`, {
+        const fetch4 = fetch(`${urlGetRevenueYear}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -166,7 +245,7 @@ function TabBangDieuKhien() {
             },
         })
 
-        Promise.all([fetch1, fetch2, fetch3, fetch4, fetch5])
+        Promise.all([fetch1, fetch2, fetch3, fetch4])
             .then(responses => {
                 const processedResponses = responses.map(response => {
                     if (response.status === 200) {
@@ -182,17 +261,11 @@ function TabBangDieuKhien() {
                 return Promise.all(processedResponses);
             })
             .then(data => {
-                setBanCoKhach(data[0]) //số bàn có khách
-                setHoaDonTrongNgay(data[1])
-                setDoanhThuHomNay(data[2])
-                setDoanhThuThang(data[3])
-                data[4].current.forEach(item => {
-                    setLabel(prev => [...prev, item.Day]);
-                    setDataSetNow(prev => [...prev, item.Revenue]);
-                });
-                data[4].previous.forEach(item => {
-                    setDataSetBefore(prev => [...prev, item.Revenue]);
-                });
+                setTongSoXe(data[0]) //số bàn có khách
+                setTongThanhVien(data[1])
+                setHopDongNamNay(data[2])
+                setDoanhThuNamNay(data[3])
+
                 //ẩn loading
                 dispatch({ type: 'SET_LOADING', payload: false })
             })
@@ -208,37 +281,37 @@ function TabBangDieuKhien() {
 
 
     }, []);
+    
     return (
         <div>
-            <div class="card mb-4" >
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >
                 <div class="card-header pb-0" >
                     <h2>Bảng Điều Khiển</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
                     <div>
-
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2 mt-2" >
                     <div className="" style={{ marginLeft: '10px', marginRight: '10px' }}>
-                        <div className="row">
-                            <div className="col-3" >
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
-                                    <Link class="row" to={`/BanVaKhuVuc`} >
-                                        
+                        <div className={`${isMobile ? 'flex-column' : 'row'}`} >
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} >
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: 'rgb(239 244 255)' }}>
+                                    <Link class="row" to={`/Xe`} >
+
                                         <div class="col-8">
                                             <div class="numbers">
-                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Bàn đang có khách</p>
+                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Tổng Số Xe</p>
                                                 <h5 class="font-weight-bolder mb-0">
-                                                    {banCoKhach}
+                                                    {tongSoXe}
                                                 </h5>
 
                                             </div>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                                <i class="ni ni-check-bold text-lg opacity-10" aria-hidden="true"></i>
+                                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
+                                                <i class="ni ni-delivery-fast text-lg opacity-10" aria-hidden="true"></i>
                                             </div>
                                         </div>
                                     </Link>
@@ -246,41 +319,62 @@ function TabBangDieuKhien() {
 
 
                             </div>
-                            <div className="col-3">
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
-                                    <Link class="row" to={`/HoaDon`}>
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ marginTop: isMobile && '1rem' }}>
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: 'rgb(239 244 255)' }}>
+                                    <Link class="row" to={`/ThanhVien`}>
                                         <div class="col-8">
                                             <div class="numbers">
-                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Hoá Đơn Hôm Nay</p>
+                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Tổng Số Thành Viên</p>
                                                 <h5 class="font-weight-bolder mb-0">
-                                                    {hoaDonTrongNgay}
+                                                    {tongThanhVien}
                                                 </h5>
                                             </div>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                                <i class="ni ni-single-copy-04 text-lg opacity-10" aria-hidden="true"></i>
+                                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
+                                                <i class="ni ni-circle-08 text-lg opacity-10" aria-hidden="true"></i>
                                             </div>
                                         </div>
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-3">
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
-                                    <Link class="row" to={`/HoaDon`}>
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ marginTop: isMobile && '1rem' }}>
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: 'rgb(239 244 255)' }}>
+                                    <Link class="row" to={`/HopDong`}>
                                         <div class="col-8">
                                             <div class="numbers">
-                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Doanh Thu Hôm Nay</p>
+                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Hợp Đồng Năm Nay</p>
+                                                <h5 class="font-weight-bolder mb-0">
+                                                    {hopDongNamNay}
+                                                </h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
+                                                <i class="ni ni-folder-17 text-lg opacity-10" aria-hidden="true"></i>
+
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ marginTop: isMobile && '1rem' }}>
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: 'rgb(239 244 255)' }}>
+                                    <Link class="row" to={`/HopDong`}>
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Doanh Thu Năm Nay</p>
                                                 <h5 class="font-weight-bolder mb-0">
                                                     {new Intl.NumberFormat('vi-VN', {
                                                         style: 'currency',
                                                         currency: 'VND'
-                                                    }).format(doanhThuHomNay)}
+                                                    }).format(doanhThuNamNay)}
+
                                                 </h5>
                                             </div>
                                         </div>
                                         <div class="col-4 text-end">
-                                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
                                                 <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
 
                                             </div>
@@ -288,44 +382,55 @@ function TabBangDieuKhien() {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-3">
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
-                                    <Link class="row" to={`/HoaDon`}>
-                                        <div class="col-8">
-                                            <div class="numbers">
-                                                <p class="text-sm mb-0 text-capitalize font-weight-bold" >Doanh Thu Tháng Này</p>
-                                                <h5 class="font-weight-bolder mb-0">
-                                                    {new Intl.NumberFormat('vi-VN', {
-                                                        style: 'currency',
-                                                        currency: 'VND'
-                                                    }).format(doanhThuThang)}
-
-                                                </h5>
-                                            </div>
-                                        </div>
-                                        <div class="col-4 text-end">
-                                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                                <i class="ni ni-calendar-grid-58 text-lg opacity-10" aria-hidden="true"></i>
-
-                                            </div>
-                                        </div>
-                                    </Link>
+                        </div>
+                        {isMobile && <hr class="horizontal dark" />}
+                        <div style={{ marginTop: isMobile ? '2%' : '1%', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+                                <h4 style={{ textAlign: 'center', textDecoration: 'underline' }}> Doanh Thu Năm
+                                </h4>
+                            </div>
+                            {!isMobile &&
+                                <div>
+                                    <select
+                                        value={dataUser.oldYear}
+                                        onChange={handleChangeOldYear}
+                                        className="form-select-sm"
+                                        style={{ marginLeft: 'auto', border: '2px solid rgb(255, 99, 132)' }}
+                                    >
+                                        {years.map(year => (
+                                            <option key={year} value={year}>
+                                                {year}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-                            </div>
+                            }
+                            {!isMobile && <div style={{ display: 'flex', alignItems: 'center' }}>
+                                ㅤ <FontAwesomeIcon icon={faExchangeAlt} onClick={() => { handleSwap() }} /> ㅤ</div>}
+                            {!isMobile &&
+                                <div>
+                                    <select
+                                        value={dataUser.year}
+                                        onChange={handleChangeYear}
+                                        className="form-select-sm"
+                                        style={{ marginLeft: 'auto', border: '2px solid rgb(75, 192, 192)' }}
+                                    >
+                                        {years.map(year => (
+                                            <option key={year} value={year}>
+                                                {year}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            }
                         </div>
-                        <div style={{ marginTop: '1%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', borderRadius: '15px', boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px' }}>
-                            <h4 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}> Doanh Thu Tháng
-                            </h4>
-                            <div style={{ width: '80%', display: 'flex', justifyContent: 'center', margin: '0 2% 0 2%' }}>
-                                <Line
-                                    data={dataDoThi}
-                                    options={optionsDoThi}
-
-                                >
-                                </Line>
-                            </div>
+                        <div style={{ width: isMobile ?'100%': '80%', display: 'flex', justifyContent: 'center', margin: '0 2% 0 2%' }}>
+                            <Line
+                                data={dataDoThi}
+                                options={optionsDoThi}
+                            >
+                            </Line>
                         </div>
-
 
                     </div>
 

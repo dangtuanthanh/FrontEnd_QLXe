@@ -6,14 +6,14 @@ const TableBaoHiem = (props) => {
     //hàm sắp xếp
     const handleClickSort = (value) => {//Xử lý click cột sắp xếp
         if (isAsc) {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'asc',page:1 })
             setIsAsc(false)
             if (value === 'NgayMuaBaoHiem' || value === 'NgayHetHan')
                 props.addNotification(`Sắp xếp cũ nhất tới mới nhất theo ${value}`, 'success', 3000)
             else
                 props.addNotification(`Sắp xếp tăng dần theo ${value}`, 'success', 3000)
         } else {
-            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc' })
+            props.setdataUser({ ...props.dataUser, sortBy: value, sortOrder: 'desc',page:1 })
             setIsAsc(true)
             if (value === 'NgayMuaBaoHiem' || value === 'NgayHetHan')
                 props.addNotification(`Sắp xếp mới nhất đến cũ nhất theo ${value}`, 'success', 3000)
@@ -43,7 +43,7 @@ const TableBaoHiem = (props) => {
                 {
                     props.duLieuHienThi.map((dulieu, index) =>
                         //<div  onClick={() => handleRowClick(thanhvien)}>
-                        <tr style={{ 'textAlign': 'center' }} id='trdata' key={index} onClick={() => {
+                        <tr style={{ 'textAlign': 'center', backgroundColor: dulieu.SapHetHan ? '#fff7f7' : null   }} id='trdata' key={index} onClick={() => {
                             props.setIsInsert(false)
                             props.setIDAction(dulieu.MaXe)
                             props.setIDAction2(dulieu.LanMuaBaoHiem)
@@ -55,7 +55,15 @@ const TableBaoHiem = (props) => {
                             <td >{dulieu.LanMuaBaoHiem}</td>
                             <td >{dulieu.NgayMuaBaoHiem}</td>
                             <td >{dulieu.NgayHetHan}</td>
-                            <td style={{ textAlign: 'left' }} >{dulieu.LoaiBaoHiem}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                {
+                                    dulieu.LoaiBaoHiem ?
+                                        dulieu.LoaiBaoHiem.length > 10 ?
+                                            dulieu.LoaiBaoHiem.slice(0, 10) + '...' :
+                                            dulieu.LoaiBaoHiem
+                                        : ''
+                                }
+                            </td>
                             <td style={{ textAlign: 'left' }} >{dulieu.NguoiMuaBaoHiem}</td>
                             {dulieu.TinhTrangApDung ?
                                 <td style={{ color: 'green' }} ><FontAwesomeIcon icon={faCheck} /> Áp Dụng</td>

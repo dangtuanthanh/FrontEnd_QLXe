@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faCog, faBell, faTimes, faBars, faSignOut, faCheckSquare, faMedal, faShieldAlt, faMapMarkedAlt, faWrench, faTools } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faCog, faBell, faTimes, faBars, faSignOut, faHandshake, faFileSignature } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 
@@ -10,22 +10,20 @@ import { urlLogout } from "../components/url";
 import CheckLogin from "../components/CheckLogin"
 import Navigation from "../components/Navigation"
 import loadingGif from '../assets/img/loading/loading1.gif'
-import TabBaoHiem from "../components/Tabs/TabBaoHiem";
-import TabDinhVi from "../components/Tabs/TabDinhVi";
-import TabPhuHieu from "../components/Tabs/TabPhuHieu";
-import TabDangKiem from "../components/Tabs/TabDangKiem";
-import TabHangMucBaoDuong from "../components/Tabs/TabHangMucBaoDuong";
-import TabBaoDuong from "../components/Tabs/TabBaoDuong";
+// import TabHopDongCuaToi from "../components/Tabs/TabHopDongCuaToi";
+// import TabDinhVi from "../components/Tabs/TabDinhVi";
+// import TabPhuHieu from "../components/Tabs/TabPhuHieu";
+import TabHopDong from "../components/Tabs/TabHopDong";
+import TabHopDongCuaToi from "../components/Tabs/TabHopDongCuaToi";
 import '../App.css';
 
-function DichVu() {
+function HopDong() {
     const [thongTinDangNhap, setThongTinDangNhap] = useState({
         menu: [],
         ThanhVien: {}
     });
-    const xuLyLayThongTinDangNhap = (data) => {
-        setThongTinDangNhap(data);
-    };
+    const [canViewContract, setCanViewContract] = useState(false);
+
     //xử lý redux
     const dispatch = useDispatch()
     const navigate = useNavigate();
@@ -102,15 +100,13 @@ function DichVu() {
 
     const loading = useSelector(state => state.loading.loading)
     const tabs = {
-        tab1: 'TabBaoHiem',
+        tab1: 'TabHopDongCuaToi',
         tab2: 'TabDinhVi',
         tab3: 'TabPhuHieu',
-        tab4: 'TabDangKiem',
-        tab5: 'TabHangMucBaoDuong',
-        tab6: 'TabBaoDuong',
+        tab4: 'TabHopDong'
     }
 
-    const [activeTab, setActiveTab] = useState(tabs.tab4);
+    const [activeTab, setActiveTab] = useState(canViewContract ? tabs.tab4 : tabs.tab1);
 
     const handleTabClick = tab => {
         setActiveTab(tab);
@@ -118,24 +114,34 @@ function DichVu() {
     let TabComponent;
 
     if (activeTab === tabs.tab1) {
-        TabComponent = TabBaoHiem;
+        TabComponent = TabHopDongCuaToi;
     }
 
-    if (activeTab === tabs.tab2) {
-        TabComponent = TabDinhVi;
-    }
-    if (activeTab === tabs.tab3) {
-        TabComponent = TabPhuHieu;
-    }
+    // if (activeTab === tabs.tab2) {
+    //     TabComponent = TabDinhVi;
+    // }
+    // if (activeTab === tabs.tab3) {
+    //     TabComponent = TabPhuHieu;
+    // }
     if (activeTab === tabs.tab4) {
-        TabComponent = TabDangKiem;
+        TabComponent = TabHopDong;
     }
-    if (activeTab === tabs.tab5) {
-        TabComponent = TabHangMucBaoDuong;
-    }
-    if (activeTab === tabs.tab6) {
-        TabComponent = TabBaoDuong;
-    }
+    useEffect(() => {
+        if (Object.keys(thongTinDangNhap.ThanhVien).length > 0) {
+            if (thongTinDangNhap.ThanhVien.Quyen) {
+                const quyens = thongTinDangNhap.ThanhVien.Quyen.split(', ');
+                if (quyens.includes('Xem danh sách hợp đồng')) {
+                    setActiveTab(tabs.tab4)
+                    setCanViewContract(true);
+                } else {
+                    setCanViewContract(false);
+                }
+            }
+        }
+    }, [thongTinDangNhap.ThanhVien.Quyen]);
+    const xuLyLayThongTinDangNhap = (data) => {
+        setThongTinDangNhap(data);
+    };
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap} >
             {loading && <div className="loading">
@@ -147,7 +153,7 @@ function DichVu() {
                         <div className="conten-modal" >
                             <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 700px.</h6>
                             <p>Để đảm bảo ứng dụng được hiển thị đầy đủ hãy sử dụng thiết bị có chiều cao lớn hơn như máy tính, máy tính bảng.</p>
-                            <strong style={{ fontSize: '0.9rem',color:'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
+                            <strong style={{ fontSize: '0.9rem', color: 'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
                         </div>
                     </div>
                 </div>
@@ -163,85 +169,56 @@ function DichVu() {
                     }}>
                         <div style={{ marginLeft: '2%', marginRight: '1%' }}>
                             <div style={{ marginLeft: '0px' }} className="row">
-                                <ul class={`nav nav-tabs  ${isMobile ? 'col-10' : 'col-8'} `} >
-                                    {!isMobile &&
-                                        <li class="nav-item" >
-                                            <button class="nav-link " style={{ color: 'blue' }} onClick={handleToggleNavigation}>
-                                                {showNavigation ? "<<" : ">>"}
+                                <ul class="nav nav-tabs col-6" >
+                                    <li class="nav-item" >
+                                        <button class="nav-link " style={{ color: 'blue' }} onClick={handleToggleNavigation}>
+                                            {showNavigation ? "<<" : ">>"}
+                                        </button>
+                                    </li>
+                                    {canViewContract ?
+
+                                        <li class="nav-item">
+                                            <button
+                                                className={activeTab === 'TabHopDong' ? 'nav-link active' : 'nav-link'}
+                                                style={{ color: 'blue' }}
+                                                onClick={() => handleTabClick(tabs.tab4)}>{isMobile ? (
+                                                    <FontAwesomeIcon icon={faHandshake} />
+                                                ) : (
+                                                    'Hợp Đồng'
+                                                )}
                                             </button>
                                         </li>
+
+                                        : null
                                     }
                                     <li class="nav-item">
                                         <button
-                                            className={activeTab === 'TabDangKiem' ? 'nav-link active' : 'nav-link'}
-                                            style={{ color: 'blue' }}
-                                            onClick={() => handleTabClick(tabs.tab4)}>{isMobile ? (
-                                                <FontAwesomeIcon icon={faCheckSquare} />
-                                            ) : (
-                                                'Đăng Kiểm'
-                                            )}
-                                        </button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button
-                                            style={{ color: 'blue' }}
-                                            className={activeTab === 'TabPhuHieu' ? 'nav-link active' : 'nav-link'}
-                                            onClick={() => handleTabClick(tabs.tab3)}>{isMobile ? (
-                                                <FontAwesomeIcon icon={faMedal} />
-                                            ) : (
-                                                'Phù Hiệu'
-                                            )}
-                                        </button>
-
-                                    </li>
-                                    <li class="nav-item">
-                                        <button
-                                            className={activeTab === 'TabBaoHiem' ? 'nav-link active' : 'nav-link'}
+                                            className={activeTab === 'TabHopDongCuaToi' ? 'nav-link active' : 'nav-link'}
                                             style={{ color: 'blue' }}
                                             onClick={() => handleTabClick(tabs.tab1)}>{isMobile ? (
-                                                <FontAwesomeIcon icon={faShieldAlt} />
+                                                <FontAwesomeIcon icon={faFileSignature} />
                                             ) : (
-                                                'Bảo Hiểm'
+                                                'Hợp Đồng Của Tôi'
                                             )}
                                         </button>
                                     </li>
 
-                                    <li class="nav-item">
-                                        <button
-                                            style={{ color: 'blue' }}
-                                            className={activeTab === 'TabDinhVi' ? 'nav-link active' : 'nav-link'}
-                                            onClick={() => handleTabClick(tabs.tab2)}>{isMobile ? (
-                                                <FontAwesomeIcon icon={faMapMarkedAlt} />
-                                            ) : (
-                                                'Định Vị'
-                                            )}
-                                        </button>
-                                    </li>
 
-                                    <li class="nav-item">
-                                        <button
-                                            style={{ color: 'blue' }}
-                                            className={activeTab === 'TabBaoDuong' ? 'nav-link active' : 'nav-link'}
-                                            onClick={() => handleTabClick(tabs.tab6)}>{isMobile ? (
-                                                <FontAwesomeIcon icon={faWrench} />
-                                            ) : (
-                                                'Bảo Dưỡng'
-                                            )}
-                                        </button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button
-                                            style={{ color: 'blue' }}
-                                            className={activeTab === 'TabHangMucBaoDuong' ? 'nav-link active' : 'nav-link'}
-                                            onClick={() => handleTabClick(tabs.tab5)}>{isMobile ? (
-                                                <FontAwesomeIcon icon={faTools} />
-                                            ) : (
-                                                'Hạng Mục Bảo Dưỡng'
-                                            )}
-                                        </button>
-                                    </li>
+
+                                    {/* <li class="nav-item">
+                                    <button
+                                        style={{ color: 'blue' }}
+                                        className={activeTab === 'TabDinhVi' ? 'nav-link active' : 'nav-link'}
+                                        onClick={() => handleTabClick(tabs.tab2)}>Định Vị</button>
+                                </li>
+                                <li class="nav-item">
+                                    <button
+                                        style={{ color: 'blue' }}
+                                        className={activeTab === 'TabPhuHieu' ? 'nav-link active' : 'nav-link'}
+                                        onClick={() => handleTabClick(tabs.tab3)}>Phù Hiệu</button>
+                                </li> */}
                                 </ul>
-                                <div className={` ${isMobile ? 'col-2' : 'col-4'} d-flex justify-content-end align-items-center`}>
+                                <div className="col-6 d-flex justify-content-end align-items-center">
                                     <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                         <div onClick={() => {
                                             navigate(`/TrangCaNhan`);
@@ -250,13 +227,7 @@ function DichVu() {
                                         </div>
                                     </span>
                                     <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn bg-gradient-info btn-sm mb-0">
-                                        {isMobile ? (
-                                            <FontAwesomeIcon icon={faSignOut} />
-                                        ) : (
-                                            <>
-                                                Đăng Xuất  <FontAwesomeIcon icon={faSignOut} />
-                                            </>
-                                        )}
+                                        Đăng Xuất <FontAwesomeIcon icon={faSignOut} />
                                     </button>
                                 </div>
                             </div>
@@ -290,4 +261,4 @@ function DichVu() {
     );
 }
 
-export default DichVu
+export default HopDong

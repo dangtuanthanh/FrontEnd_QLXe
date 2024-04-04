@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch ,useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
-import {  urlInsertGroupTypeCar, urlGetGroupTypeCar, urlUpdateGroupTypeCar } from "../url"
+import { urlGetMaintenanceItem, urlInsertMaintenanceItem, urlUpdateMaintenanceItem } from "../url"
 
-const Them_suaNhomLoaiXe = (props) => {
+const Them_suaHangMucBaoDuong = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
@@ -17,7 +17,7 @@ const Them_suaNhomLoaiXe = (props) => {
     useEffect(() => {
         if (props.iDAction) {
             dispatch({ type: 'SET_LOADING', payload: true })
-            const fetchGetAccount = fetch(`${urlGetGroupTypeCar}?id=${props.iDAction}`, {
+            const fetchGetAccount = fetch(`${urlGetMaintenanceItem}?id=${props.iDAction}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,17 +60,17 @@ const Them_suaNhomLoaiXe = (props) => {
     //xử lý xác nhận
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!dataReq.TenNhomLoaiXe
+        if (!dataReq.TenHangMuc
         ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
         else {
             dispatch({ type: 'SET_LOADING', payload: true })
             const data = {
-                MaNhomLoaiXe:dataReq.MaNhomLoaiXe,
-                TenNhomLoaiXe:dataReq.TenNhomLoaiXe,
+                MaHangMucBaoDuong: dataReq.MaHangMucBaoDuong,
+                TenHangMuc: dataReq.TenHangMuc,
                 MoTa: dataReq.MoTa
             };
             if (props.isInsert === true) {
-                fetch(urlInsertGroupTypeCar, {
+                fetch(urlInsertMaintenanceItem, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ const Them_suaNhomLoaiXe = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'MaNhomLoaiXe', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser, sortBy: 'MaHangMucBaoDuong', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
@@ -106,7 +106,7 @@ const Them_suaNhomLoaiXe = (props) => {
 
                     });
             } else {
-                fetch(urlUpdateGroupTypeCar, {
+                fetch(urlUpdateMaintenanceItem, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const Them_suaNhomLoaiXe = (props) => {
                             return response.json();
                         } else if (response.status === 401) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
-                        }else if (response.status === 400) {
+                        } else if (response.status === 400) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
                         } else if (response.status === 500) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
@@ -149,30 +149,30 @@ const Them_suaNhomLoaiXe = (props) => {
     const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box"style={{
+            <div className="box" style={{
                 width: isMobile && '100%'
             }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>Thông Tin Nhóm Loại Xe<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <h4 id='tieudepop'>Thông Tin Hạng Mục Bảo Dưỡng<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}
-                             style={{
-                                maxHeight:  isMobile ? '74vh':'530px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}>
-                            <div className="">
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
+                                <div className="">
                                     <div className="form-group">
-                                        <label>Tên Nhóm Loại Xe {batBuocNhap}</label>
+                                        <label>Tên Hạng Mục Bảo Dưỡng {batBuocNhap}</label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            value={dataReq.TenNhomLoaiXe}
+                                            value={dataReq.TenHangMuc}
                                             onChange={(event) => {
                                                 setDataReq({
                                                     ...dataReq,
-                                                    TenNhomLoaiXe: event.target.value
+                                                    TenHangMuc: event.target.value
                                                 });
                                             }}
                                         />
@@ -194,16 +194,16 @@ const Them_suaNhomLoaiXe = (props) => {
                                         />
                                     </div>
                                 </div>
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
-                                <button
-                                    onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
-                                    className="btn bg-gradient-info mt-3"
-                                >
-                                    Xác Nhận
-                                </button>
-                            </form>
 
+                            </form>
+                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                            <button
+                                onClick={handleSubmit}
+                                style={{ float: "right" }} type="button"
+                                className="btn bg-gradient-info mt-3"
+                            >
+                                Xác Nhận
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -212,4 +212,4 @@ const Them_suaNhomLoaiXe = (props) => {
     );
 };
 
-export default Them_suaNhomLoaiXe;
+export default Them_suaHangMucBaoDuong;

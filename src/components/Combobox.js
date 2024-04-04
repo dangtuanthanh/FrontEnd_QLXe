@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle} from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 function Combobox(props) {
   const [selected, setSelected] = useState([]);
   useEffect(() => {
     props.onChange(selected);
   }, [selected]);
+  var maxWord = 40
+  if(props.maxWord){
+    maxWord =props.maxWord
+  }
   const handleComboboxChange = (event) => {
     if (props.multiple === true) {
       if (selected.includes(event.target.value)) {
@@ -28,6 +32,7 @@ function Combobox(props) {
     >
       <label
         style={{
+          marginBottom: '0px',
           marginRight: '10px',
           flexShrink: 0,
           ...props.labelStyle
@@ -51,16 +56,22 @@ function Combobox(props) {
             key={combo[props.columnValue]}
             value={combo[props.columnValue]}
           >
-            {`${combo[props.columnAdd]}`}
+            {
+              combo[props.columnAdd] ?
+              combo[props.columnAdd].length > maxWord ?
+              combo[props.columnAdd].slice(0,maxWord) + '...' :
+              combo[props.columnAdd]
+                : ''
+            }
           </option>
         ))}
       </select>
       {
-        props.isAdd && <div  onClick={() => props.onClick()}>
-        < FontAwesomeIcon icon={faPlusCircle} />
+        props.isAdd && <div onClick={() => props.onClick()}>
+          < FontAwesomeIcon icon={faPlusCircle} />
         </div>
       }
-      
+
     </div>
   );
 }

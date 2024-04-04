@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faArrowLeft, faArrowDown,faArrowUp  } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
@@ -9,7 +9,7 @@ import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableVaiTroTruyCap from "../Table/TableVaiTroTruyCap";
 import Insert_updateRole from "../Popup/Insert_updateRole";
-function TabVaiTroTruyCap() {
+function TabVaiTroTruyCap(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
@@ -22,16 +22,24 @@ function TabVaiTroTruyCap() {
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
-
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
     const [onAction, setOnAction] = useState(() => { });
+    const [prIsMobile, setPrIsMobile] = useState(props.isMobile);
+    useEffect(() => {
+        setPrIsMobile(props.isMobile)
+    }, [props.isMobile]);
     const PopupAlert = (props) => {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:prIsMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -243,12 +251,12 @@ function TabVaiTroTruyCap() {
     };
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Vai Trò Truy Cập</h2>
+                    <h2> Quản Lý Vai Trò Truy Cập {props.isMobile &&<button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction?faArrowUp :faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
-
+                    {showButtonFunction &&
                     <div>
                         {
                             selectedIds.length == 0
@@ -342,6 +350,7 @@ function TabVaiTroTruyCap() {
 
                         </div>
                     </div>
+}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
@@ -358,17 +367,40 @@ function TabVaiTroTruyCap() {
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
                         />
-                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
-                    </div>
+                        </div>
+                        {!props.isMobile ?<div>
+                        <div style={{ height: '7vh' }}></div>
+                        <div style={{
+                            display: 'flex', width: '100%', position: 'absolute',
+                            right: 0,
+                            bottom: 0, margin: '1rem'
+                        }} >
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '50%' }}><label style={{
+                                fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
+                            }}></label></div>
+
+                            <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '50%' }}>
+                                <div style={{ marginRight: '2rem' }}>
+                                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                                </div>
+                                {/* phân trang */}
+                                <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                            </div>
+                        </div>
+                        </div>: <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                        }
+                    
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
             {
                 popupInsertUpdate && <div className="popup">
                     <Insert_updateRole
@@ -390,7 +422,7 @@ function TabVaiTroTruyCap() {
                     onAction={onAction}
                 />
             }
-        </div>
+        </div >
     )
 
 }

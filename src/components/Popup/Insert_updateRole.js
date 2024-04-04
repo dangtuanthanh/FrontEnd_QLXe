@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
-import { urlGetPermission, urlInsertRole, urlGetRole,urlUpdateRole } from "../url"
+import { urlGetPermission, urlInsertRole, urlGetRole, urlUpdateRole } from "../url"
 const Insert_updateRole = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
@@ -13,7 +13,19 @@ const Insert_updateRole = (props) => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
     // combobox
+    const [searchTerm, setSearchTerm] = useState('');
     const [combosQuyen, setCombosQuyen] = useState([]);//danh sách quyền
+    const [combosQuyen2, setCombosQuyen2] = useState([]);
+    //hàm tìm kiếm
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value)
+        setCombosQuyen2(combosQuyen.filter(combo => {
+            return combo.MoTa.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCombosQuyen2(combosQuyen)
+    }, [combosQuyen]);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -55,7 +67,7 @@ const Insert_updateRole = (props) => {
                     const stringsMaQuyen = data[1].MaQuyen.map(num => num.toString());
                     getRoleByID = ({
                         ...getRoleByID,
-                        MaQuyen:stringsMaQuyen
+                        MaQuyen: stringsMaQuyen
                     });
                     setDataReq(getRoleByID)
                 }
@@ -95,7 +107,7 @@ const Insert_updateRole = (props) => {
             dispatch({ type: 'SET_LOADING', payload: true })
             const strMaQuyen = dataReq.MaQuyen.join(',');
             const data = {
-                MaVaiTro:dataReq.MaVaiTro,
+                MaVaiTro: dataReq.MaVaiTro,
                 TenVaiTro: dataReq.TenVaiTro,
                 MaQuyen: strMaQuyen
             };
@@ -160,7 +172,7 @@ const Insert_updateRole = (props) => {
                         props.addNotification(data.message, 'success', 3000)
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
-                        props.setPopupInsertUpdate(false) 
+                        props.setPopupInsertUpdate(false)
                         props.setdataUser({ ...props.dataUser })
                     })
                     .catch(error => {
@@ -175,9 +187,12 @@ const Insert_updateRole = (props) => {
             }
         }
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box"style={{
+                width: isMobile && '100%'
+            }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
@@ -198,30 +213,56 @@ const Insert_updateRole = (props) => {
                                     />
                                 </div>
                                 <div className="form-group"
-                                    style={{ maxHeight: '400px', overflow: 'auto' }}
+                                    
                                 >
                                     <label>Quyền: {batBuocNhap}ㅤ</label>
-                                    {combosQuyen.map(combo => (
-                                        <div key={combo.MaQuyen} >
-                                            <label >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={
-                                                        (dataReq.MaQuyen?.includes(combo.MaQuyen.toString())) || false
-                                                    }
-                                                    onChange={() => handleQuyenChange(combo.MaQuyen.toString())}
-                                                />
-                                                {` ${combo["MaQuyen"]} - ${combo["TenQuyen"]} - ${combo["MoTa"]}`}
-                                            </label>
-                                        </div>
-                                    ))}
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <input
+                                            id="search"
+                                            value={searchTerm} onChange={handleSearch}
+                                            placeholder='Tìm Quyền'
+                                            type="text"
+                                            className="form-control-sm"
+                                            style={{ width: '95%' }}
+                                        />
+                                        {
+                                            searchTerm !== '' &&
+                                            <button
+                                                className="btn btn-close"
+                                                style={{ color: 'red', marginLeft: '4px', marginTop: '10px', fontSize: '0.6em' }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setCombosQuyen2(combosQuyen)
+                                                    setSearchTerm('')
+                                                }}
+                                            >
+                                                X
+                                            </button>
+                                        }
+                                    </div>
+                                    <div style={{ maxHeight: '340px', overflow: 'auto',marginTop:'1rem' }}>
+                                        {combosQuyen2.map(combo => (
+                                            <div key={combo.MaQuyen} >
+                                                <label >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            (dataReq.MaQuyen?.includes(combo.MaQuyen.toString())) || false
+                                                        }
+                                                        onChange={() => handleQuyenChange(combo.MaQuyen.toString())}
+                                                    />
+                                                    {` ${combo["MaQuyen"]} - ${combo["TenQuyen"]} - ${combo["MoTa"]}`}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
                                     style={{ float: "right" }} type="button"
-                                    className="btn btn-primary mt-3"
+                                    className="btn bg-gradient-info mt-3"
                                 >
                                     Xác Nhận
                                 </button>

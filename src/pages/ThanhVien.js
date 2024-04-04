@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faCog, faBell, faSignOut, faTimes, faBars, faUserTag } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 
@@ -22,6 +22,7 @@ function ThanhVien() {
     const xuLyLayThongTinDangNhap = (data) => {
         setThongTinDangNhap(data);
     };
+
     //xử lý redux
     const dispatch = useDispatch()
     const navigate = useNavigate();
@@ -62,11 +63,39 @@ function ThanhVien() {
 
     }
 
-    //Xử lý menu
-    const [showNavigation, setShowNavigation] = useState(true);
+    const [isMobile, setIsMobile] = useState(() => {
+        return window.innerWidth < 1250;
+    });
+    const [errHeight, setErrHeight] = useState(false);
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1250);
+            const isMobileRedux = window.innerWidth < 1250;
+            dispatch({
+                type: 'SET_ISMOBILE',
+                payload: isMobileRedux
+            });
+            if (window.innerHeight < 700) {
+                setErrHeight(true)
+            } else setErrHeight(false)
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
+
+    const [showNavigation, setShowNavigation] = useState(() => {
+        return isMobile ? false : true;
+    });
     const handleToggleNavigation = () => {
         setShowNavigation(!showNavigation);
     };
+
+
+
     const navigationColumnClass = showNavigation ? "col-2" : "col-0";
     const contentColumnClass = showNavigation ? "col-10" : "col-12";
 
@@ -91,35 +120,62 @@ function ThanhVien() {
         TabComponent = TabVaiTroTruyCap;
     }
 
+
+
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap} >
             {loading && <div className="loading">
                 <img src={loadingGif} style={{ width: '30%' }} />
             </div>}
+            {errHeight ? <div className="popup">
+                <div className="popup-box">
+                    <div className="box">
+                        <div className="conten-modal" >
+                            <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 700px.</h6>
+                            <p>Để đảm bảo ứng dụng được hiển thị đầy đủ hãy sử dụng thiết bị có chiều cao lớn hơn như máy tính, máy tính bảng.</p>
+                            <strong style={{ fontSize: '0.9rem',color:'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                :
             <div className="row">
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
                 </div>
-                <div className={contentColumnClass}>
+                <div className={contentColumnClass} style={{
+                    opacity: isMobile && showNavigation ? 0.3 : 1,
+                    pointerEvents: isMobile && showNavigation ? 'none' : 'auto'
+                }}>
                     <div style={{ marginLeft: '2%', marginRight: '1%' }}>
-                        <div style={{ marginLeft: '0px'}} className="row">
+
+                        <div style={{ marginLeft: '0px' }} className="row" >
                             <ul class="nav nav-tabs col-6" >
-                                <li class="nav-item" >
-                                    <button class="nav-link " style={{color:'blue'}} onClick={handleToggleNavigation}>
+                                <li class="nav-item">
+                                    <button class="nav-link " style={{ color: 'blue' }} onClick={handleToggleNavigation}>
                                         {showNavigation ? "<<" : ">>"}
                                     </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabThanhVien' ? 'nav-link active' : 'nav-link'}
-                                        style={{color:'blue'}}
-                                        onClick={() => handleTabClick(tabs.tab1)}>Thành Viên</button>
+                                        style={{ color: 'blue' }}
+                                        onClick={() => handleTabClick(tabs.tab1)}>{isMobile ? (
+                                            <FontAwesomeIcon icon={faUser} />
+                                        ) : (
+                                            'Thành Viên'
+                                        )}
+                                    </button>
                                 </li>
                                 <li class="nav-item">
                                     <button
-                                    style={{color:'blue'}}
+                                        style={{ color: 'blue' }}
                                         className={activeTab === 'TabVaiTroTruyCap' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab2)}>Vai Trò Truy Cập</button>
+                                        onClick={() => handleTabClick(tabs.tab2)}>{isMobile ? (
+                                            <FontAwesomeIcon icon={faUserTag} />
+                                        ) : (
+                                            'Vai Trò Truy Cập'
+                                        )}</button>
                                 </li>
 
                             </ul>
@@ -131,22 +187,43 @@ function ThanhVien() {
                                         <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.ThanhVien.TenThanhVien}</span>
                                     </div>
                                 </span>
-                                <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
+                                {/* <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <FontAwesomeIcon icon={faCog} />
                                 </span>
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <FontAwesomeIcon icon={faBell} />
-                                </span>
+                                </span> */}
                                 <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn bg-gradient-info btn-sm mb-0">
                                     Đăng Xuất <FontAwesomeIcon icon={faSignOut} />
                                 </button>
                             </div>
                         </div>
-                        <TabComponent />
-                        
+
+                        <TabComponent isMobile={isMobile} />
                     </div>
                 </div>
+                <button
+                    id="ButtonMenu"
+                    className="btn bg-gradient-info"
+                    style={{
+                        position: 'fixed',
+                        top: '3rem',
+                        right: '1.5rem',
+                        padding: '8px 16px',
+                        width: '3rem'
+                    }}
+                    onClick={() => {
+                        setShowNavigation(!showNavigation)
+                    }}
+                >
+                    {showNavigation ? (
+                        <FontAwesomeIcon icon={faTimes} />
+                    ) : (
+                        <FontAwesomeIcon icon={faBars} />
+                    )}
+                </button>
             </div>
+}
         </CheckLogin>
     );
 }

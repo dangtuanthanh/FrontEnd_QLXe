@@ -14,7 +14,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ThanhVien from "./pages/ThanhVien"
 import Xe from "./pages/Xe"
 import DichVu from "./pages/DichVu"
-
+import HopDong from "./pages/HopDong"
 import BangDieuKhien from "./pages/BangDieuKhien"
 
 import NotFound from "./pages/NotFound";
@@ -28,14 +28,15 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login /> } />
+          <Route path="/" element={<Login />} />
           <Route path="/ThanhVien" element={<ThanhVien />} />
           <Route path="/Xe" element={<Xe />} />
           <Route path="/DichVu" element={<DichVu />} />
+          <Route path="/HopDong" element={<HopDong />} />
 
           <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
           <Route path="/TrangCaNhan" element={<TrangCaNhan />} />
-          <Route path="*" element={<NotFound />}/>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </Provider>

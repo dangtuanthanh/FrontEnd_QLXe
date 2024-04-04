@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faArrowLeft , faArrowDown,faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetRegistry, urlDeleteRegistry } from "../url";
+import { urlGetMaintenanceItem, urlDeleteMaintenanceItem } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableDangKiem from "../Table/TableDangKiem";
-import Them_suaDangKiem from "../Popup/them_suaDangKiem";
-function TabDangKiem(props) {
+import TableHangMucBaoDuong from "../Table/TableHangMucBaoDuong";
+import Them_suaHangMucBaoDuong from "../Popup/them_suaHangMucBaoDuong";
+function TabHangMucBaoDuong(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'MaXe',
+        sortBy: 'MaHangMucBaoDuong',
         sortOrder: 'asc',
-        searchBy: 'BienSoXe',
+        searchBy: 'TenHangMuc',
         search: '',
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
-    //Xử lý hiển thị các nút chức năng
-    const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
-    const handleToggleButtonFunction = () => {
-        setShowButtonFunction(!showButtonFunction);
-    };
+//Xử lý hiển thị các nút chức năng
+const [showButtonFunction, setShowButtonFunction] = useState(!props.isMobile);
+const handleToggleButtonFunction = () => {
+    setShowButtonFunction(!showButtonFunction);
+};
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -106,13 +106,12 @@ function TabDangKiem(props) {
     const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
 
-    const [iDAction2, setIDAction2] = useState();//giá trị của id khi thực hiện sửa xoá
-    const [iDAction3, setIDAction3] = useState();//giá trị của id khi thực hiện sửa xoá
+
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaXe',
+            sortBy: 'MaHangMucBaoDuong',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -124,7 +123,7 @@ function TabDangKiem(props) {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaXe',
+            sortBy: 'MaHangMucBaoDuong',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -135,7 +134,7 @@ function TabDangKiem(props) {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'MaXe',
+            sortBy: 'MaHangMucBaoDuong',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -145,19 +144,20 @@ function TabDangKiem(props) {
 
 
     //Xoá dữ liệu
-    const deleteData = (ID, ID2) => {
+    const deleteData = (ID) => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        const data = {
-            ID: ID,
-            ID2: ID2
-        }
-        fetch(`${urlDeleteRegistry}`, {
+        let IDs = [ID]
+        if (Array.isArray(ID)) {
+            IDs = ID.map(item => Number(item));
+            console.log('mảng số đã được chuyển', IDs);
+        } else IDs = [ID];
+        fetch(`${urlDeleteMaintenanceItem}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({ IDs })
         })
             .then(response => {
                 if (response.status === 200) {
@@ -174,6 +174,7 @@ function TabDangKiem(props) {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
                 dispatch({ type: 'SET_LOADING', payload: false })
+                setSelectedIds([])
                 TaiDuLieu()
 
             })
@@ -187,21 +188,16 @@ function TabDangKiem(props) {
 
             });
     }
-    const filterLanMoiNhat = () => {
-        setdataUser({
-            ...dataUser,
-            page: 1,
-            search: ' ',
-            searchBy: 'LanMoiNhat'
-        });
-    };
+    // sửa hàng loạt
+    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
+
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetRegistry}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetMaintenanceItem}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -255,133 +251,135 @@ function TabDangKiem(props) {
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Đăng Kiểm{props.isMobile && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button>}</h2>
+                    <h2> Quản Lý Hạng Mục Bảo Dưỡng{props.isMobile &&<button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction?faArrowUp :faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
                     {showButtonFunction &&
-                        <div>
-                            <div style={{ 'display': "inline-block", float: 'left' }}>
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={() => { TaiDuLieu(); }}
-                                    className="btn bg-gradient-info">
-                                    <FontAwesomeIcon icon={faRotate} />
-                                    ㅤLàm Mới
-                                </button>ㅤ
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={() => {
-                                        setIsInsert(true)
-                                        setPopupInsertUpdate(true)
-                                        setIDAction()
-                                        setIDAction2()
-                                    }}
-
-                                    className="btn bg-gradient-info">
-                                    <FontAwesomeIcon icon={faAdd} />
-                                    ㅤThêm
-                                </button>ㅤ
-                                <button
-                                    style={{ 'display': "inline-block" }}
-                                    onClick={filterLanMoiNhat}
-                                    className="btn btn-light">
-                                    <FontAwesomeIcon icon={faFilter} />
-                                    ㅤ Lần Mới Nhất
-                                </button>ㅤ
-                            </div>
-
-
-                            <div style={{ 'display': "inline-block", float: 'right' }}>
-                                {/* số hàng trên trang */}
-                                <ItemsPerPage
-                                    dataRes={dataRes}
-                                    openPopupAlert={openPopupAlert}
-                                    dataUser={dataUser}
-                                    setdataUser={setdataUser}
-                                />
-                                ㅤ
-                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
-                                {
-                                    dataUser.search !== '' &&
+                    <div>
+                        {
+                            selectedIds.length == 0
+                                ? <div style={{ 'display': "inline-block", float: 'left' }}>
                                     <button
-                                        className="btn btn-close"
-                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        style={{ 'display': "inline-block" }}
+                                        onClick={() => { TaiDuLieu(); }}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faRotate} />
+                                        ㅤLàm Mới
+                                    </button>ㅤ
+                                    <button
+                                        style={{ 'display': "inline-block" }}
                                         onClick={() => {
-                                            if (dataUser.searchBy === 'LanMoiNhat')
-                                                setdataUser({
-                                                    ...dataUser,
-                                                    search: '',
-                                                    searchBy: 'BienSoXe'
-                                                });
-                                            else
-                                                setdataUser({
-                                                    ...dataUser,
-                                                    search: ''
-                                                });
+                                            setIsInsert(true)
+                                            setPopupInsertUpdate(true)
+                                            setIDAction()
                                         }}
-                                    >
-                                        X
-                                    </button>
-                                }
-                                ㅤ
-                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                    <option value="BienSoXe">Tìm theo Biển Số Xe</option>
-                                    <option value="LanDangKiem">Tìm theo Lần Đăng Kiểm</option>
-                                    <option value="NgayDangKiem">Tìm theo Ngày Đăng Kiểm</option>
-                                    <option value="NgayHetHan">Tìm theo Ngày Hết Hạn</option>
-                                    <option value="ThoiGian">Tìm theo Thời Gian Hiệu Lực</option>
-                                    <option value="NoiDangKiem">Tìm theo Nơi Đăng Kiểm</option>
-                                    <option value="NguoiDiDangKiem">Tìm theo Người Đi Đăng Kiểm</option>
-                                    <option value="TinhTrangApDung">Tìm theo Trạng Thái</option>
-                                </select>
-                                ㅤ
-                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                    <option value='false'>Chế độ tìm: Gần đúng</option>
-                                    <option value="true">Chế độ tìm: Chính xác</option>
-                                </select>
 
-                            </div>
-                        </div>}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faAdd} />
+                                        ㅤThêm
+                                    </button>ㅤ
+                                </div>
+                                : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                    <button
+                                        style={{ display: "inline-block" }}
+                                        //onClick={setSelectedIds([])}
+                                        onClick={() => { setSelectedIds([]); }}
+                                        className="btn btn-danger">
+                                        <FontAwesomeIcon icon={faArrowLeft} />
+                                        ㅤQuay Lại
+                                    </button>ㅤ
+                                    {/* <button
+                                                        style={{ display: "inline-block" }}
+                                                        //onClick={() => {togglePopup6();}}
+                                                        className="btn bg-gradient-info">
+                                                        <FontAwesomeIcon icon={faPencil} />
+                                                        ㅤSửa ô đã chọn
+                                                    </button>ㅤ */}
+                                    <button
+                                        style={{ display: "inline-block" }}
+                                        onClick={() => {
+                                            openPopupAlert(
+                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                () => { deleteData(selectedIds) }
+                                            )
+                                        }}
+                                        className="btn bg-gradient-info">
+                                        <FontAwesomeIcon icon={faTrash} />
+                                        ㅤXoá ô đã chọn
+                                    </button>ㅤ
+                                </div>
+                        }
+
+                        <div style={{ 'display': "inline-block", float: 'right' }}>
+                            {/* số hàng trên trang */}
+                            <ItemsPerPage
+                                dataRes={dataRes}
+                                openPopupAlert={openPopupAlert}
+                                dataUser={dataUser}
+                                setdataUser={setdataUser}
+                            />
+                            ㅤ
+                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                            {
+                                dataUser.search !== '' &&
+                                <button
+                                    className="btn btn-close"
+                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                    onClick={() => {
+                                        setdataUser({
+                                            ...dataUser,
+                                            search: ''
+                                        });
+                                    }}
+                                >
+                                    X
+                                </button>
+                            }
+                            ㅤ
+                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                <option value="MaHangMucBaoDuong">Tìm theo Mã Hạng Mục Bảo Dưỡng</option>
+                                <option value="TenHangMuc">Tìm theo Tên Hạng Mục Bảo Dưỡng</option>
+                            </select>
+                            ㅤ
+                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                <option value='false'>Chế độ tìm: Gần đúng</option>
+                                <option value="true">Chế độ tìm: Chính xác</option>
+                            </select>
+
+                        </div>
+                    </div>
+}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableDangKiem
+                        <TableHangMucBaoDuong
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
                             addNotification={addNotification}
                             setIsInsert={setIsInsert}
                             setIDAction={setIDAction}
-                            setIDAction2={setIDAction2}
-                            setIDAction3={setIDAction3}
                             setPopupInsertUpdate={setPopupInsertUpdate}
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
+                            selectedIds={selectedIds}
+                            setSelectedIds={setSelectedIds}
                         />
-                    </div>
-                    {!props.isMobile ? <div>
-                        <div style={{ height: '7vh' }}></div>
+                        </div>
+                        {!props.isMobile ?<div>
+                       <div style={{height:'7vh'}}></div>
                         <div style={{
                             display: 'flex', width: '100%', position: 'absolute',
                             right: 0,
                             bottom: 0, margin: '1rem'
                         }} >
-                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{
-                                fontFamily: '"Comic Sans MS", cursive, sans-serif', fontStyle: 'italic', color: '#cfcfcf'
+                            <div style={{ marginLeft: '2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '30%' }}><label style={{fontFamily:'"Comic Sans MS", cursive, sans-serif',fontStyle: 'italic', color:'#cfcfcf'
                             }}></label></div>
 
                             <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '70%' }}>
                                 <div style={{ marginRight: '2rem' }}>
                                     {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayDangKiem" || dataRes.sortBy === "NgayHetHan" ?
-                                        (dataRes.sortOrder === 'asc'
-                                            ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
-                                            : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
-                                        : (
-                                            dataRes.sortOrder === 'asc'
-                                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
-                                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
-                                        theo cột {dataRes.sortBy}   </label>
+                                    <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
                                 </div>
                                 {/* phân trang */}
                                 <Pagination
@@ -391,29 +389,26 @@ function TabDangKiem(props) {
                                 />
                             </div>
                         </div>
-                    </div> : <Pagination
-                        setdataUser={setdataUser}
-                        dataUser={dataUser}
-                        dataRes={dataRes}
-                    />
-                    }
-
+                        </div>: <Pagination
+                                    setdataUser={setdataUser}
+                                    dataUser={dataUser}
+                                    dataRes={dataRes}
+                                />
+                        }
+                    
                 </div>
             </div>
-
             {
                 popupInsertUpdate && <div className="popup">
-                    <Them_suaDangKiem
+                    <Them_suaHangMucBaoDuong
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
-                        tieuDe='Thông Tin Loại Xe'
+                        tieuDe='Thông Tin Hạng Mục Bảo Dưỡng'
                         dataUser={dataUser}
                         setdataUser={setdataUser}
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
-                        iDAction2={iDAction2}
-                        iDAction3={iDAction3}
                     />
                 </div>
             }
@@ -429,4 +424,4 @@ function TabDangKiem(props) {
 
 }
 
-export default TabDangKiem
+export default TabHangMucBaoDuong
