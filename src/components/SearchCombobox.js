@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { useSelector } from 'react-redux'
 function SearchComBoBox(props) {
   const [search, setSearch] = useState('');
   const [combos, setCombos] = useState(props.combos);
@@ -14,9 +15,12 @@ function SearchComBoBox(props) {
     setCombos(filteredCombos);
     setSearch(event.target.value);
   }
+  const isMobile = useSelector(state => state.isMobile.isMobile)
   return (
     <div className="popup-box">
-      <div className="box">
+      <div className="box" style={{
+        width: isMobile && '100%'
+      }}>
         <div className="conten-modal">
           <div>
             <div className="bg-light px-4 py-3">

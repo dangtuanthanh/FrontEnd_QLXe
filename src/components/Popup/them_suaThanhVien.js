@@ -505,7 +505,7 @@ const Them_suaThanhVien = (props) => {
                                         <div className="form-group">
                                             <label>Số Điện Thoại</label>
                                             <input
-                                                type="number"
+                                                type="text"
                                                 className="form-control"
                                                 value={dataReq.SoDienThoai}
                                                 onChange={(event) => {
@@ -516,11 +516,11 @@ const Them_suaThanhVien = (props) => {
                                                 }}
                                             />
                                         </div>
-                                        <Dropdown
+                                        {!props.isInsert &&<Dropdown
                                             title="Xem Hợp Đồng"
                                             items={dataReq.HopDong}
                                             onItemClick={handleDropdownItemClickHopDong}
-                                        />
+                                        />}
                                     </div>
                                     <div className={` ${isMobile ? 'col-12' : 'col-6'}`}>
                                         <ImageUpload />

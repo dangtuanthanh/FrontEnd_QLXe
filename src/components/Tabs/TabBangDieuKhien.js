@@ -11,6 +11,7 @@ import { urlGetTotalCar, urlGetTotalMember, urlGetYearContract, urlGetRevenueYea
 function TabBangDieuKhien() {
     //xử lý redux
     const dispatch = useDispatch();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     const [tongSoXe, setTongSoXe] = useState('...');
     const [tongThanhVien, setTongThanhVien] = useState('...');
     const [hopDongNamNay, setHopDongNamNay] = useState('...');
@@ -97,7 +98,7 @@ function TabBangDieuKhien() {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:isMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -280,7 +281,7 @@ function TabBangDieuKhien() {
 
 
     }, []);
-    const isMobile = useSelector(state => state.isMobile.isMobile)
+    
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >

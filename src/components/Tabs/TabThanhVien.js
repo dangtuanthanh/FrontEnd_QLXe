@@ -40,11 +40,15 @@ function TabThanhVien(props) {
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
     const [onAction, setOnAction] = useState(() => { });
+    const [prIsMobile, setPrIsMobile] = useState(props.isMobile);
+    useEffect(() => {
+        setPrIsMobile(props.isMobile)
+    }, [props.isMobile]);
     const PopupAlert = (props) => {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:prIsMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>

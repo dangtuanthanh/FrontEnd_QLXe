@@ -8,6 +8,7 @@ import { urlChangePassword } from "../url";
 function TabEmail(props) {
     //xử lý redux
     const dispatch = useDispatch()
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     const [dataReq, setDataReq] = useState({});
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
@@ -54,7 +55,7 @@ function TabEmail(props) {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center',width:isMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -225,7 +226,7 @@ function TabEmail(props) {
             </div>
         );
     }
-    const isMobile = useSelector(state => state.isMobile.isMobile)
+ 
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }} >
